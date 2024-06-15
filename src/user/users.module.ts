@@ -7,5 +7,4 @@ import { UsersDao } from './users.dao';
   imports: [TypeOrmModule.forFeature([User])],
   providers: [UsersDao],
 })
-export class UsersModule {
-}
+export class UsersModule {}

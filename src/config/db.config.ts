@@ -5,8 +5,7 @@ import { envEnum } from '../enums/env.enum';
 
 @Injectable()
 export class DBConfig implements TypeOrmOptionsFactory {
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {

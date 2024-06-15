@@ -5,8 +5,7 @@ import { GatewayIntentBits } from 'discord.js';
 
 @Injectable()
 export class DiscordConfig implements DiscordOptionsFactory {
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   createDiscordOptions(): DiscordModuleOption {
     return {
