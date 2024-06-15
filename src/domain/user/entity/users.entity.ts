@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Member } from '../../meeting/entity/member.entity';
 import { Participant } from '../../schedule/entity/participant.entity';
+import { Settings } from './settings.embedded';
 
 @Entity()
 export class Users {
@@ -9,6 +10,9 @@ export class Users {
 
   @Column()
   nickname: string;
+
+  @Column(() => Settings)
+  settings: Settings;
 
   @OneToMany(() => Member, (member) => member.user)
   members: Promise<Member[]>;
