@@ -1,6 +1,7 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Users } from '../../user/entity/users.entity';
 import { Meeting } from './meeting.entity';
+import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum';
 
 @Entity()
 export class Member {
@@ -13,7 +14,6 @@ export class Member {
   @ManyToOne(() => Users, (user) => user.members, {
     nullable: false,
     onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'users_id' })
   user: Promise<Users>;
@@ -21,8 +21,14 @@ export class Member {
   @ManyToOne(() => Meeting, (meeting) => meeting.members, {
     nullable: false,
     onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'meeting_id' })
   meeting: Promise<Member>;
+
+  @Column({
+    type: 'enum',
+    enum: AuthorityEnum,
+    default: AuthorityEnum.MEMBER,
+  })
+  authority: AuthorityEnumType;
 }

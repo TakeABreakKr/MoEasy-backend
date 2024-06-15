@@ -8,9 +8,7 @@ import { DiscordConfig } from './config/discord.config';
 import { DBConfig } from './config/db.config';
 
 import { BotModule } from './bot/bot.module';
-import { UsersModule } from './user/users.module';
-import { MeetingModule } from './meeting/meeting.module';
-import { ScheduleModule } from './schedule/schedule.module';
+import { DomainModule } from './domain/domain.module';
 
 @Module({
   imports: [
@@ -28,9 +26,7 @@ import { ScheduleModule } from './schedule/schedule.module';
       useClass: DiscordConfig,
     }),
     BotModule,
-    UsersModule,
-    MeetingModule,
-    ScheduleModule,
+    DomainModule,
   ],
 })
 export class AppModule {}

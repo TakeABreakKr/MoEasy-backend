@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
-import { envEnum } from '../enums/env.enum';
+import { EnvEnum } from '../enums/env.enum';
 
 @Injectable()
 export class DBConfig implements TypeOrmOptionsFactory {
@@ -16,7 +16,7 @@ export class DBConfig implements TypeOrmOptionsFactory {
       password: this.configService.get('db.password'),
       database: this.configService.get('db.database'),
       autoLoadEntities: true,
-      synchronize: this.configService.get('env') !== envEnum.PROD,
+      synchronize: this.configService.get('env') !== EnvEnum.PROD,
     };
   }
 }

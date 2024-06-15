@@ -1,10 +1,10 @@
 import { version } from '../../package.json';
-import { envEnum } from '../enums/env.enum';
+import { EnvEnum } from '../enums/env.enum';
 
 export default () => ({
   version,
   port: parseInt(process.env.PORT, 10) || 5000,
-  env: envEnum[process.env.NODE_ENV || 'DEV'],
+  env: EnvEnum[process.env.NODE_ENV || 'DEV'],
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT) || 3306,

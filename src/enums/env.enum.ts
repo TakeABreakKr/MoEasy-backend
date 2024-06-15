@@ -1,6 +1,6 @@
-export const envEnum = {
+export const EnvEnum = {
   DEV: 'DEV',
   PROD: 'PROD',
 } as const;
 
-export type envEnumType = (typeof envEnum)[keyof typeof envEnum];
+export type EnvEnumType = (typeof EnvEnum)[keyof typeof EnvEnum];
