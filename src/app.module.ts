@@ -9,6 +9,8 @@ import { DBConfig } from './config/db.config';
 
 import { BotModule } from './bot/bot.module';
 import { UsersModule } from './user/users.module';
+import { MeetingModule } from './meeting/meeting.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { UsersModule } from './user/users.module';
     }),
     BotModule,
     UsersModule,
+    MeetingModule,
+    ScheduleModule,
   ],
 })
 export class AppModule {}
