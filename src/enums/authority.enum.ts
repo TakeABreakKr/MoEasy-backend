@@ -1,4 +1,5 @@
 export const AuthorityEnum = {
+  WAITING: 'WAITING',
   MEMBER: 'MEMBER',
   ADMIN: 'ADMIN',
   OWNER: 'OWNER',

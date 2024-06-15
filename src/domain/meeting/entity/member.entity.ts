@@ -28,7 +28,7 @@ export class Member {
   @Column({
     type: 'enum',
     enum: AuthorityEnum,
-    default: AuthorityEnum.MEMBER,
+    default: AuthorityEnum.WAITING,
   })
   authority: AuthorityEnumType;
 }
