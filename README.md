@@ -35,6 +35,7 @@ $ npm install
 
 ## Running the app
 
+port number : 5000
 ```bash
 # development
 $ npm run start
