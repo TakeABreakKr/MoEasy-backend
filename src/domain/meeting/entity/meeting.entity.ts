@@ -7,8 +7,16 @@ export class Meeting {
   @PrimaryGeneratedColumn()
   meeting_id: number;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   name: string;
+
+  @Column({
+    type: 'integer',
+    default: 10,
+  })
+  limit: number;
 
   @OneToMany(() => Schedule, (schedule) => schedule.meeting)
   schedules: Promise<Schedule[]>;

@@ -6,8 +6,11 @@ export class Schedule {
   @PrimaryGeneratedColumn('increment')
   schedule_id: number;
 
-  @Column('datetime')
-  date: Date;
+  @Column({
+    type: 'datetime',
+    nullable: false,
+  })
+  startAt: Date;
 
   @ManyToOne(() => Meeting, (meeting) => meeting.schedules)
   meeting: Promise<Meeting>;
