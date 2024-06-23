@@ -23,7 +23,7 @@ export class Member {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'meeting_id' })
-  meeting: Promise<Member>;
+  meeting: Promise<Meeting>;
 
   @Column({
     type: 'enum',
@@ -31,4 +31,10 @@ export class Member {
     default: AuthorityEnum.WAITING,
   })
   authority: AuthorityEnumType;
+
+  @Column({
+    type: 'integer',
+    default: null,
+  })
+  waitingNumber: number | null;
 }

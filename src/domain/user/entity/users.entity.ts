@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Member } from '../../meeting/entity/member.entity';
 import { Participant } from '../../schedule/entity/participant.entity';
 import { Settings } from './settings.embedded';
@@ -19,4 +19,22 @@ export class Users {
 
   @OneToMany(() => Participant, (participant) => participant.user)
   participants: Promise<Participant[]>;
+
+  @ManyToMany(() => Users, (users) => users.friends)
+  @JoinTable({
+    name: 'friend',
+  })
+  friends: Promise<Users[]>;
+
+  async getMembers(): Promise<Member[]> {
+    return this.members;
+  }
+
+  async getParticipants(): Promise<Participant[]> {
+    return this.participants;
+  }
+
+  async getFriends(): Promise<Users[]> {
+    return this.friends;
+  }
 }

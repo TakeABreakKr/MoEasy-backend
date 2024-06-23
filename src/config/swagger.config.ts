@@ -1,3 +1,5 @@
+import { writeFileSync } from 'fs';
+import * as path from 'path';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -12,4 +14,6 @@ export function setupSwagger(app: INestApplication) {
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
+  const specJsonPath = path.join(configService.get('PWD'), './swagger-spec.json');
+  writeFileSync(specJsonPath, JSON.stringify(document));
 }

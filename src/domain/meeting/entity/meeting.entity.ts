@@ -9,6 +9,7 @@ export class Meeting {
 
   @Column({
     nullable: false,
+    length: 18,
   })
   name: string;
 
@@ -17,6 +18,9 @@ export class Meeting {
     default: 10,
   })
   limit: number;
+
+  @Column()
+  thumbnail: string;
 
   @OneToMany(() => Schedule, (schedule) => schedule.meeting)
   schedules: Promise<Schedule[]>;
