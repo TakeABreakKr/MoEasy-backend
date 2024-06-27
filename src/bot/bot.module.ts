@@ -4,11 +4,7 @@ import { BotGateway } from './bot.gateway';
 import { SlashCommandModule } from './commands/slash/slash.command.module';
 
 @Module({
-  imports: [
-    DiscordModule.forFeature(),
-    SlashCommandModule,
-  ],
+  imports: [DiscordModule.forFeature(), SlashCommandModule],
   providers: [BotGateway],
 })
-export class BotModule {
-}
+export class BotModule {}

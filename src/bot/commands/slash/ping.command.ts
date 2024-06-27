@@ -1,5 +1,4 @@
 import { Command, Handler } from '@discord-nestjs/core';
-import { ChatInputCommandInteraction } from 'discord.js';
 
 @Command({
   name: 'ping',
@@ -7,7 +6,7 @@ import { ChatInputCommandInteraction } from 'discord.js';
 })
 export class PingCommand {
   @Handler()
-  onPing(interaction: ChatInputCommandInteraction): string {
+  onPing(): string {
     return 'pong';
   }
 }

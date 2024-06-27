@@ -7,8 +7,7 @@ import { InjectDiscordClient, Once } from '@discord-nestjs/core';
 export class BotGateway {
   private readonly logger = new Logger(BotGateway.name);
 
-  constructor(@InjectDiscordClient() private readonly client: Client) {
-  }
+  constructor(@InjectDiscordClient() private readonly client: Client) {}
 
   @Once('ready')
   onReady() {

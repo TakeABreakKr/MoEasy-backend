@@ -2,9 +2,6 @@ import { Module } from '@nestjs/common';
 import { PingCommand } from './ping.command';
 
 @Module({
-  providers: [
-    PingCommand,
-  ],
+  providers: [PingCommand],
 })
-export class SlashCommandModule {
-}
+export class SlashCommandModule {}

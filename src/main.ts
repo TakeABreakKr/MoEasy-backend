@@ -1,15 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import { initializeTransactionalContext } from 'typeorm-transactional';
 import { AppModule } from './app.module';
 import { setupSwagger } from './config/swagger.config';
-import { envEnum, envEnumType } from './enums/env.enum';
+import { EnvEnum, EnvEnumType } from './enums/env.enum';
 
 async function bootstrap() {
+  initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
   const configService: ConfigService = app.get(ConfigService);
 
-  const env: envEnumType = configService.get('env');
-  if (env !== envEnum.PROD) {
+  const env: EnvEnumType = configService.get('env');
+  if (env !== EnvEnum.PROD) {
     setupSwagger(app);
   }
 
