@@ -11,6 +11,7 @@ import { DBConfig } from './config/db.config';
 
 import { BotModule } from './bot/bot.module';
 import { DomainModule } from './domain/domain.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { DomainModule } from './domain/domain.module';
     }),
     BotModule,
     DomainModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
