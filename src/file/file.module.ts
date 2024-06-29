@@ -1,5 +1,6 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { LocalFileService } from './service/local.file.service';
+import { S3FileService } from './service/s3.file.service';
 
 @Global()
 @Module({})
@@ -21,10 +22,17 @@ export class FileModule {
         };
       }
       case 's3': {
+        const providers = [
+          {
+            provide: 'FileService',
+            useValue: S3FileService,
+          },
+        ];
+
         return {
           module: FileModule,
-          providers: [],
-          exports: [],
+          providers,
+          exports: providers,
         };
       }
     }
