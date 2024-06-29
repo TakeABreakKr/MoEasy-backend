@@ -11,6 +11,7 @@ import { DBConfig } from './config/db.config';
 
 import { BotModule } from './bot/bot.module';
 import { DomainModule } from './domain/domain.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -36,6 +37,9 @@ import { DomainModule } from './domain/domain.module';
     }),
     BotModule,
     DomainModule,
+    FileModule.forRoot({
+      fileMode: 'local',
+    }),
   ],
 })
 export class AppModule {}

@@ -11,8 +11,8 @@ export class MeetingDao {
     return this.meetingRepository.findOneBy({ meeting_id: id });
   }
 
-  async create(name: string): Promise<Meeting> {
-    const meeting = this.meetingRepository.create({ name });
+  async create(name: string, limit: number, thumbnail: string): Promise<Meeting> {
+    const meeting = this.meetingRepository.create({ name, limit, thumbnail });
     await this.meetingRepository.save(meeting);
     return meeting;
   }

@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CreateMeetingResponse } from '../dto/response/create.meeting.response';
 import { CreateMeetingRequest } from '../dto/request/create.meeting.request';
 import { MeetingService } from '../service/meeting.service';
@@ -10,13 +11,17 @@ export class MeetingController {
   constructor(private meetingService: MeetingService) {}
 
   @Post('create')
-  @ApiResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
   @ApiConsumes('application/json')
   @ApiBody({
     description: 'Values that needs to create meeting entity.',
     type: CreateMeetingRequest,
   })
-  async createMeeting(@Body() request: CreateMeetingRequest): Promise<CreateMeetingResponse> {
-    return this.meetingService.createMeeting(request);
+  async createMeeting(
+    @Body() request: CreateMeetingRequest,
+    @UploadedFile() thumbnail: Express.Multer.File,
+  ): Promise<CreateMeetingResponse> {
+    return this.meetingService.createMeeting(request, thumbnail);
   }
 }
