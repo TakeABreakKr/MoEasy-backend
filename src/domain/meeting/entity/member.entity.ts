@@ -37,4 +37,25 @@ export class Member {
     default: null,
   })
   waitingNumber: number | null;
+
+  static create(meeting_id: number, users_id: number, authority?: AuthorityEnumType, waitingNumber?: number): Member {
+    const member = new Member();
+    member.meeting_id = meeting_id;
+    member.users_id = users_id;
+    if (authority) {
+      member.authority = authority;
+    }
+    if (waitingNumber) {
+      member.waitingNumber = waitingNumber;
+    }
+    return member;
+  }
+
+  async getUser(): Promise<Users> {
+    return this.user;
+  }
+
+  async getMeeting(): Promise<Meeting> {
+    return this.meeting;
+  }
 }

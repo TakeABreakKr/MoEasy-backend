@@ -1,7 +1,6 @@
 import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { CreateMeetingResponse } from '../dto/response/create.meeting.response';
 import { CreateMeetingRequest } from '../dto/request/create.meeting.request';
 import { MeetingService } from '../service/meeting.service';
 
@@ -21,7 +20,8 @@ export class MeetingController {
   async createMeeting(
     @Body() request: CreateMeetingRequest,
     @UploadedFile() thumbnail: Express.Multer.File,
-  ): Promise<CreateMeetingResponse> {
-    return this.meetingService.createMeeting(request, thumbnail);
+  ): Promise<void> {
+    const requester_id = 0; // TODO: getRequester info from token
+    await this.meetingService.createMeeting(request, thumbnail, requester_id);
   }
 }

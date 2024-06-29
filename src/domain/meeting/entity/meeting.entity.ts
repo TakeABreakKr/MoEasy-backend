@@ -13,6 +13,9 @@ export class Meeting {
   })
   name: string;
 
+  @Column()
+  explanation: string;
+
   @Column({
     type: 'integer',
     default: 10,
@@ -27,4 +30,12 @@ export class Meeting {
 
   @OneToMany(() => Member, (member) => member.meeting)
   members: Promise<Member[]>;
+
+  async getSchedules(): Promise<Schedule[]> {
+    return this.schedules;
+  }
+
+  async getMembers(): Promise<Member[]> {
+    return this.members;
+  }
 }

@@ -5,7 +5,9 @@ import { Member } from '../entity/member.entity';
 
 @Injectable()
 export class MemberDao {
-  constructor(
-    @InjectRepository(Member) private memberRepository: Repository<Member>,
-  ) {}
+  constructor(@InjectRepository(Member) private memberRepository: Repository<Member>) {}
+
+  async saveAll(members: Member[]) {
+    await this.memberRepository.save(members);
+  }
 }

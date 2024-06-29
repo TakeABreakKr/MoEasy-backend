@@ -9,6 +9,11 @@ export class CreateMeetingRequest {
   name: string;
 
   @ApiProperty()
+  @IsOptional()
+  @IsString()
+  explanation: string;
+
+  @ApiProperty()
   @IsNumber()
   @IsOptional()
   @Min(1)
