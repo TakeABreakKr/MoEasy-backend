@@ -1,3 +1,6 @@
+import { StreamableFile } from '@nestjs/common';
+
 export abstract class FileService {
-  abstract uploadFile(file: Express.Multer.File): string;
+  abstract uploadThumbnailFile(file: Express.Multer.File): Promise<string>;
+  abstract getFile(thumbnail: string): Promise<StreamableFile | null>;
 }

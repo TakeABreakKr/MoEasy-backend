@@ -16,4 +16,8 @@ export class MeetingDao {
     await this.meetingRepository.save(meeting);
     return meeting;
   }
+
+  async update(meeting: Meeting) {
+    await this.meetingRepository.save(meeting);
+  }
 }

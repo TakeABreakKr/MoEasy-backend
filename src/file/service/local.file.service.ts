@@ -1,5 +1,5 @@
-import { writeFileSync } from 'fs';
-import { Injectable } from '@nestjs/common';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FileService } from './file.service';
 
@@ -9,10 +9,18 @@ export class LocalFileService extends FileService {
     super();
   }
 
-  uploadFile(file: Express.Multer.File): string {
+  async uploadThumbnailFile(file: Express.Multer.File): Promise<string> {
     const path = this.configService.get('file.dir') + file.originalname;
     writeFileSync(path, file.buffer);
 
     return path;
+  }
+
+  async getFile(thumbnailPath: string): Promise<StreamableFile | null> {
+    if (!thumbnailPath || existsSync(thumbnailPath)) {
+      return null;
+    }
+
+    return new StreamableFile(readFileSync(thumbnailPath));
   }
 }

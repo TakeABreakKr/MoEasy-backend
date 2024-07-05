@@ -21,4 +21,15 @@ export class CreateMeetingRequest {
 
   @ApiProperty()
   members: CreateMeetingMemberDto[];
+
+  @ApiProperty({
+    type: 'file',
+    properties: {
+      file: {
+        type: 'string',
+        format: 'binary',
+      },
+    },
+  })
+  thumbnail: Express.Multer.File;
 }
