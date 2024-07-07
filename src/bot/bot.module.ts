@@ -7,4 +7,4 @@ import { SlashCommandModule } from './commands/slash/slash.command.module';
   imports: [DiscordModule.forFeature(), SlashCommandModule],
   providers: [BotGateway],
 })
-export class BotModule {}
+export class BotModule { }

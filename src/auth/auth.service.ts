@@ -11,11 +11,9 @@ export class AuthService {
     ) { }
 
     async validateUser(profile: any): Promise<User> {
-        // Find user by discordId
         const user = await this.userRepository.findOne({ where: { discordId: profile.id } });
 
         if (!user) {
-            // Create new user if not found
             const newUser = new User();
             newUser.discordId = profile.id;
             newUser.username = profile.username;
@@ -24,7 +22,6 @@ export class AuthService {
             await this.userRepository.save(newUser);
             return newUser;
         } else {
-            // Update existing user if necessary
             user.username = profile.username;
             user.avatar = profile.avatar;
             user.email = profile.email;

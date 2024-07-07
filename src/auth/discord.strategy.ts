@@ -7,8 +7,8 @@ import { AuthService } from './auth.service';
 export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
     constructor(private authService: AuthService) {
         super({
-            clientID: 'YOUR_DISCORD_CLIENT_ID',
-            clientSecret: 'YOUR_DISCORD_CLIENT_SECRET',
+            clientID: '1248807669335330847',
+            clientSecret: '7aRc5GJ8KFMiQTEQliJhv0DzT4zuU0qt',
             callbackURL: 'http://localhost:3000/auth/discord/callback',
             scope: ['identify', 'email'],
         });
