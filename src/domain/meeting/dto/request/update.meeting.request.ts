@@ -4,7 +4,7 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator
 export class UpdateMeetingRequest {
   @ApiProperty()
   @IsNotEmpty()
-  meeting_id: number;
+  meeting_id: string;
 
   @ApiProperty()
   @IsOptional()

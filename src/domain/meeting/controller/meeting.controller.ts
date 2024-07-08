@@ -6,6 +6,7 @@ import { UpdateMeetingRequest } from '../dto/request/update.meeting.request';
 import { MeetingService } from '../service/meeting.service';
 import { GetMeetingResponse } from '../dto/response/get.meeting.response';
 import { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
+import { UpdateMeetingThumbnailRequest } from '../dto/request/update.meeting.thumbnail.request';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -34,6 +35,15 @@ export class MeetingController {
     await this.meetingService.updateMeeting(request);
   }
 
+  @Post('update/thumbnail')
+  @UseInterceptors(FileInterceptor('thumbnail'))
+  @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
+  @ApiConsumes('multipart/form-data')
+  async updateMeetingThumbnail(@Body() request: UpdateMeetingThumbnailRequest): Promise<void> {
+    await this.meetingService.updateMeetingThumbnail(request);
+  }
+
   @Get('get')
   @ApiOkResponse({
     status: 200,
@@ -42,8 +52,8 @@ export class MeetingController {
   @ApiQuery({
     name: 'meetingId',
   })
-  async getMeeting(@Query('meetingId') meeting_id: number): Promise<GetMeetingResponse> {
-    return this.meetingService.getMeeting(meeting_id);
+  async getMeeting(@Query('meetingId') meetingId: string): Promise<GetMeetingResponse> {
+    return this.meetingService.getMeeting(meetingId);
   }
 
   @Get('get/list')

@@ -14,6 +14,7 @@ import { Keyword } from '../entity/keyword.entity';
 import { KeywordDao } from '../dao/keyword.dao';
 import { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
 import { GetMeetingListMeetingDto } from '../dto/response/get.meeting.list.meeting.dto';
+import { UpdateMeetingThumbnailRequest } from '../dto/request/update.meeting.thumbnail.request';
 
 @Injectable()
 export class MeetingService {
@@ -48,7 +49,7 @@ export class MeetingService {
     });
     await this.memberDao.saveAll(members);
 
-    return this.transformMeetingId(meeting.meeting_id);
+    return this.transformMeetingIdToString(meeting.meeting_id);
   }
 
   @Transactional()
@@ -57,7 +58,9 @@ export class MeetingService {
       throw new Error('Invalid Request');
     }
 
-    const meeting: Meeting = await this.meetingDao.findById(request.meeting_id);
+    const meetingId = this.transformMeetingIdToInteger(request.meeting_id);
+
+    const meeting: Meeting = await this.meetingDao.findById(meetingId);
     if (!meeting) {
       throw new Error('존재하는 모임이 아닙니다.');
     }
@@ -69,8 +72,20 @@ export class MeetingService {
     await this.meetingDao.update(meeting);
   }
 
-  public async getMeeting(meeting_id: number): Promise<GetMeetingResponse> {
-    const meeting: Meeting = await this.meetingDao.findById(meeting_id);
+  @Transactional()
+  public async updateMeetingThumbnail(request: UpdateMeetingThumbnailRequest) {
+    const thumbnailPath: string = await this.fileService.uploadThumbnailFile(request.thumbnail);
+
+    const meetingId: number = this.transformMeetingIdToInteger(request.meetingId);
+    const meeting: Meeting = await this.meetingDao.findById(meetingId);
+
+    meeting.thumbnail = thumbnailPath;
+    await this.meetingDao.update(meeting);
+  }
+
+  public async getMeeting(meeting_id: string): Promise<GetMeetingResponse> {
+    const meetingId: number = this.transformMeetingIdToInteger(meeting_id);
+    const meeting: Meeting = await this.meetingDao.findById(meetingId);
 
     return this.toGetMeetingResponse(meeting);
   }
@@ -79,7 +94,7 @@ export class MeetingService {
     const meetings: Meeting[] = await this.meetingDao.findAll();
     const meetingList: GetMeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
-        meetingId: this.transformMeetingId(meeting.meeting_id),
+        meetingId: this.transformMeetingIdToString(meeting.meeting_id),
       };
     });
 
@@ -98,7 +113,11 @@ export class MeetingService {
     };
   }
 
-  private transformMeetingId(meeting_id: number): string {
+  private transformMeetingIdToString(meeting_id: number): string {
     return meeting_id.toString(16).replaceAll('0', MeetingService.padding);
+  }
+
+  private transformMeetingIdToInteger(meetingId: string): number {
+    return parseInt(meetingId.replaceAll(MeetingService.padding, '0'), 16);
   }
 }
