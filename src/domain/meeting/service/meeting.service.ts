@@ -10,6 +10,8 @@ import { Member } from '../entity/member.entity';
 import { CreateMeetingRequest } from '../dto/request/create.meeting.request';
 import { UpdateMeetingRequest } from '../dto/request/update.meeting.request';
 import { GetMeetingResponse } from '../dto/response/get.meeting.response';
+import { Keyword } from '../entity/keyword.entity';
+import { KeywordDao } from '../dao/keyword.dao';
 
 @Injectable()
 export class MeetingService {
@@ -20,6 +22,7 @@ export class MeetingService {
     @Inject('FileService') private fileService: FileService,
     private meetingDao: MeetingDao,
     private memberDao: MemberDao,
+    private keywordDao: KeywordDao,
   ) {}
 
   @Transactional()
@@ -32,9 +35,14 @@ export class MeetingService {
       thumbnailPath,
     );
 
+    const keywords: Keyword[] = request.keywords.map((keyword) => {
+      return Keyword.create(keyword, meeting.meeting_id);
+    });
+    await this.keywordDao.saveAll(keywords);
+
     const members = request.members.map((member) => {
-      const authority: AuthorityEnumType = member.id === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.INVITED;
-      return Member.create(meeting.meeting_id, member.id, authority);
+      const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.INVITED;
+      return Member.create(meeting.meeting_id, member, authority);
     });
     await this.memberDao.saveAll(members);
 
