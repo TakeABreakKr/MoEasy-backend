@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { CreateMeetingMemberDto } from './create.meeting.member.dto';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 export class CreateMeetingRequest {
   @ApiProperty()
@@ -13,15 +12,6 @@ export class CreateMeetingRequest {
   @IsString()
   explanation: string;
 
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  @Min(1)
-  limit: number;
-
-  @ApiProperty()
-  members: CreateMeetingMemberDto[];
-
   @ApiProperty({
     type: 'file',
     properties: {
@@ -32,4 +22,17 @@ export class CreateMeetingRequest {
     },
   })
   thumbnail: Express.Multer.File;
+
+  @ApiProperty()
+  @MaxLength(5)
+  keywords: string[];
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  @Min(1)
+  limit: number;
+
+  @ApiProperty()
+  members: number[];
 }

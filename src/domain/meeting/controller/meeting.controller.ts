@@ -16,9 +16,9 @@ export class MeetingController {
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
   @ApiConsumes('multipart/form-data')
-  async createMeeting(@Body() request: CreateMeetingRequest): Promise<void> {
+  async createMeeting(@Body() request: CreateMeetingRequest): Promise<string> {
     const requester_id = 0; // TODO: getRequester info from token
-    await this.meetingService.createMeeting(request, requester_id);
+    return this.meetingService.createMeeting(request, requester_id);
   }
 
   @Post('update')

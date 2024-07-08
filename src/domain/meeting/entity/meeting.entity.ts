@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Schedule } from '../../schedule/entity/schedule.entity';
 import { Member } from './member.entity';
+import { Keyword } from './keyword.entity';
 
 @Entity()
 export class Meeting {
@@ -25,11 +26,18 @@ export class Meeting {
   @Column()
   thumbnail: string;
 
+  @OneToMany(() => Keyword, (keyword) => keyword.meeting)
+  keywords: Promise<Keyword[]>;
+
   @OneToMany(() => Schedule, (schedule) => schedule.meeting)
   schedules: Promise<Schedule[]>;
 
   @OneToMany(() => Member, (member) => member.meeting)
   members: Promise<Member[]>;
+
+  async getKeywords(): Promise<Keyword[]> {
+    return this.keywords;
+  }
 
   async getSchedules(): Promise<Schedule[]> {
     return this.schedules;

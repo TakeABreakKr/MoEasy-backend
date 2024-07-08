@@ -13,6 +13,8 @@ import { GetMeetingResponse } from '../dto/response/get.meeting.response';
 
 @Injectable()
 export class MeetingService {
+  private static padding: string = 'G';
+
   constructor(
     private readonly dataSource: DataSource,
     @Inject('FileService') private fileService: FileService,
@@ -21,7 +23,7 @@ export class MeetingService {
   ) {}
 
   @Transactional()
-  async createMeeting(request: CreateMeetingRequest, requester_id: number): Promise<void> {
+  public async createMeeting(request: CreateMeetingRequest, requester_id: number): Promise<string> {
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(request.thumbnail);
     const meeting: Meeting = await this.meetingDao.create(
       request.name,
@@ -35,9 +37,11 @@ export class MeetingService {
       return Member.create(meeting.meeting_id, member.id, authority);
     });
     await this.memberDao.saveAll(members);
+
+    return this.transformMeetingId(meeting.meeting_id);
   }
 
-  async updateMeeting(request: UpdateMeetingRequest) {
+  public async updateMeeting(request: UpdateMeetingRequest) {
     if (!request.name && !request.limit && !request.explanation) {
       throw new Error('Invalid Request');
     }
@@ -54,7 +58,7 @@ export class MeetingService {
     await this.meetingDao.update(meeting);
   }
 
-  async getMeeting(meeting_id: number): Promise<GetMeetingResponse> {
+  public async getMeeting(meeting_id: number): Promise<GetMeetingResponse> {
     const meeting: Meeting = await this.meetingDao.findById(meeting_id);
 
     return this.toGetMeetingResponse(meeting);
@@ -68,5 +72,9 @@ export class MeetingService {
       limit: meeting.limit,
       thumbnail: thumbnail,
     };
+  }
+
+  private transformMeetingId(meeting_id: number): string {
+    return meeting_id.toString(16).replaceAll('0', MeetingService.padding);
   }
 }

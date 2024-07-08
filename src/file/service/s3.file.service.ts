@@ -7,7 +7,7 @@ import { FileService } from './file.service';
 @Injectable()
 export class S3FileService extends FileService {
   private s3Client: S3Client;
-  private bucketName: string;
+  private readonly bucketName: string;
 
   constructor(private configService: ConfigService) {
     super();
