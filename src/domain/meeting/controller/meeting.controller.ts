@@ -5,6 +5,7 @@ import { CreateMeetingRequest } from '../dto/request/create.meeting.request';
 import { UpdateMeetingRequest } from '../dto/request/update.meeting.request';
 import { MeetingService } from '../service/meeting.service';
 import { GetMeetingResponse } from '../dto/response/get.meeting.response';
+import { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -43,5 +44,14 @@ export class MeetingController {
   })
   async getMeeting(@Query('meetingId') meeting_id: number): Promise<GetMeetingResponse> {
     return this.meetingService.getMeeting(meeting_id);
+  }
+
+  @Get('get/list')
+  @ApiOkResponse({
+    status: 200,
+    description: 'Meeting list retrieved successfully',
+  })
+  async getMeetingList(): Promise<GetMeetingListResponse> {
+    return this.meetingService.getMeetingList();
   }
 }

@@ -12,6 +12,8 @@ import { UpdateMeetingRequest } from '../dto/request/update.meeting.request';
 import { GetMeetingResponse } from '../dto/response/get.meeting.response';
 import { Keyword } from '../entity/keyword.entity';
 import { KeywordDao } from '../dao/keyword.dao';
+import { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
+import { GetMeetingListMeetingDto } from '../dto/response/get.meeting.list.meeting.dto';
 
 @Injectable()
 export class MeetingService {
@@ -49,6 +51,7 @@ export class MeetingService {
     return this.transformMeetingId(meeting.meeting_id);
   }
 
+  @Transactional()
   public async updateMeeting(request: UpdateMeetingRequest) {
     if (!request.name && !request.limit && !request.explanation) {
       throw new Error('Invalid Request');
@@ -70,6 +73,19 @@ export class MeetingService {
     const meeting: Meeting = await this.meetingDao.findById(meeting_id);
 
     return this.toGetMeetingResponse(meeting);
+  }
+
+  public async getMeetingList(): Promise<GetMeetingListResponse> {
+    const meetings: Meeting[] = await this.meetingDao.findAll();
+    const meetingList: GetMeetingListMeetingDto[] = meetings.map((meeting) => {
+      return {
+        meetingId: this.transformMeetingId(meeting.meeting_id),
+      };
+    });
+
+    return {
+      meetingList,
+    };
   }
 
   private async toGetMeetingResponse(meeting: Meeting): Promise<GetMeetingResponse> {

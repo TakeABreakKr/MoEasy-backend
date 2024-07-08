@@ -20,4 +20,8 @@ export class MeetingDao {
   async update(meeting: Meeting) {
     await this.meetingRepository.save(meeting);
   }
+
+  async findAll(): Promise<Meeting[]> {
+    return this.meetingRepository.find();
+  }
 }
