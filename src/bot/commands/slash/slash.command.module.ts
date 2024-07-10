@@ -3,6 +3,6 @@ import { PingCommand } from './ping.command';
 import { SigninCommand } from './signin.command';
 
 @Module({
-    providers: [PingCommand, SigninCommand],
+  providers: [PingCommand, SigninCommand],
 })
-export class SlashCommandModule { }
+export class SlashCommandModule {}

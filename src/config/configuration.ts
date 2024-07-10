@@ -4,6 +4,7 @@ import { EnvEnum } from '../enums/env.enum';
 export default () => ({
   version,
   port: parseInt(process.env.PORT, 10) || 5000,
+  host: process.env.HOST || 'localhost',
   env: EnvEnum[process.env.NODE_ENV || 'DEV'],
   db: {
     host: process.env.DB_HOST || 'localhost',
@@ -14,5 +15,6 @@ export default () => ({
   },
   discord: {
     token: process.env.DISCORD_TOKEN || '',
+    client_id: process.env.DISCORD_CLIENT_ID || '',
   },
 });
