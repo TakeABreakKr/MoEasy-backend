@@ -1,13 +1,14 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { LocalFileService } from './service/local.file.service';
 import { S3FileService } from './service/s3.file.service';
+import { FileModeEnum, FileModeEnumType } from '../enums/file.mode.enum';
 
 @Global()
 @Module({})
 export class FileModule {
-  static forRoot({ fileMode }: { fileMode: 'local' | 's3' }): DynamicModule {
+  static forRoot({ fileMode }: { fileMode: FileModeEnumType }): DynamicModule {
     switch (fileMode) {
-      case 'local': {
+      case FileModeEnum.local: {
         const providers = [
           {
             provide: 'FileService',
@@ -21,7 +22,7 @@ export class FileModule {
           exports: providers,
         };
       }
-      case 's3': {
+      case FileModeEnum.s3: {
         const providers = [
           {
             provide: 'FileService',

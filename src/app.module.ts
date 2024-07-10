@@ -12,6 +12,7 @@ import { DBConfig } from './config/db.config';
 import { BotModule } from './bot/bot.module';
 import { DomainModule } from './domain/domain.module';
 import { FileModule } from './file/file.module';
+import { FileModeEnum } from './enums/file.mode.enum';
 
 @Module({
   imports: [
@@ -38,7 +39,7 @@ import { FileModule } from './file/file.module';
     BotModule,
     DomainModule,
     FileModule.forRoot({
-      fileMode: 'local',
+      fileMode: FileModeEnum.local,
     }),
   ],
 })
