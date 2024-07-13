@@ -1,15 +1,34 @@
+import type { Response } from 'express';
+import type { ConfigService } from '@nestjs/config';
+import type { UsersDao } from '../dao/users.dao';
+import type { Users } from '../entity/users.entity';
+import type { DiscordProfileDto } from '../dto/discord.profile.dto';
+import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
+import type { DiscordComponent } from '../component/discord.component';
+import type { TokenDto } from '../dto/token.dto';
+
 import { Injectable } from '@nestjs/common';
-import { Users } from '../entity/users.entity';
-import { UsersDao } from '../dao/users.dao';
-import { DiscordProfileDto } from '../dto/discord.profile.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersDao: UsersDao) {}
+  constructor(
+    private configService: ConfigService,
+    private discordComponent: DiscordComponent,
+    private usersDao: UsersDao,
+  ) {}
 
-  public async login() {}
+  public async login() {
+    throw new Error('not presented yet!!');
+  }
 
-  public async callback() {}
+  public async callback(req: AuthCallbackRequest, res: Response) {
+    const { accessToken, refreshToken }: TokenDto = await this.discordComponent.getTokens(req);
+
+    const host = this.configService.get('frontend.host');
+    res.set('AccessToken', accessToken);
+    res.set('RefreshToken', refreshToken);
+    return res.redirect(`${host}`);
+  }
 
   private async getUser(profile: DiscordProfileDto): Promise<Users> {
     const user: Users = await this.usersDao.findByDiscordId(profile.id);

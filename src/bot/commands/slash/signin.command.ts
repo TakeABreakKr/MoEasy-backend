@@ -8,6 +8,8 @@ import configuration from '../../../config/configuration';
 export class SigninCommand {
   @Handler()
   onPing(): string {
-    return `https://discord.com/oauth2/authorize?client_id=${configuration().discord.client_id}&redirect_uri=${configuration().host}/auth/callback`;
+    const clientId: string = configuration().discord.client_id;
+    const redirectUri: string = configuration().host + '/auth/callback';
+    return `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=relationships.read+identify+email`;
   }
 }
