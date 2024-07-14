@@ -1,5 +1,6 @@
+import type { GetMeetingMemberDto } from './get.meeting.member.dto';
+
 import { ApiProperty } from '@nestjs/swagger';
-import { StreamableFile } from '@nestjs/common';
 
 export class GetMeetingResponse {
   @ApiProperty()
@@ -12,5 +13,8 @@ export class GetMeetingResponse {
   limit: number;
 
   @ApiProperty()
-  thumbnail?: StreamableFile;
+  members: GetMeetingMemberDto[];
+
+  @ApiProperty()
+  thumbnail?: string;
 }

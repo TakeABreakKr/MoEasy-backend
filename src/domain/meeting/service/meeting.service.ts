@@ -1,20 +1,24 @@
-import { Inject, Injectable, StreamableFile } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import type { DataSource } from 'typeorm';
+import type { FileService } from '../../../file/service/file.service';
+import type { MeetingDao } from '../dao/meeting.dao';
+import type { MemberDao } from '../dao/member.dao';
+import type { Meeting } from '../entity/meeting.entity';
+import type { CreateMeetingRequest } from '../dto/request/create.meeting.request';
+import type { UpdateMeetingRequest } from '../dto/request/update.meeting.request';
+import type { GetMeetingResponse } from '../dto/response/get.meeting.response';
+import type { KeywordDao } from '../dao/keyword.dao';
+import type { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
+import type { GetMeetingListMeetingDto } from '../dto/response/get.meeting.list.meeting.dto';
+import type { UpdateMeetingThumbnailRequest } from '../dto/request/update.meeting.thumbnail.request';
+import type { UsersDao } from '../../user/dao/users.dao';
+import type { Users } from '../../user/entity/users.entity';
+import type { GetMeetingMemberDto } from '../dto/response/get.meeting.member.dto';
+
+import { Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum';
-import { FileService } from '../../../file/service/file.service';
-import { MeetingDao } from '../dao/meeting.dao';
-import { MemberDao } from '../dao/member.dao';
-import { Meeting } from '../entity/meeting.entity';
 import { Member } from '../entity/member.entity';
-import { CreateMeetingRequest } from '../dto/request/create.meeting.request';
-import { UpdateMeetingRequest } from '../dto/request/update.meeting.request';
-import { GetMeetingResponse } from '../dto/response/get.meeting.response';
 import { Keyword } from '../entity/keyword.entity';
-import { KeywordDao } from '../dao/keyword.dao';
-import { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
-import { GetMeetingListMeetingDto } from '../dto/response/get.meeting.list.meeting.dto';
-import { UpdateMeetingThumbnailRequest } from '../dto/request/update.meeting.thumbnail.request';
 
 @Injectable()
 export class MeetingService {
@@ -26,6 +30,7 @@ export class MeetingService {
     private meetingDao: MeetingDao,
     private memberDao: MemberDao,
     private keywordDao: KeywordDao,
+    private usersDao: UsersDao,
   ) {}
 
   @Transactional()
@@ -45,7 +50,11 @@ export class MeetingService {
 
     const members = request.members.map((member) => {
       const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.INVITED;
-      return Member.create(meeting.meeting_id, member, authority);
+      return Member.create({
+        authority,
+        meeting_id: meeting.meeting_id,
+        users_id: member,
+      });
     });
     await this.memberDao.saveAll(members);
 
@@ -68,7 +77,7 @@ export class MeetingService {
     const name: string = request.name || meeting.name;
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
-    meeting.updateBasicInfo(name, explanation, limit);
+    meeting.updateBasicInfo({ name, explanation, limit });
     await this.meetingDao.update(meeting);
   }
 
@@ -90,26 +99,60 @@ export class MeetingService {
     return this.toGetMeetingResponse(meeting);
   }
 
-  public async getMeetingList(): Promise<GetMeetingListResponse> {
+  public async getMeetingList(usersId?: number, authorities?: AuthorityEnumType[]): Promise<GetMeetingListResponse> {
     const meetings: Meeting[] = await this.meetingDao.findAll();
     const meetingList: GetMeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
         meetingId: this.transformMeetingIdToString(meeting.meeting_id),
+        name: meeting.name,
+        explanation: meeting.explanation,
       };
     });
 
+    if (!usersId) {
+      return {
+        meetingList,
+      };
+    }
+
+    for (const meeting of meetingList) {
+      const member: Member = await this.memberDao.findByUsersAndMeetingId(
+        usersId,
+        this.transformMeetingIdToInteger(meeting.meetingId),
+      );
+      meeting.authority = member.authority;
+    }
+
     return {
-      meetingList,
+      meetingList: meetingList.filter((meeting) => {
+        return meeting.authority && authorities.includes(meeting.authority);
+      }),
     };
   }
 
   private async toGetMeetingResponse(meeting: Meeting): Promise<GetMeetingResponse> {
-    const thumbnail: StreamableFile | null = await this.fileService.getFile(meeting.thumbnail);
+    const members: Member[] = await this.memberDao.findByMeetingId(meeting.meeting_id);
+    const usersIds = members.map((member) => member.users_id);
+    const users: Users[] = await this.usersDao.findByIds(usersIds);
+    const userMap = new Map<number, Users>();
+    users.forEach((user) => {
+      userMap.set(user.users_id, user);
+    });
+
+    const memberDtos: GetMeetingMemberDto[] = members.map((member): GetMeetingMemberDto => {
+      const user: Users = userMap.get(member.users_id);
+      return {
+        username: user.nickname,
+        authority: member.authority,
+      };
+    });
+
     return {
       name: meeting.name,
       explanation: meeting.explanation,
       limit: meeting.limit,
-      thumbnail: thumbnail,
+      thumbnail: meeting.thumbnail,
+      members: memberDtos,
     };
   }
 

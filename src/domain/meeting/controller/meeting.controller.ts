@@ -7,6 +7,7 @@ import { MeetingService } from '../service/meeting.service';
 import { GetMeetingResponse } from '../dto/response/get.meeting.response';
 import { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
 import { UpdateMeetingThumbnailRequest } from '../dto/request/update.meeting.thumbnail.request';
+import { AuthorityEnumType } from '../../../enums/authority.enum';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -24,8 +25,8 @@ export class MeetingController {
   }
 
   @Post('update')
-  @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
+  @ApiBearerAuth()
   @ApiConsumes('application/json')
   @ApiBody({
     description: 'Basic values to modify meetings',
@@ -37,8 +38,8 @@ export class MeetingController {
 
   @Post('update/thumbnail')
   @UseInterceptors(FileInterceptor('thumbnail'))
-  @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
+  @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   async updateMeetingThumbnail(@Body() request: UpdateMeetingThumbnailRequest): Promise<void> {
     await this.meetingService.updateMeetingThumbnail(request);
@@ -61,7 +62,18 @@ export class MeetingController {
     status: 200,
     description: 'Meeting list retrieved successfully',
   })
-  async getMeetingList(): Promise<GetMeetingListResponse> {
+  @ApiBearerAuth()
+  async getMeetingList(@Query('authorities') authorities: AuthorityEnumType[]): Promise<GetMeetingListResponse> {
+    const requester_id: number = 0; // TODO: getRequester info from token
+    return this.meetingService.getMeetingList(requester_id, authorities);
+  }
+
+  @Get('lookAround')
+  @ApiOkResponse({
+    status: 200,
+    description: 'Meeting list retrieved successfully',
+  })
+  async lookAroundMeetingList(): Promise<GetMeetingListResponse> {
     return this.meetingService.getMeetingList();
   }
 }

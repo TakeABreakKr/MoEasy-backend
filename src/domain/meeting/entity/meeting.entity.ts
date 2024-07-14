@@ -47,7 +47,7 @@ export class Meeting {
     return this.members;
   }
 
-  updateBasicInfo(name?: string, explanation?: string, limit?: number) {
+  updateBasicInfo({ name, explanation, limit }: { name: string; explanation: string; limit: number }) {
     this.name = name;
     this.explanation = explanation;
     this.limit = limit;

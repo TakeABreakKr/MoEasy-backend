@@ -11,4 +11,8 @@ export class UsersDao {
   async findById(id: number): Promise<Users | null> {
     return this.usersRepository.findOneBy({ users_id: id });
   }
+
+  async findByIds(usersIds: number[]) {
+    return this.usersRepository.findByIds(usersIds);
+  }
 }
