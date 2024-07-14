@@ -10,4 +10,5 @@ export interface DiscordUserByTokenDto {
   discriminator: string;
   global_name: string;
   public_flags: number;
+  email?: string;
 }

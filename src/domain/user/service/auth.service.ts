@@ -6,6 +6,7 @@ import type { DiscordProfileDto } from '../dto/discord.profile.dto';
 import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 import type { DiscordComponent } from '../component/discord.component';
 import type { TokenDto } from '../dto/token.dto';
+import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.info.response';
 
 import { Injectable } from '@nestjs/common';
 
@@ -15,7 +16,7 @@ export class AuthService {
     private configService: ConfigService,
     private discordComponent: DiscordComponent,
     private usersDao: UsersDao,
-  ) {}
+  ) { }
 
   public async login() {
     throw new Error('not presented yet!!');
@@ -23,6 +24,16 @@ export class AuthService {
 
   public async callback(req: AuthCallbackRequest, res: Response) {
     const { accessToken, refreshToken }: TokenDto = await this.discordComponent.getTokens(req);
+
+    const discordUser: DiscordUserByTokenDto = await this.discordComponent.getUser({ accessToken, refreshToken });
+    const profile: DiscordProfileDto = {
+      id: discordUser.id,
+      username: discordUser.username,
+      avatar: discordUser.avatar,
+      email: discordUser.email,
+    };
+
+    await this.getUser(profile);
 
     const host = this.configService.get('frontend.host');
     res.set('AccessToken', accessToken);
