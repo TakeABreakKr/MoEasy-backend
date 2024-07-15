@@ -1,4 +1,3 @@
-import type { HttpService } from '@nestjs/axios';
 import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 import type { TokenDto } from '../dto/token.dto';
 import type { DiscordAccessTokenResponse } from '../dto/response/discord.access.token.response';
@@ -7,12 +6,20 @@ import type {
   DiscordUserByTokenDto,
 } from '../dto/response/discord.authorized.info.response';
 
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DiscordComponent {
-  private baseURL = 'https://discord.com';
-  constructor(private httpService: HttpService) {}
+  private readonly baseURL: string;
+
+  constructor(
+    private httpService: HttpService,
+    private configService: ConfigService,
+  ) {
+    this.baseURL = this.configService.get('discord.host');
+  }
 
   public async getTokens(req: AuthCallbackRequest): Promise<TokenDto> {
     const { data }: { data: DiscordAccessTokenResponse } = await this.httpService.axiosRef.request({

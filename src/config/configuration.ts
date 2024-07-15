@@ -17,6 +17,7 @@ export default () => ({
     database: process.env.DB_DATABASE || 'moeasy',
   },
   discord: {
+    host: 'https://discord.com',
     token: process.env.DISCORD_TOKEN || '',
     client_id: process.env.DISCORD_CLIENT_ID || '',
   },
