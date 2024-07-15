@@ -38,7 +38,11 @@ export class MemberService {
   }
 
   @Transactional()
-  public async accept(usersId: number, meetingId: string) {
+  public async accept(requester_id: number, usersId: number, meetingId: string) {
+    if (requester_id !== usersId) {
+      throw new Error('invitation not for requester');
+    }
+
     const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
     if (!member) {
