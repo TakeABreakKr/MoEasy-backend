@@ -1,1 +1,7 @@
-export class MemberSearchResponse {}
+import { ApiProperty } from '@nestjs/swagger';
+import { MemberSearchDto } from './member.search.dto';
+
+export class MemberSearchResponse {
+  @ApiProperty()
+  memberList: MemberSearchDto[];
+}

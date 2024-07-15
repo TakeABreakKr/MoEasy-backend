@@ -4,8 +4,8 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiQuery, ApiTags }
 import { MeetingCreateRequest } from '../dto/request/meeting.create.request';
 import { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
 import { MeetingService } from '../service/meeting.service';
-import { GetMeetingResponse } from '../dto/response/get.meeting.response';
-import { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
+import { MeetingResponse } from '../dto/response/meeting.response';
+import { MeetingListResponse } from '../dto/response/meeting.list.response';
 import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
 import { AuthorityEnumType } from '../../../enums/authority.enum';
 
@@ -53,7 +53,7 @@ export class MeetingController {
   @ApiQuery({
     name: 'meetingId',
   })
-  async getMeeting(@Query('meetingId') meetingId: string): Promise<GetMeetingResponse> {
+  async getMeeting(@Query('meetingId') meetingId: string): Promise<MeetingResponse> {
     return this.meetingService.getMeeting(meetingId);
   }
 
@@ -63,7 +63,7 @@ export class MeetingController {
     description: 'Meeting list retrieved successfully',
   })
   @ApiBearerAuth()
-  async getMeetingList(@Query('authorities') authorities: AuthorityEnumType[]): Promise<GetMeetingListResponse> {
+  async getMeetingList(@Query('authorities') authorities: AuthorityEnumType[]): Promise<MeetingListResponse> {
     const requester_id: number = 0; // TODO: getRequester info from token
     return this.meetingService.getMeetingList(requester_id, authorities);
   }
@@ -73,7 +73,7 @@ export class MeetingController {
     status: 200,
     description: 'Meeting list retrieved successfully',
   })
-  async lookAroundMeetingList(): Promise<GetMeetingListResponse> {
+  async lookAroundMeetingList(): Promise<MeetingListResponse> {
     return this.meetingService.getMeetingList();
   }
 }

@@ -22,7 +22,7 @@ export class MemberService {
   ) {}
 
   public async search(keyword: string): Promise<MemberSearchResponse> {
-    return null;
+    return null; // TODO: develop after friend system
   }
 
   @Transactional()

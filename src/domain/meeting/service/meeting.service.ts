@@ -4,14 +4,14 @@ import { MemberDao } from '../dao/member.dao';
 import type { Meeting } from '../entity/meeting.entity';
 import type { MeetingCreateRequest } from '../dto/request/meeting.create.request';
 import type { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
-import type { GetMeetingResponse } from '../dto/response/get.meeting.response';
+import type { MeetingResponse } from '../dto/response/meeting.response';
 import { KeywordDao } from '../dao/keyword.dao';
-import type { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
-import type { GetMeetingListMeetingDto } from '../dto/response/get.meeting.list.meeting.dto';
+import type { MeetingListResponse } from '../dto/response/meeting.list.response';
+import type { MeetingListMeetingDto } from '../dto/response/meeting.list.meeting.dto';
 import type { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
 import { UsersDao } from '../../user/dao/users.dao';
 import type { Users } from '../../user/entity/users.entity';
-import type { GetMeetingMemberDto } from '../dto/response/get.meeting.member.dto';
+import type { MeetingMemberDto } from '../dto/response/meeting.member.dto';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
@@ -86,7 +86,7 @@ export class MeetingService {
     await this.meetingDao.update(meeting);
   }
 
-  public async getMeeting(meeting_id: string): Promise<GetMeetingResponse> {
+  public async getMeeting(meeting_id: string): Promise<MeetingResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
@@ -96,9 +96,9 @@ export class MeetingService {
     return this.toGetMeetingResponse(meeting);
   }
 
-  public async getMeetingList(usersId?: number, authorities?: AuthorityEnumType[]): Promise<GetMeetingListResponse> {
+  public async getMeetingList(usersId?: number, authorities?: AuthorityEnumType[]): Promise<MeetingListResponse> {
     const meetings: Meeting[] = await this.meetingDao.findAll();
-    const meetingList: GetMeetingListMeetingDto[] = meetings.map((meeting) => {
+    const meetingList: MeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
         meetingId: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
         name: meeting.name,
@@ -127,7 +127,7 @@ export class MeetingService {
     };
   }
 
-  private async toGetMeetingResponse(meeting: Meeting): Promise<GetMeetingResponse> {
+  private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {
     const members: Member[] = await this.memberDao.findByMeetingId(meeting.meeting_id);
     const usersIds = members.map((member) => member.users_id);
     const users: Users[] = await this.usersDao.findByIds(usersIds);
@@ -136,7 +136,7 @@ export class MeetingService {
       userMap.set(user.users_id, user);
     });
 
-    const memberDtos: GetMeetingMemberDto[] = members.map((member): GetMeetingMemberDto => {
+    const memberDtos: MeetingMemberDto[] = members.map((member): MeetingMemberDto => {
       const user: Users = userMap.get(member.users_id);
       return {
         username: user.nickname,
