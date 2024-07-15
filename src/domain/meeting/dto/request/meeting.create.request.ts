@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
-export class CreateMeetingRequest {
+export class MeetingCreateRequest {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

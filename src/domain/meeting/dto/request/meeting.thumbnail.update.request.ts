@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateMeetingThumbnailRequest {
+export class MeetingThumbnailUpdateRequest {
   @ApiProperty()
   meetingId: string;
 

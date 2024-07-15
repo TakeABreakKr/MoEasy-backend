@@ -6,5 +6,6 @@ import { UsersDao } from './dao/users.dao';
 @Module({
   imports: [TypeOrmModule.forFeature([Users])],
   providers: [UsersDao],
+  exports: [UsersDao],
 })
 export class UsersModule {}

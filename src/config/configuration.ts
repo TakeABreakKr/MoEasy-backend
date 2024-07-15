@@ -3,6 +3,7 @@ import { EnvEnum } from '../enums/env.enum';
 
 export default () => ({
   version,
+  host: process.env.HOST || 'localhost',
   port: parseInt(process.env.PORT, 10) || 5000,
   env: EnvEnum[process.env.NODE_ENV || 'DEV'],
   AWS: {

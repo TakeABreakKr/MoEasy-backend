@@ -65,4 +65,8 @@ export class Member {
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
   }
+
+  updateAuthority(authority: AuthorityEnumType) {
+    this.authority = authority;
+  }
 }

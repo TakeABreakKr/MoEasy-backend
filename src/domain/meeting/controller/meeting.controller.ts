@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Post, Query, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { CreateMeetingRequest } from '../dto/request/create.meeting.request';
-import { UpdateMeetingRequest } from '../dto/request/update.meeting.request';
+import { MeetingCreateRequest } from '../dto/request/meeting.create.request';
+import { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
 import { MeetingService } from '../service/meeting.service';
 import { GetMeetingResponse } from '../dto/response/get.meeting.response';
 import { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
-import { UpdateMeetingThumbnailRequest } from '../dto/request/update.meeting.thumbnail.request';
+import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
 import { AuthorityEnumType } from '../../../enums/authority.enum';
 
 @ApiTags('meeting')
@@ -19,7 +19,7 @@ export class MeetingController {
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
   @ApiConsumes('multipart/form-data')
-  async createMeeting(@Body() request: CreateMeetingRequest): Promise<string> {
+  async createMeeting(@Body() request: MeetingCreateRequest): Promise<string> {
     const requester_id = 0; // TODO: getRequester info from token
     return this.meetingService.createMeeting(request, requester_id);
   }
@@ -30,9 +30,9 @@ export class MeetingController {
   @ApiConsumes('application/json')
   @ApiBody({
     description: 'Basic values to modify meetings',
-    type: UpdateMeetingRequest,
+    type: MeetingUpdateRequest,
   })
-  async updateMeeting(@Body() request: UpdateMeetingRequest): Promise<void> {
+  async updateMeeting(@Body() request: MeetingUpdateRequest): Promise<void> {
     await this.meetingService.updateMeeting(request);
   }
 
@@ -41,7 +41,7 @@ export class MeetingController {
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
-  async updateMeetingThumbnail(@Body() request: UpdateMeetingThumbnailRequest): Promise<void> {
+  async updateMeetingThumbnail(@Body() request: MeetingThumbnailUpdateRequest): Promise<void> {
     await this.meetingService.updateMeetingThumbnail(request);
   }
 

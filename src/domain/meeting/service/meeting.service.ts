@@ -1,16 +1,15 @@
-import type { DataSource } from 'typeorm';
 import type { FileService } from '../../../file/service/file.service';
-import type { MeetingDao } from '../dao/meeting.dao';
-import type { MemberDao } from '../dao/member.dao';
+import { MeetingDao } from '../dao/meeting.dao';
+import { MemberDao } from '../dao/member.dao';
 import type { Meeting } from '../entity/meeting.entity';
-import type { CreateMeetingRequest } from '../dto/request/create.meeting.request';
-import type { UpdateMeetingRequest } from '../dto/request/update.meeting.request';
+import type { MeetingCreateRequest } from '../dto/request/meeting.create.request';
+import type { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
 import type { GetMeetingResponse } from '../dto/response/get.meeting.response';
-import type { KeywordDao } from '../dao/keyword.dao';
+import { KeywordDao } from '../dao/keyword.dao';
 import type { GetMeetingListResponse } from '../dto/response/get.meeting.list.response';
 import type { GetMeetingListMeetingDto } from '../dto/response/get.meeting.list.meeting.dto';
-import type { UpdateMeetingThumbnailRequest } from '../dto/request/update.meeting.thumbnail.request';
-import type { UsersDao } from '../../user/dao/users.dao';
+import type { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
+import { UsersDao } from '../../user/dao/users.dao';
 import type { Users } from '../../user/entity/users.entity';
 import type { GetMeetingMemberDto } from '../dto/response/get.meeting.member.dto';
 
@@ -19,13 +18,13 @@ import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum';
 import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
+import { MeetingUtils } from '../../../utils/meeting.utils';
 
 @Injectable()
 export class MeetingService {
   private static padding: string = 'G';
 
   constructor(
-    private readonly dataSource: DataSource,
     @Inject('FileService') private fileService: FileService,
     private meetingDao: MeetingDao,
     private memberDao: MemberDao,
@@ -34,21 +33,16 @@ export class MeetingService {
   ) {}
 
   @Transactional()
-  public async createMeeting(request: CreateMeetingRequest, requester_id: number): Promise<string> {
-    const thumbnailPath: string = await this.fileService.uploadThumbnailFile(request.thumbnail);
-    const meeting: Meeting = await this.meetingDao.create(
-      request.name,
-      request.explanation,
-      request.limit,
-      thumbnailPath,
-    );
+  public async createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string> {
+    const thumbnailPath: string = await this.fileService.uploadThumbnailFile(req.thumbnail);
+    const meeting: Meeting = await this.meetingDao.create(req.name, req.explanation, req.limit, thumbnailPath);
 
-    const keywords: Keyword[] = request.keywords.map((keyword) => {
+    const keywords: Keyword[] = req.keywords.map((keyword) => {
       return Keyword.create(keyword, meeting.meeting_id);
     });
     await this.keywordDao.saveAll(keywords);
 
-    const members = request.members.map((member) => {
+    const members: Member[] = req.members.map((member) => {
       const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.INVITED;
       return Member.create({
         authority,
@@ -58,18 +52,18 @@ export class MeetingService {
     });
     await this.memberDao.saveAll(members);
 
-    return this.transformMeetingIdToString(meeting.meeting_id);
+    return MeetingUtils.transformMeetingIdToString(meeting.meeting_id);
   }
 
   @Transactional()
-  public async updateMeeting(request: UpdateMeetingRequest) {
+  public async updateMeeting(request: MeetingUpdateRequest) {
     if (!request.name && !request.limit && !request.explanation) {
       throw new Error('Invalid Request');
     }
 
-    const meetingId = this.transformMeetingIdToInteger(request.meeting_id);
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
 
-    const meeting: Meeting = await this.meetingDao.findById(meetingId);
+    const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
       throw new Error('존재하는 모임이 아닙니다.');
     }
@@ -82,10 +76,10 @@ export class MeetingService {
   }
 
   @Transactional()
-  public async updateMeetingThumbnail(request: UpdateMeetingThumbnailRequest) {
+  public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest) {
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(request.thumbnail);
 
-    const meetingId: number = this.transformMeetingIdToInteger(request.meetingId);
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
     const meeting: Meeting = await this.meetingDao.findById(meetingId);
 
     meeting.thumbnail = thumbnailPath;
@@ -93,8 +87,11 @@ export class MeetingService {
   }
 
   public async getMeeting(meeting_id: string): Promise<GetMeetingResponse> {
-    const meetingId: number = this.transformMeetingIdToInteger(meeting_id);
-    const meeting: Meeting = await this.meetingDao.findById(meetingId);
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+    const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
+    if (!meeting) {
+      throw new Error('wrong meeting id requested');
+    }
 
     return this.toGetMeetingResponse(meeting);
   }
@@ -103,7 +100,7 @@ export class MeetingService {
     const meetings: Meeting[] = await this.meetingDao.findAll();
     const meetingList: GetMeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
-        meetingId: this.transformMeetingIdToString(meeting.meeting_id),
+        meetingId: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
         name: meeting.name,
         explanation: meeting.explanation,
       };
@@ -118,7 +115,7 @@ export class MeetingService {
     for (const meeting of meetingList) {
       const member: Member = await this.memberDao.findByUsersAndMeetingId(
         usersId,
-        this.transformMeetingIdToInteger(meeting.meetingId),
+        MeetingUtils.transformMeetingIdToInteger(meeting.meetingId),
       );
       meeting.authority = member.authority;
     }
@@ -154,13 +151,5 @@ export class MeetingService {
       thumbnail: meeting.thumbnail,
       members: memberDtos,
     };
-  }
-
-  private transformMeetingIdToString(meeting_id: number): string {
-    return meeting_id.toString(16).replaceAll('0', MeetingService.padding);
-  }
-
-  private transformMeetingIdToInteger(meetingId: string): number {
-    return parseInt(meetingId.replaceAll(MeetingService.padding, '0'), 16);
   }
 }
