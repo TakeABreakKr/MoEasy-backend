@@ -5,7 +5,6 @@ import { Transactional } from 'typeorm-transactional';
 import { ConfigService } from '@nestjs/config';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { UsersDao } from '../../user/dao/users.dao';
-import { MeetingDao } from '../dao/meeting.dao';
 import { MemberDao } from '../dao/member.dao';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
 import { MeetingUtils } from '../../../utils/meeting.utils';
@@ -17,7 +16,6 @@ export class MemberService {
   constructor(
     private configService: ConfigService,
     private usersDao: UsersDao,
-    private meetingDao: MeetingDao,
     private memberDao: MemberDao,
   ) {}
 
@@ -26,7 +24,10 @@ export class MemberService {
   }
 
   @Transactional()
-  public async withdraw(requester_id: number, meeting_id: string) {}
+  public async withdraw(requester_id: number, meeting_id: string) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+    await this.memberDao.deleteByUsersAndMeetingId(requester_id, meetingId);
+  }
 
   @Transactional()
   public async invite(requester_id: number, req: MemberInviteRequest): Promise<string> {

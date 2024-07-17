@@ -40,4 +40,8 @@ export class MemberDao {
     member.updateAuthority(authority);
     await this.memberRepository.save(member);
   }
+
+  async deleteByUsersAndMeetingId(usersId: number, meetingId: number) {
+    await this.memberRepository.delete({ users_id: usersId, meeting_id: meetingId });
+  }
 }
