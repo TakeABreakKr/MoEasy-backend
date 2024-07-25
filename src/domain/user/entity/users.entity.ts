@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Member } from '../../meeting/entity/member.entity';
-import { Participant } from '../../schedule/entity/participant.entity';
+import { Member } from '@domain/meeting/entity/member.entity';
+import { Participant } from '@domain/schedule/entity/participant.entity';
 import { Settings } from './settings.embedded';
 
 @Entity()

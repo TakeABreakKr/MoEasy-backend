@@ -5,6 +5,15 @@
     "ts"
   ],
   "rootDir": ".",
+  "moduleNameMapper": {
+    "^@root/(.*)$": "<rootDir>/../src/*",
+    "^@bot/(.*)$": "<rootDir>/../src/bot/*",
+    "^@config/(.*)$": "<rootDir>/../src/config/*",
+    "^@domain/(.*)$": "<rootDir>/../src/domain/*",
+    "^@enums/(.*)$": "<rootDir>/../src/enums/*",
+    "^@file/(.*)$": "<rootDir>/../src/file/*",
+    "^@utils/(.*)$": "<rootDir>/../src/utils/*"
+  },
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {

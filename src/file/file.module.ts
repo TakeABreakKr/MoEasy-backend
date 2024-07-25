@@ -1,7 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { LocalFileService } from './service/local.file.service';
 import { S3FileService } from './service/s3.file.service';
-import { FileModeEnum, FileModeEnumType } from '../enums/file.mode.enum';
+import { FileModeEnum, FileModeEnumType } from '@enums/file.mode.enum';
 
 @Global()
 @Module({})

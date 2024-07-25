@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Member } from '../entity/member.entity';
-import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum';
+import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 
 type CreateMemberType = {
   meetingId: number;

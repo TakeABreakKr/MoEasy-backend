@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
-import { EnvEnum } from '../enums/env.enum';
+import { EnvEnum } from '@enums/env.enum';
 
 @Injectable()
 export class DBConfig implements TypeOrmOptionsFactory {

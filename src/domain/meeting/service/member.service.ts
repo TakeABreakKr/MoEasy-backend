@@ -7,7 +7,7 @@ import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { UsersDao } from '../../user/dao/users.dao';
 import { MemberDao } from '../dao/member.dao';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
-import { MeetingUtils } from '../../../utils/meeting.utils';
+import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '../entity/member.entity';
 import { AuthorityEnum } from '../../../enums/authority.enum';
 

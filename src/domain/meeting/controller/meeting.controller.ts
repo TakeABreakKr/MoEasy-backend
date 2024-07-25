@@ -7,7 +7,7 @@ import { MeetingService } from '../service/meeting.service';
 import { MeetingResponse } from '../dto/response/meeting.response';
 import { MeetingListResponse } from '../dto/response/meeting.list.response';
 import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
-import { AuthorityEnumType } from '../../../enums/authority.enum';
+import { AuthorityEnumType } from '@enums/authority.enum';
 
 @ApiTags('meeting')
 @Controller('meeting')
