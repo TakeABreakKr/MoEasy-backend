@@ -35,7 +35,12 @@ export class MeetingService {
   @Transactional()
   public async createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string> {
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(req.thumbnail);
-    const meeting: Meeting = await this.meetingDao.create(req.name, req.explanation, req.limit, thumbnailPath);
+    const meeting: Meeting = await this.meetingDao.create({
+      name: req.name,
+      explanation: req.explanation,
+      limit: req.limit,
+      thumbnail: thumbnailPath,
+    });
 
     const keywords: Keyword[] = req.keywords.map((keyword) => {
       return Keyword.create(keyword, meeting.meeting_id);

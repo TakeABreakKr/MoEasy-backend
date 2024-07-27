@@ -49,6 +49,7 @@ export class MeetingController {
   @ApiOkResponse({
     status: 200,
     description: 'Meeting retrieved successfully',
+    type: MeetingResponse,
   })
   @ApiQuery({
     name: 'meetingId',
@@ -61,6 +62,7 @@ export class MeetingController {
   @ApiOkResponse({
     status: 200,
     description: 'Meeting list retrieved successfully',
+    type: MeetingListResponse,
   })
   @ApiBearerAuth()
   async getMeetingList(@Query('authorities') authorities: AuthorityEnumType[]): Promise<MeetingListResponse> {
@@ -72,6 +74,7 @@ export class MeetingController {
   @ApiOkResponse({
     status: 200,
     description: 'Meeting list retrieved successfully',
+    type: MeetingListResponse,
   })
   async lookAroundMeetingList(): Promise<MeetingListResponse> {
     return this.meetingService.getMeetingList();
