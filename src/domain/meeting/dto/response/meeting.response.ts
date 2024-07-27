@@ -1,6 +1,5 @@
-import type { MeetingMemberDto } from './meeting.member.dto';
-
 import { ApiProperty } from '@nestjs/swagger';
+import { MeetingMemberDto } from './meeting.member.dto';
 
 export class MeetingResponse {
   @ApiProperty()
@@ -12,7 +11,10 @@ export class MeetingResponse {
   @ApiProperty()
   limit: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: MeetingMemberDto,
+    isArray: true,
+  })
   members: MeetingMemberDto[];
 
   @ApiProperty()
