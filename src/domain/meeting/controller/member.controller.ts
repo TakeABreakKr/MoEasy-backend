@@ -11,7 +11,7 @@ export class MemberController {
 
   @Get('search')
   @ApiBearerAuth()
-  @ApiOkResponse({ status: 200, description: 'withdraw succeed' })
+  @ApiOkResponse({ status: 200, description: 'withdraw succeed', type: MemberSearchResponse })
   async search(@Query() keyword: string): Promise<MemberSearchResponse> {
     return this.memberService.search(keyword);
   }
