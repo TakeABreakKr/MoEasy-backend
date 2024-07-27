@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AuthorityEnumType } from '../../../../enums/authority.enum';
+import { AuthorityEnum, AuthorityEnumType } from '../../../../enums/authority.enum';
 
 export class MeetingListMeetingDto {
   @ApiProperty()
@@ -11,6 +11,8 @@ export class MeetingListMeetingDto {
   @ApiProperty()
   explanation: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: AuthorityEnum,
+  })
   authority?: AuthorityEnumType;
 }
