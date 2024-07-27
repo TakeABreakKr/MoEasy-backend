@@ -3,6 +3,13 @@ import { Users } from '../../user/entity/users.entity';
 import { Meeting } from './meeting.entity';
 import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum';
 
+type CreateMemberDto = {
+  meeting_id: number;
+  users_id: number;
+  authority?: AuthorityEnumType;
+  waitingNumber?: number;
+};
+
 @Entity()
 export class Member {
   @PrimaryColumn()
@@ -37,4 +44,29 @@ export class Member {
     default: null,
   })
   waitingNumber: number | null;
+
+  static create({ meeting_id, users_id, authority, waitingNumber }: CreateMemberDto): Member {
+    const member = new Member();
+    member.meeting_id = meeting_id;
+    member.users_id = users_id;
+    if (authority) {
+      member.authority = authority;
+    }
+    if (waitingNumber) {
+      member.waitingNumber = waitingNumber;
+    }
+    return member;
+  }
+
+  async getUser(): Promise<Users> {
+    return this.user;
+  }
+
+  async getMeeting(): Promise<Meeting> {
+    return this.meeting;
+  }
+
+  updateAuthority(authority: AuthorityEnumType) {
+    this.authority = authority;
+  }
 }
