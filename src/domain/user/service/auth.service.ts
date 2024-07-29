@@ -16,7 +16,7 @@ export class AuthService {
     private configService: ConfigService,
     private discordComponent: DiscordComponent,
     private usersDao: UsersDao,
-  ) { }
+  ) {}
 
   public async login() {
     throw new Error('not presented yet!!');

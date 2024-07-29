@@ -44,8 +44,9 @@ export class DiscordComponent {
     const { data }: { data: DiscordAuthorizedInfoResponse } = await this.httpService.axiosRef.request({
       method: 'get',
       baseURL: this.baseURL,
-      url: '',
+      url: '/oauth2/@me',
       headers: {
+        authorization: `Bearer ${token.accessToken}`,
       },
     });
 
