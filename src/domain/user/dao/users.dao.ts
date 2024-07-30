@@ -13,6 +13,10 @@ export class UsersDao {
     return this.usersRepository.findOneBy({ users_id: id });
   }
 
+  public async findByIds(usersIds: number[]) {
+    return this.usersRepository.findByIds(usersIds);
+  }
+
   public async findByDiscordId(discord_id: string): Promise<Users | null> {
     return this.usersRepository.findOneBy({ discord_id });
   }

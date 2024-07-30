@@ -3,11 +3,17 @@ import { EnvEnum } from '../enums/env.enum';
 
 export default () => ({
   version,
-  port: parseInt(process.env.PORT, 10) || 5000,
   host: process.env.HOST || 'http://localhost:5000',
+  port: parseInt(process.env.PORT, 10) || 5000,
   env: EnvEnum[process.env.NODE_ENV || 'DEV'],
   frontend: {
     host: process.env.FRONT_HOST || 'http://localhost:4000',
+  },
+  AWS: {
+    region: process.env.AWS_REGION || '',
+    bucket: process.env.BUCKET || '',
+    S3_ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY || '',
+    S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY || '',
   },
   db: {
     host: process.env.DB_HOST || 'localhost',
@@ -20,5 +26,8 @@ export default () => ({
     host: 'https://discord.com',
     token: process.env.DISCORD_TOKEN || '',
     client_id: process.env.DISCORD_CLIENT_ID || '',
+  },
+  file: {
+    dir: process.env.PWD + '/file',
   },
 });

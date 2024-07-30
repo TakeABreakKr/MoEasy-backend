@@ -9,7 +9,8 @@ import { DiscordComponent } from './component/discord.component';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Users]), HttpModule],
-  providers: [UsersDao, DiscordComponent, AuthService],
   controllers: [AuthController],
+  providers: [UsersDao, DiscordComponent, AuthService],
+  exports: [UsersDao],
 })
 export class UsersModule {}
