@@ -1,13 +1,13 @@
 import type { Response } from 'express';
-import type { ConfigService } from '@nestjs/config';
-import type { UsersDao } from '../dao/users.dao';
 import type { Users } from '../entity/users.entity';
 import type { DiscordProfileDto } from '../dto/discord.profile.dto';
 import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
-import type { DiscordComponent } from '../component/discord.component';
 import type { TokenDto } from '../dto/token.dto';
 import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.info.response';
 
+import { ConfigService } from '@nestjs/config';
+import { DiscordComponent } from '../component/discord.component';
+import { UsersDao } from '../dao/users.dao';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

@@ -1,8 +1,8 @@
 import type { Response } from 'express';
-import type { AuthService } from '../service/auth.service';
 import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 
 import { Body, Controller, Post, Res } from '@nestjs/common';
+import { AuthService } from '../service/auth.service';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('auth')

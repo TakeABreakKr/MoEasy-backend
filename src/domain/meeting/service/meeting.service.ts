@@ -144,7 +144,7 @@ export class MeetingService {
     const memberDtos: MeetingMemberDto[] = members.map((member): MeetingMemberDto => {
       const user: Users = userMap.get(member.users_id);
       return {
-        username: user.nickname,
+        username: user.username,
         authority: member.authority,
       };
     });
