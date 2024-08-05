@@ -80,7 +80,7 @@ describe('MeetingController', () => {
       limit: 1,
     };
     const result = await meetingController.updateMeeting(request);
-    expect(result).not.toThrow();
+    expect(result).toBe(void 0);
   });
 
   it('updateMeetingThumbnailTest', async () => {
@@ -89,6 +89,6 @@ describe('MeetingController', () => {
       thumbnail,
     };
     const result = await meetingController.updateMeetingThumbnail(request);
-    expect(result).not.toThrow();
+    expect(result).toBe(void 0);
   });
 });
