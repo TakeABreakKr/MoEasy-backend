@@ -1,18 +1,19 @@
-import type { Users } from '../../user/entity/users.entity';
+import type { Users } from '@domain/user/entity/users.entity';
 
 import { Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { ConfigService } from '@nestjs/config';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
-import { UsersDao } from '../../user/dao/users.dao';
+import { UsersDao } from '@domain/user/dao/users.dao';
 import { MemberDao } from '../dao/member.dao';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '../entity/member.entity';
-import { AuthorityEnum } from '../../../enums/authority.enum';
+import { AuthorityEnum } from '@enums/authority.enum';
+import { MemberService } from './member.service.interface';
 
 @Injectable()
-export class MemberService {
+export class MemberServiceImpl implements MemberService {
   constructor(
     private configService: ConfigService,
     private usersDao: UsersDao,

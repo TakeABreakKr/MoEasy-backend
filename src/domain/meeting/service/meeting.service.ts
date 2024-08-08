@@ -1,27 +1,28 @@
 import type { FileService } from '@file/service/file.service';
-import { MeetingDao } from '../dao/meeting.dao';
-import { MemberDao } from '../dao/member.dao';
 import type { Meeting } from '../entity/meeting.entity';
 import type { MeetingCreateRequest } from '../dto/request/meeting.create.request';
 import type { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
 import type { MeetingResponse } from '../dto/response/meeting.response';
-import { KeywordDao } from '../dao/keyword.dao';
 import type { MeetingListResponse } from '../dto/response/meeting.list.response';
 import type { MeetingListMeetingDto } from '../dto/response/meeting.list.meeting.dto';
 import type { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
-import { UsersDao } from '@domain/user/dao/users.dao';
 import type { Users } from '@domain/user/entity/users.entity';
 import type { MeetingMemberDto } from '../dto/response/meeting.member.dto';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
+import { MeetingUtils } from '@utils/meeting.utils';
+import { UsersDao } from '@domain/user/dao/users.dao';
+import { KeywordDao } from '../dao/keyword.dao';
+import { MeetingDao } from '../dao/meeting.dao';
+import { MemberDao } from '../dao/member.dao';
 import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
-import { MeetingUtils } from '@utils/meeting.utils';
+import { MeetingService } from './meeting.service.interface';
 
 @Injectable()
-export class MeetingService {
+export class MeetingServiceImpl implements MeetingService {
   private static padding: string = 'G';
 
   constructor(

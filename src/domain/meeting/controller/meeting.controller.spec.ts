@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MeetingService } from '@domain/meeting/service/meeting.service';
 import { MeetingController } from '@domain/meeting/controller/meeting.controller';
 import { MeetingCreateRequest } from '@domain/meeting/dto/request/meeting.create.request';
 import { MeetingResponse } from '@domain/meeting/dto/response/meeting.response';
 import { MeetingListResponse } from '@domain/meeting/dto/response/meeting.list.response';
 import { MeetingUpdateRequest } from '@domain/meeting/dto/request/meeting.update.request';
 import { MeetingThumbnailUpdateRequest } from '@domain/meeting/dto/request/meeting.thumbnail.update.request';
+import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
 
-class MockMeetingService {
+class MockMeetingService implements MeetingService {
   public static createMeetingResult: string = 'OOOOOOO1';
 
   public async createMeeting(): Promise<string> {
@@ -53,7 +53,7 @@ describe('MeetingController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MeetingController],
-      providers: [{ provide: MeetingService, useClass: MockMeetingService }],
+      providers: [{ provide: 'MeetingService', useClass: MockMeetingService }],
     }).compile();
     meetingController = module.get<MeetingController>(MeetingController);
   });

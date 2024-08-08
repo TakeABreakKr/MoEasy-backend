@@ -1,13 +1,13 @@
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { MemberService } from '../service/member.service';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import { MemberService } from '../service/member.service.interface';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
 
 @ApiTags('member')
 @Controller('member')
 export class MemberController {
-  constructor(private memberService: MemberService) {}
+  constructor(@Inject('MemberService') private readonly memberService: MemberService) {}
 
   @Get('search')
   @ApiBearerAuth()
