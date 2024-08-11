@@ -3,16 +3,35 @@ import type { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entity/users.entity';
+import { DiscordProfileDto } from '../dto/discord.profile.dto';
 
 @Injectable()
 export class UsersDao {
   constructor(@InjectRepository(Users) private usersRepository: Repository<Users>) {}
 
-  async findById(id: number): Promise<Users | null> {
+  public async findById(id: number): Promise<Users | null> {
     return this.usersRepository.findOneBy({ users_id: id });
   }
 
-  async findByIds(usersIds: number[]) {
+  public async findByIds(usersIds: number[]) {
     return this.usersRepository.findByIds(usersIds);
+  }
+
+  public async findByDiscordId(discord_id: string): Promise<Users | null> {
+    return this.usersRepository.findOneBy({ discord_id });
+  }
+
+  public async createUsers(profile: DiscordProfileDto): Promise<Users> {
+    const user: Users = this.usersRepository.create({
+      discord_id: profile.id,
+      username: profile.username,
+      avatar: profile.avatar,
+      email: profile.email,
+      settings: {
+        allowNotificationYn: false,
+      },
+    });
+    await this.usersRepository.save(user);
+    return user;
   }
 }

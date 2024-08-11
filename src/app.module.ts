@@ -19,6 +19,7 @@ import { FileModeEnum } from './enums/file.mode.enum';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
