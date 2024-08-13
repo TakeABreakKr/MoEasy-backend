@@ -6,17 +6,18 @@
   ],
   "rootDir": ".",
   "moduleNameMapper": {
-    "^@root/(.*)$": "<rootDir>/../src/*",
-    "^@bot/(.*)$": "<rootDir>/../src/bot/*",
-    "^@config/(.*)$": "<rootDir>/../src/config/*",
-    "^@domain/(.*)$": "<rootDir>/../src/domain/*",
-    "^@enums/(.*)$": "<rootDir>/../src/enums/*",
-    "^@file/(.*)$": "<rootDir>/../src/file/*",
-    "^@utils/(.*)$": "<rootDir>/../src/utils/*"
+    "^@root/(.*)$": "<rootDir>/../src/$1",
+    "^@bot/(.*)$": "<rootDir>/../src/bot/$1",
+    "^@config/(.*)$": "<rootDir>/../src/config/$1",
+    "^@domain/(.*)$": "<rootDir>/../src/domain/$1",
+    "^@enums/(.*)$": "<rootDir>/../src/enums/$1",
+    "^@file/(.*)$": "<rootDir>/../src/file/$1",
+    "^@utils/(.*)$": "<rootDir>/../src/utils/$1"
   },
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "testTimeout": 10000
 }

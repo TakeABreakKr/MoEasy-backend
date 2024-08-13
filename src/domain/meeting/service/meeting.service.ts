@@ -9,7 +9,7 @@ import type { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumb
 import type { Users } from '@domain/user/entity/users.entity';
 import type { MeetingMemberDto } from '../dto/response/meeting.member.dto';
 
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingUtils } from '@utils/meeting.utils';
@@ -96,7 +96,7 @@ export class MeetingServiceImpl implements MeetingService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
-      throw new Error('wrong meeting id requested');
+      throw new HttpException('wrong meeting id requested', HttpStatus.BAD_REQUEST);
     }
 
     return this.toGetMeetingResponse(meeting);

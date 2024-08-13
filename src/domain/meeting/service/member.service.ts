@@ -21,7 +21,9 @@ export class MemberServiceImpl implements MemberService {
   ) {}
 
   public async search(keyword: string): Promise<MemberSearchResponse> {
-    return null; // TODO: develop after friend system
+    return {
+      memberList: [],
+    }; // TODO: develop after friend system
   }
 
   @Transactional()
