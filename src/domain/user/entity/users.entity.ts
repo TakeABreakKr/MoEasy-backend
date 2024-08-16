@@ -9,7 +9,16 @@ export class Users {
   users_id: number;
 
   @Column()
-  nickname: string;
+  discord_id: string;
+
+  @Column()
+  username: string;
+
+  @Column()
+  avatar: string;
+
+  @Column()
+  email: string;
 
   @Column(() => Settings)
   settings: Settings;

@@ -3,9 +3,12 @@ import { EnvEnum } from '@enums/env.enum';
 
 export default () => ({
   version,
-  host: process.env.HOST || 'localhost',
+  host: process.env.HOST || 'http://localhost:5000',
   port: parseInt(process.env.PORT, 10) || 5000,
   env: EnvEnum[process.env.NODE_ENV || 'DEV'],
+  frontend: {
+    host: process.env.FRONT_HOST || 'http://localhost:4000',
+  },
   AWS: {
     region: process.env.AWS_REGION || '',
     bucket: process.env.BUCKET || '',
@@ -20,7 +23,9 @@ export default () => ({
     database: process.env.DB_DATABASE || 'moeasy',
   },
   discord: {
+    host: 'https://discord.com',
     token: process.env.DISCORD_TOKEN || '',
+    client_id: process.env.DISCORD_CLIENT_ID || '',
   },
   file: {
     dir: process.env.PWD + '/file',
