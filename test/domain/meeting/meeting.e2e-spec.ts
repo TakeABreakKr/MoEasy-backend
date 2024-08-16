@@ -15,11 +15,9 @@ describe('meeting', () => {
       members: [],
       thumbnail: undefined,
     };
-    return request(httpServer).get('/meeting/get?meetingId=GGGGGGG1')
-      .expect(400)
-      .expect({
-        statusCode: 400,
-        message: 'wrong meeting id requested',
-      });
+    return request(httpServer).get('/meeting/get?meetingId=GGGGGGG1').expect(400).expect({
+      statusCode: 400,
+      message: 'wrong meeting id requested',
+    });
   });
 });

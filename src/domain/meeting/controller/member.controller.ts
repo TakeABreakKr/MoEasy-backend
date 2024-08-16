@@ -1,8 +1,18 @@
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { MemberService } from '../service/member.service.interface';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
+import { ErrorMessageType } from '@enums/error.message.enum';
 
 @ApiTags('member')
 @Controller('member')
@@ -19,6 +29,7 @@ export class MemberController {
   @Post('withdraw')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'withdraw succeed' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
   @ApiBody({})
   async withdraw(@Body('meetingId') meeting_id: string) {
@@ -28,20 +39,24 @@ export class MemberController {
 
   @Post('invite')
   @ApiBearerAuth()
-  @ApiOkResponse({ status: 200, description: 'invite url created' })
+  @ApiOkResponse({ status: 200, description: 'invite url created', type: String })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiForbiddenResponse({ status: 403, description: ErrorMessageType.FORBIDDEN_INVITE_REQUEST })
   @ApiConsumes('application/json')
   @ApiBody({
     description: 'necessary info for invite to meeting',
     type: MemberInviteRequest,
   })
-  async invite(@Body() req: MemberInviteRequest) {
+  async invite(@Body() req: MemberInviteRequest): Promise<string> {
     const requester_id: number = 0; // TODO: getRequester info from token
-    await this.memberService.invite(requester_id, req);
+    return this.memberService.invite(requester_id, req);
   }
 
   @Get('invite/accept')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'invite accepted successfully' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.WRONG_INVITE_URL })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.MALFORMED_INVITE_URL })
   async accept(@Query('usersId') usersId: number, @Query('meetingId') meetingId: string) {
     const requester_id: number = 0; // TODO: getRequester info from token
     await this.memberService.accept(requester_id, usersId, meetingId);

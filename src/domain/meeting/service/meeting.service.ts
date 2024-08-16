@@ -9,7 +9,7 @@ import type { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumb
 import type { Users } from '@domain/user/entity/users.entity';
 import type { MeetingMemberDto } from '../dto/response/meeting.member.dto';
 
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingUtils } from '@utils/meeting.utils';
@@ -20,6 +20,7 @@ import { MemberDao } from '../dao/member.dao';
 import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
 import { MeetingService } from './meeting.service.interface';
+import { ErrorMessageType } from '@enums/error.message.enum';
 
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {
@@ -63,15 +64,11 @@ export class MeetingServiceImpl implements MeetingService {
 
   @Transactional()
   public async updateMeeting(request: MeetingUpdateRequest) {
-    if (!request.name && !request.limit && !request.explanation) {
-      throw new Error('Invalid Request');
-    }
-
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
 
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
-      throw new Error('존재하는 모임이 아닙니다.');
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
     }
 
     const name: string = request.name || meeting.name;
@@ -96,7 +93,7 @@ export class MeetingServiceImpl implements MeetingService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
-      throw new HttpException('wrong meeting id requested', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
     }
 
     return this.toGetMeetingResponse(meeting);

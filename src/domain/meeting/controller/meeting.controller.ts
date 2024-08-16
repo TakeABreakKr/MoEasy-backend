@@ -1,6 +1,14 @@
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Body, Controller, Get, Inject, Post, Query, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MeetingCreateRequest } from '../dto/request/meeting.create.request';
 import { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
 import { MeetingResponse } from '../dto/response/meeting.response';
@@ -8,6 +16,7 @@ import { MeetingListResponse } from '../dto/response/meeting.list.response';
 import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
 import { AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
+import { ErrorMessageType } from '@enums/error.message.enum';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -26,6 +35,7 @@ export class MeetingController {
 
   @Post('update')
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiBearerAuth()
   @ApiConsumes('application/json')
   @ApiBody({
@@ -51,6 +61,7 @@ export class MeetingController {
     description: 'Meeting retrieved successfully',
     type: MeetingResponse,
   })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',
   })
