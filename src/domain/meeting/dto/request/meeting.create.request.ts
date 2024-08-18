@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min} from 'class-validator';
 
 export class MeetingCreateRequest {
   @ApiProperty()
@@ -19,7 +19,7 @@ export class MeetingCreateRequest {
   thumbnail: Express.Multer.File;
 
   @ApiProperty()
-  @MaxLength(5)
+  @MaxLength(10)
   keywords: string[];
 
   @ApiProperty()

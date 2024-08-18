@@ -9,7 +9,9 @@ export class Keyword {
   @Column()
   meeting_id: number;
 
-  @Column()
+  @Column({
+    length: 20 //20이면 10글자 제한 맞ㅇ나?
+  })
   keyword: string;
 
   @ManyToOne(() => Meeting, (meeting) => meeting.keywords)

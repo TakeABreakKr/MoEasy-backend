@@ -22,7 +22,7 @@ import { MeetingUtils } from '../../../utils/meeting.utils';
 
 @Injectable()
 export class MeetingService {
-  private static padding: string = 'G';
+  private static padding: string = 'G'; //이게 뭐예요?
 
   constructor(
     @Inject('FileService') private fileService: FileService,
@@ -42,7 +42,16 @@ export class MeetingService {
       thumbnail: thumbnailPath,
     });
 
+    const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
+
+    if(keywordsCount > 10){
+      throw new Error('키워드 개수는 10개까지 가능합니다.');
+    }
+
     const keywords: Keyword[] = req.keywords.map((keyword) => {
+      if (keyword.length > 10){
+        throw new Error('키워드 글자수는 10자까지 가능합니다!');
+      }
       return Keyword.create(keyword, meeting.meeting_id);
     });
     await this.keywordDao.saveAll(keywords);
@@ -73,9 +82,15 @@ export class MeetingService {
       throw new Error('존재하는 모임이 아닙니다.');
     }
 
+    const keywordCount : number = await this.keywordDao.countByMeetingId(meetingId);
+    if (keywordCount > 10){
+      throw new Error('키워드 개수는 10개까지 가능합니다.');
+    }
+
     const name: string = request.name || meeting.name;
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
+
     meeting.updateBasicInfo({ name, explanation, limit });
     await this.meetingDao.update(meeting);
   }
