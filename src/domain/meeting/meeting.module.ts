@@ -5,16 +5,22 @@ import { Member } from './entity/member.entity';
 import { MeetingController } from './controller/meeting.controller';
 import { MeetingDao } from './dao/meeting.dao';
 import { MemberDao } from './dao/member.dao';
-import { MeetingService } from './service/meeting.service';
+import { MeetingServiceImpl } from './service/meeting.service';
 import { KeywordDao } from './dao/keyword.dao';
 import { Keyword } from './entity/keyword.entity';
 import { MemberController } from './controller/member.controller';
-import { MemberService } from './service/member.service';
-import { UsersModule } from '../user/users.module';
+import { MemberServiceImpl } from './service/member.service';
+import { UsersModule } from '@domain/user/users.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Meeting, Member, Keyword]), UsersModule],
-  providers: [MeetingDao, MemberDao, KeywordDao, MeetingService, MemberService],
+  providers: [
+    MeetingDao,
+    MemberDao,
+    KeywordDao,
+    { provide: 'MeetingService', useClass: MeetingServiceImpl },
+    { provide: 'MemberService', useClass: MemberServiceImpl },
+  ],
   controllers: [MeetingController, MemberController],
 })
 export class MeetingModule {}

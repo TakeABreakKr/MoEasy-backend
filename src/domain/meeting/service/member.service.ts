@@ -1,18 +1,20 @@
-import type { Users } from '../../user/entity/users.entity';
+import type { Users } from '@domain/user/entity/users.entity';
 
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { ConfigService } from '@nestjs/config';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
-import { UsersDao } from '../../user/dao/users.dao';
+import { UsersDao } from '@domain/user/dao/users.dao';
 import { MemberDao } from '../dao/member.dao';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
-import { MeetingUtils } from '../../../utils/meeting.utils';
+import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '../entity/member.entity';
-import { AuthorityEnum } from '../../../enums/authority.enum';
+import { AuthorityEnum } from '@enums/authority.enum';
+import { MemberService } from './member.service.interface';
+import { ErrorMessageType } from '@enums/error.message.enum';
 
 @Injectable()
-export class MemberService {
+export class MemberServiceImpl implements MemberService {
   constructor(
     private configService: ConfigService,
     private usersDao: UsersDao,
@@ -20,7 +22,9 @@ export class MemberService {
   ) {}
 
   public async search(keyword: string): Promise<MemberSearchResponse> {
-    return null; // TODO: develop after friend system
+    return {
+      memberList: [],
+    }; // TODO: develop after friend system
   }
 
   @Transactional()
@@ -41,13 +45,13 @@ export class MemberService {
   @Transactional()
   public async accept(requester_id: number, usersId: number, meetingId: string) {
     if (requester_id !== usersId) {
-      throw new Error('invitation not for requester');
+      throw new UnauthorizedException(ErrorMessageType.WRONG_INVITE_URL);
     }
 
     const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
     if (!member) {
-      throw new Error('invite url malformed');
+      throw new BadRequestException(ErrorMessageType.MALFORMED_INVITE_URL);
     }
 
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
@@ -56,12 +60,12 @@ export class MemberService {
   private async validateInviteRequester(users_id: number, meetingId: number) {
     const user: Users | null = await this.usersDao.findById(users_id);
     if (!user) {
-      throw new Error('requester is not exists');
+      throw new UnauthorizedException(ErrorMessageType.NOT_EXIST_REQUESTER);
     }
 
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(users_id, meetingId);
     if (!member) {
-      throw new Error('only members of meeting are able to request invitation');
+      throw new ForbiddenException(ErrorMessageType.FORBIDDEN_INVITE_REQUEST);
     }
   }
 

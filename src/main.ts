@@ -2,9 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { initializeTransactionalContext } from 'typeorm-transactional';
-import { AppModule } from './app.module';
-import { setupSwagger } from './config/swagger.config';
-import { EnvEnum, EnvEnumType } from './enums/env.enum';
+import { AppModule } from '@root/app.module';
+import { setupSwagger } from '@config/swagger.config';
+import { EnvEnum, EnvEnumType } from '@enums/env.enum';
 
 async function bootstrap() {
   initializeTransactionalContext();

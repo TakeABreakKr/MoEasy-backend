@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Users } from '../../user/entity/users.entity';
 import { Meeting } from './meeting.entity';
-import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum';
+import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 
 type CreateMemberDto = {
   meeting_id: number;
