@@ -30,9 +30,8 @@ export class MeetingController {
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
   @ApiConsumes('multipart/form-data')
-  async createMeeting(@Body() request: MeetingCreateRequest): Promise<string> {
-    const requester_id = 0; // TODO: getRequester info from token
-    return this.meetingService.createMeeting(request, requester_id);
+  async createMeeting(@Body() request: MeetingCreateRequest, @Token() user: AuthUser): Promise<string> {
+    return this.meetingService.createMeeting(request, user.id);
   }
 
   @Post('update')
@@ -82,8 +81,7 @@ export class MeetingController {
     @Query('authorities') authorities: AuthorityEnumType[],
     @Token() user: AuthUser,
   ): Promise<MeetingListResponse> {
-    const requester_id: number = user.id;
-    return this.meetingService.getMeetingList(requester_id, authorities);
+    return this.meetingService.getMeetingList(user.id, authorities);
   }
 
   @Public()
