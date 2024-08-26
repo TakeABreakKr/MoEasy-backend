@@ -17,6 +17,8 @@ import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.
 import { AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { Public } from '@decorator/public.decorator';
+import { AuthUser, Token } from '@decorator/token.decorator';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -76,11 +78,15 @@ export class MeetingController {
     type: MeetingListResponse,
   })
   @ApiBearerAuth()
-  async getMeetingList(@Query('authorities') authorities: AuthorityEnumType[]): Promise<MeetingListResponse> {
-    const requester_id: number = 0; // TODO: getRequester info from token
+  async getMeetingList(
+    @Query('authorities') authorities: AuthorityEnumType[],
+    @Token() user: AuthUser,
+  ): Promise<MeetingListResponse> {
+    const requester_id: number = user.id;
     return this.meetingService.getMeetingList(requester_id, authorities);
   }
 
+  @Public()
   @Get('lookAround')
   @ApiOkResponse({
     status: 200,
