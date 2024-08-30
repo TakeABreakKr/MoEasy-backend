@@ -82,6 +82,7 @@ export class AuthService {
     const payload: AuthUser = {
       id: user.users_id,
       name: user.username,
+      issueDate: Date.now(),
     };
 
     return {
