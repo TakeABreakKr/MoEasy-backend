@@ -10,7 +10,7 @@ export class Keyword {
   meeting_id: number;
 
   @Column({
-    length: 20 //20이면 10글자 제한 맞ㅇ나?
+    length: 20, //20이면 10글자 제한 맞ㅇ나?
   })
   keyword: string;
 

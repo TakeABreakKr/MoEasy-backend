@@ -34,7 +34,11 @@ export class MemberService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.validateInviteRequester(requester_id, meetingId);
 
-    const member: Member = await this.memberDao.create({ meetingId, usersId: req.newMemberId });
+    const member: Member = await this.memberDao.create({
+      meetingId,
+      usersId: req.newMemberId,
+      authority: AuthorityEnum.INVITED,
+    });
     return this.createInvitationAcceptUrl(member.users_id, member.meeting_id);
   }
 
@@ -49,7 +53,16 @@ export class MemberService {
     if (!member) {
       throw new Error('invite url malformed');
     }
+    await this.memberDao.updateAuthority(member, AuthorityEnum.ACCEPTED);
+  }
 
+  @Transactional()
+  public async approveMember(usersId: number, meetingId: string) {
+    const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
+    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
+    if (!member || member.authority !== AuthorityEnum.ACCEPTED) {
+      throw new Error('no member found in accepted');
+    }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
   }
 

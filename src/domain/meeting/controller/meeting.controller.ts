@@ -58,14 +58,27 @@ export class MeetingController {
     return this.meetingService.getMeeting(meetingId);
   }
 
-  @Get('get/list')
+  @Post('get/list')
   @ApiOkResponse({
     status: 200,
     description: 'Meeting list retrieved successfully',
     type: MeetingListResponse,
   })
   @ApiBearerAuth()
-  async getMeetingList(@Query('authorities') authorities: AuthorityEnumType[]): Promise<MeetingListResponse> {
+  @ApiBody({
+    description: 'Filer meetings by authority',
+    schema: {
+      type: 'object',
+      properties: {
+        authorities: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'List of authority types to filter meetings',
+        },
+      },
+    },
+  })
+  async getMeetingList(@Body('authorities') authorities: AuthorityEnumType[]): Promise<MeetingListResponse> {
     const requester_id: number = 0; // TODO: getRequester info from token
     return this.meetingService.getMeetingList(requester_id, authorities);
   }

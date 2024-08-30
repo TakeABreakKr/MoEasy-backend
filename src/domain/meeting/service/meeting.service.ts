@@ -44,12 +44,12 @@ export class MeetingService {
 
     const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
 
-    if(keywordsCount > 10){
+    if (keywordsCount > 10) {
       throw new Error('키워드 개수는 10개까지 가능합니다.');
     }
 
     const keywords: Keyword[] = req.keywords.map((keyword) => {
-      if (keyword.length > 10){
+      if (keyword.length > 10) {
         throw new Error('키워드 글자수는 10자까지 가능합니다!');
       }
       return Keyword.create(keyword, meeting.meeting_id);
@@ -82,8 +82,8 @@ export class MeetingService {
       throw new Error('존재하는 모임이 아닙니다.');
     }
 
-    const keywordCount : number = await this.keywordDao.countByMeetingId(meetingId);
-    if (keywordCount > 10){
+    const keywordCount: number = await this.keywordDao.countByMeetingId(meetingId);
+    if (keywordCount > 10) {
       throw new Error('키워드 개수는 10개까지 가능합니다.');
     }
 

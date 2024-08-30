@@ -8,7 +8,7 @@ import { Keyword } from '../entity/keyword.entity';
 export class KeywordDao {
   constructor(@InjectRepository(Keyword) private keywordRepository: Repository<Keyword>) {}
 
-  async countByMeetingId(meetingId: number): Promise<number>{
+  async countByMeetingId(meetingId: number): Promise<number> {
     const kewordsCount = await this.keywordRepository.count({
       where: { meeting: { meeting_id: meetingId } },
     });

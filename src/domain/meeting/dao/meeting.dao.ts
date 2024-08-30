@@ -22,7 +22,7 @@ export class MeetingDao {
     limit: number;
     thumbnail: string;
   }): Promise<Meeting> {
-    const meeting = this.meetingRepository.create({ name, limit, explanation, thumbnail});
+    const meeting = this.meetingRepository.create({ name, limit, explanation, thumbnail });
     await this.meetingRepository.save(meeting);
     return meeting;
   }

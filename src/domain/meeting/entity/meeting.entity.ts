@@ -15,7 +15,7 @@ export class Meeting {
   name: string;
 
   @Column({
-    nullable: true //이거 nullable로 처리하는게 정말 맞을까요?
+    nullable: true, //이거 nullable로 처리하는게 정말 맞을까요?
     //이거 왜 최대길이 제한 없어요?
   })
   explanation: string;
@@ -54,7 +54,7 @@ export class Meeting {
     return this.members;
   }
 
-  updateBasicInfo({ name, explanation, limit}: { name: string; explanation: string; limit: number;}) {
+  updateBasicInfo({ name, explanation, limit }: { name: string; explanation: string; limit: number }) {
     this.name = name;
     this.explanation = explanation;
     this.limit = limit;
