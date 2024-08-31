@@ -66,7 +66,7 @@ export class MeetingController {
   })
   @ApiBearerAuth()
   @ApiBody({
-    description: 'Filer meetings by authority',
+    description: 'Filer meetings by authority and sort by options',
     schema: {
       type: 'object',
       properties: {

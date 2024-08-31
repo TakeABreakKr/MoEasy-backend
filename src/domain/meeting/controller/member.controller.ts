@@ -41,7 +41,7 @@ export class MemberController {
 
   @Get('invite/accept')
   @ApiBearerAuth()
-  @ApiOkResponse({ status: 200, description: 'invite accepted, waiting for approval' })
+  @ApiOkResponse({ status: 200, description: 'invite accepted successfully' })
   async accept(@Query('usersId') usersId: number, @Query('meetingId') meetingId: string) {
     const requester_id: number = 0; // TODO: getRequester info from token
     await this.memberService.accept(requester_id, usersId, meetingId);
@@ -50,7 +50,7 @@ export class MemberController {
   @Get('invite/approve')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'member approved successfully' })
-  async approveMember(@Query('userId') usersId: number, @Query('meetingId') meetingId: string) {
-    await this.memberService.approveMember(usersId, meetingId);
+  async approve(@Query('userId') usersId: number, @Query('meetingId') meetingId: string) {
+    await this.memberService.approve(usersId, meetingId);
   }
 }

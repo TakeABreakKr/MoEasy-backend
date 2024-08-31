@@ -22,7 +22,7 @@ import { MeetingUtils } from '../../../utils/meeting.utils';
 
 @Injectable()
 export class MeetingService {
-  private static padding: string = 'G'; //이게 뭐예요?
+  private static padding: string = 'G';
 
   constructor(
     @Inject('FileService') private fileService: FileService,
@@ -80,11 +80,6 @@ export class MeetingService {
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
       throw new Error('존재하는 모임이 아닙니다.');
-    }
-
-    const keywordCount: number = await this.keywordDao.countByMeetingId(meetingId);
-    if (keywordCount > 10) {
-      throw new Error('키워드 개수는 10개까지 가능합니다.');
     }
 
     const name: string = request.name || meeting.name;

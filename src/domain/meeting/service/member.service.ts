@@ -53,15 +53,15 @@ export class MemberService {
     if (!member) {
       throw new Error('invite url malformed');
     }
-    await this.memberDao.updateAuthority(member, AuthorityEnum.ACCEPTED);
+    await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
   }
 
   @Transactional()
-  public async approveMember(usersId: number, meetingId: string) {
+  public async approve(usersId: number, meetingId: string) {
     const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
-    if (!member || member.authority !== AuthorityEnum.ACCEPTED) {
-      throw new Error('no member found in accepted');
+    if (!member || member.authority !== AuthorityEnum.WAITING) {
+      throw new Error('no member found');
     }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
   }
