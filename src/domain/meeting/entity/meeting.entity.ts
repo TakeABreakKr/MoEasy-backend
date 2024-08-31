@@ -15,8 +15,7 @@ export class Meeting {
   name: string;
 
   @Column({
-    nullable: true, //이거 nullable로 처리하는게 정말 맞을까요?
-    //이거 왜 최대길이 제한 없어요?
+    nullable: true,
   })
   explanation: string;
 
@@ -28,8 +27,6 @@ export class Meeting {
 
   @Column()
   thumbnail: string;
-
-  //number을 했는데 왜 굳이 integer을 또 해주는 걸까??
 
   @OneToMany(() => Keyword, (keyword) => keyword.meeting)
   keywords: Promise<Keyword[]>;
@@ -43,8 +40,6 @@ export class Meeting {
   async getKeywords(): Promise<Keyword[]> {
     return this.keywords;
   }
-
-  //다른거 getter는 없어도 되나?
 
   async getSchedules(): Promise<Schedule[]> {
     return this.schedules;
