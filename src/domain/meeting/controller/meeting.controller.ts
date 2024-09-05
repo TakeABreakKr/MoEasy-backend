@@ -8,6 +8,7 @@ import { MeetingResponse } from '../dto/response/meeting.response';
 import { MeetingListResponse } from '../dto/response/meeting.list.response';
 import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
 import { AuthorityEnumType } from '../../../enums/authority.enum';
+import { OptionEnumType } from '../../../enums/option.enum';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -71,16 +72,24 @@ export class MeetingController {
       type: 'object',
       properties: {
         authorities: {
-          type: 'array',
+          type: 'string',
           items: { type: 'string' },
           description: 'List of authority types to filter meetings',
+        },
+        options: {
+          type: 'string',
+          enum: ['LATEST', 'NAME'],
+          description: 'Option to sort meetingList (LATEST for latest registered, NAME for alphabetical)',
         },
       },
     },
   })
-  async getMeetingList(@Body('authorities') authorities: AuthorityEnumType[]): Promise<MeetingListResponse> {
+  async getMeetingList(
+    @Body('authorities') authorities: AuthorityEnumType[],
+    @Body('options') options: OptionEnumType,
+  ): Promise<MeetingListResponse> {
     const requester_id: number = 0; // TODO: getRequester info from token
-    return this.meetingService.getMeetingList(requester_id, authorities);
+    return this.meetingService.getMeetingList(requester_id, authorities, options);
   }
 
   @Get('lookAround')

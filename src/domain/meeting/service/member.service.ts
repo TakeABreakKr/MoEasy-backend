@@ -57,9 +57,13 @@ export class MemberService {
   }
 
   @Transactional()
-  public async approve(usersId: number, meetingId: string) {
+  public async approve(requesterId: number, usersId: number, meetingId: string) {
     const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
+    const requester: Member | null = await this.memberDao.findByUsersAndMeetingId(requesterId, meeting_id);
+    if (!requester || requester.authority !== AuthorityEnum.OWNER) {
+      throw new Error('Requester does not have the authority to approve members');
+    }
     if (!member || member.authority !== AuthorityEnum.WAITING) {
       throw new Error('no member found');
     }

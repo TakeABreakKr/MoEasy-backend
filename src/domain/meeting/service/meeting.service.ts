@@ -19,6 +19,7 @@ import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum'
 import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
 import { MeetingUtils } from '../../../utils/meeting.utils';
+import { OptionEnum, OptionEnumType } from '../../../enums/option.enum';
 
 @Injectable()
 export class MeetingService {
@@ -111,8 +112,13 @@ export class MeetingService {
     return this.toGetMeetingResponse(meeting);
   }
 
-  public async getMeetingList(usersId?: number, authorities?: AuthorityEnumType[]): Promise<MeetingListResponse> {
+  public async getMeetingList(
+    usersId?: number,
+    authorities?: AuthorityEnumType[],
+    options?: OptionEnumType,
+  ): Promise<MeetingListResponse> {
     const meetings: Meeting[] = await this.meetingDao.findAll();
+    this.sortMeetings(meetings, options);
     const meetingList: MeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
         meetingId: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
@@ -140,6 +146,15 @@ export class MeetingService {
         return meeting.authority && authorities.includes(meeting.authority);
       }),
     };
+  }
+
+  public sortMeetings(meetings: Meeting[], options: OptionEnumType): Meeting[] {
+    if (options === OptionEnum.NAME) {
+      return meetings.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (options === OptionEnum.LATEST) {
+      return meetings.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    }
+    return meetings;
   }
 
   private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {
