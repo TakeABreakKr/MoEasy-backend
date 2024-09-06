@@ -17,7 +17,7 @@ import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.
 import { AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { OptionEnumType } from '@enums/option.enum';
+import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -97,7 +97,7 @@ export class MeetingController {
   })
   async getMeetingList(
     @Body('authorities') authorities: AuthorityEnumType[],
-    @Body('options') options: OptionEnumType,
+    @Body('options') options: OrderingOptionEnumType,
   ): Promise<MeetingListResponse> {
     const requester_id: number = 0; // TODO: getRequester info from token
     return this.meetingService.getMeetingList(requester_id, authorities, options);

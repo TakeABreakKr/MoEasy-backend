@@ -21,7 +21,7 @@ import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
 import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { OptionEnum, OptionEnumType } from '@enums/option.enum';
+import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {
@@ -113,7 +113,7 @@ export class MeetingServiceImpl implements MeetingService {
   public async getMeetingList(
     usersId?: number,
     authorities?: AuthorityEnumType[],
-    options?: OptionEnumType,
+    options?: OrderingOptionEnumType,
   ): Promise<MeetingListResponse> {
     const meetings: Meeting[] = await this.meetingDao.findAll();
     this.sortMeetings(meetings, options);
@@ -146,10 +146,10 @@ export class MeetingServiceImpl implements MeetingService {
     };
   }
 
-  public sortMeetings(meetings: Meeting[], options: OptionEnumType): Meeting[] {
-    if (options === OptionEnum.NAME) {
+  public sortMeetings(meetings: Meeting[], options: OrderingOptionEnumType): Meeting[] {
+    if (options === OrderingOptionEnum.NAME) {
       return meetings.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (options === OptionEnum.LATEST) {
+    } else if (options === OrderingOptionEnum.LATEST) {
       return meetings.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
     }
     return meetings;

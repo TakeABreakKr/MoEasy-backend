@@ -4,7 +4,7 @@ import { MeetingThumbnailUpdateRequest } from '@domain/meeting/dto/request/meeti
 import { MeetingResponse } from '@domain/meeting/dto/response/meeting.response';
 import { AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingListResponse } from '@domain/meeting/dto/response/meeting.list.response';
-import { OptionEnumType } from '@enums/option.enum';
+import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 
 export interface MeetingService {
   createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string>;
@@ -14,6 +14,6 @@ export interface MeetingService {
   getMeetingList(
     userId?: number,
     authorities?: AuthorityEnumType[],
-    options?: OptionEnumType,
+    options?: OrderingOptionEnumType,
   ): Promise<MeetingListResponse>;
 }
