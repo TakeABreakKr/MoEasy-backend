@@ -1,5 +1,5 @@
 import { version } from '../../package.json';
-import { EnvEnum } from '../enums/env.enum';
+import { EnvEnum } from '@enums/env.enum';
 
 export default () => ({
   version,

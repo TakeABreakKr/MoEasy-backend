@@ -1,21 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { Server } from 'net';
+import { getServer } from './default.test';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication;
+describe('app', () => {
+  const getServerMethod: () => Promise<Server> = getServer();
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
-
-  it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/').expect(200).expect('Hello World!');
+  it('/ (GET)', async () => {
+    const httpServer: Server = await getServerMethod();
+    return request(httpServer).get('/').expect(200).expect('Hello World!');
   });
 });

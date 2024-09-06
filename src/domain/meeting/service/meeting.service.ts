@@ -1,28 +1,30 @@
-import type { FileService } from '../../../file/service/file.service';
-import { MeetingDao } from '../dao/meeting.dao';
-import { MemberDao } from '../dao/member.dao';
+import type { FileService } from '@file/service/file.service';
 import type { Meeting } from '../entity/meeting.entity';
 import type { MeetingCreateRequest } from '../dto/request/meeting.create.request';
 import type { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
 import type { MeetingResponse } from '../dto/response/meeting.response';
-import { KeywordDao } from '../dao/keyword.dao';
 import type { MeetingListResponse } from '../dto/response/meeting.list.response';
 import type { MeetingListMeetingDto } from '../dto/response/meeting.list.meeting.dto';
 import type { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
-import { UsersDao } from '../../user/dao/users.dao';
-import type { Users } from '../../user/entity/users.entity';
+import type { Users } from '@domain/user/entity/users.entity';
 import type { MeetingMemberDto } from '../dto/response/meeting.member.dto';
 
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
-import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum';
+import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
+import { MeetingUtils } from '@utils/meeting.utils';
+import { UsersDao } from '@domain/user/dao/users.dao';
+import { KeywordDao } from '../dao/keyword.dao';
+import { MeetingDao } from '../dao/meeting.dao';
+import { MemberDao } from '../dao/member.dao';
 import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
-import { MeetingUtils } from '../../../utils/meeting.utils';
-import { OptionEnum, OptionEnumType } from '../../../enums/option.enum';
+import { MeetingService } from './meeting.service.interface';
+import { ErrorMessageType } from '@enums/error.message.enum';
+import { OptionEnum, OptionEnumType } from '@enums/option.enum';
 
 @Injectable()
-export class MeetingService {
+export class MeetingServiceImpl implements MeetingService {
   private static padding: string = 'G';
 
   constructor(
@@ -72,15 +74,11 @@ export class MeetingService {
 
   @Transactional()
   public async updateMeeting(request: MeetingUpdateRequest) {
-    if (!request.name && !request.limit && !request.explanation) {
-      throw new Error('Invalid Request');
-    }
-
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
 
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
-      throw new Error('존재하는 모임이 아닙니다.');
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
     }
 
     const name: string = request.name || meeting.name;
@@ -106,7 +104,7 @@ export class MeetingService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
-      throw new Error('wrong meeting id requested');
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
     }
 
     return this.toGetMeetingResponse(meeting);

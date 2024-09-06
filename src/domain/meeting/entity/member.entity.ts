@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { Users } from '../../user/entity/users.entity';
+import { Users } from '@domain/user/entity/users.entity';
 import { Meeting } from './meeting.entity';
-import { AuthorityEnum, AuthorityEnumType } from '../../../enums/authority.enum';
-import { BaseEntity } from '../../common/base.entity';
+import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
+import { BaseEntity } from '@domain/common/base.entity';
 
 type CreateMemberDto = {
   meeting_id: number;

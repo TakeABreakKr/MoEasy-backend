@@ -42,7 +42,7 @@
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
-    "@nestjs/testing": "^10.0.0",
+    "@nestjs/testing": "^10.3.10",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.2",
     "@types/multer": "^1.4.11",
@@ -78,6 +78,15 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@root/(.*)$": "<rootDir>/$1",
+      "^@bot/(.*)$": "<rootDir>/bot/$1",
+      "^@config/(.*)$": "<rootDir>/config/$1",
+      "^@domain/(.*)$": "<rootDir>/domain/$1",
+      "^@enums/(.*)$": "<rootDir>/enums/$1",
+      "^@file/(.*)$": "<rootDir>/file/$1",
+      "^@utils/(.*)$": "<rootDir>/utils/$1"
+    }
   }
 }

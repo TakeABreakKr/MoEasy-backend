@@ -5,14 +5,15 @@ import { DataSource } from 'typeorm';
 import { DiscordModule } from '@discord-nestjs/core';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 
-import configuration from './config/configuration';
-import { DiscordConfig } from './config/discord.config';
-import { DBConfig } from './config/db.config';
+import configuration from '@config/configuration';
+import { DiscordConfig } from '@config/discord.config';
+import { DBConfig } from '@config/db.config';
 
-import { BotModule } from './bot/bot.module';
-import { DomainModule } from './domain/domain.module';
-import { FileModule } from './file/file.module';
-import { FileModeEnum } from './enums/file.mode.enum';
+import { BotModule } from '@bot/bot.module';
+import { DomainModule } from '@domain/domain.module';
+import { FileModule } from '@file/file.module';
+import { FileModeEnum } from '@enums/file.mode.enum';
+import { AppController } from '@root/controller/app.controller';
 
 @Module({
   imports: [
@@ -43,5 +44,6 @@ import { FileModeEnum } from './enums/file.mode.enum';
       fileMode: FileModeEnum.local,
     }),
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
