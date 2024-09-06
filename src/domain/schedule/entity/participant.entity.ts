@@ -1,9 +1,10 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Schedule } from './schedule.entity';
 import { Users } from '../../user/entity/users.entity';
+import { BaseEntity } from '../../common/base.entity';
 
 @Entity()
-export class Participant {
+export class Participant extends BaseEntity {
   @PrimaryColumn()
   schedule_id: number;
 

@@ -2,7 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Schedule } from '../../schedule/entity/schedule.entity';
 import { Member } from './member.entity';
 import { Keyword } from './keyword.entity';
-import { BaseEntity } from './base.entity';
+import { BaseEntity } from '../../common/base.entity';
 
 @Entity()
 export class Meeting extends BaseEntity {

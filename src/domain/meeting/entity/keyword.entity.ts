@@ -1,8 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Meeting } from './meeting.entity';
+import { BaseEntity } from '../../common/base.entity';
 
 @Entity()
-export class Keyword {
+export class Keyword extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   keyword_id: number;
 
