@@ -13,6 +13,7 @@ import { MemberService } from '../service/member.service.interface';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { AuthUser, Token } from '@decorator/token.decorator';
 
 @ApiTags('member')
 @Controller('member')
@@ -32,9 +33,8 @@ export class MemberController {
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
   @ApiBody({})
-  async withdraw(@Body('meetingId') meeting_id: string) {
-    const requester_id: number = 0; // TODO: getRequester info from token
-    await this.memberService.withdraw(requester_id, meeting_id);
+  async withdraw(@Body('meetingId') meeting_id: string, @Token() user: AuthUser) {
+    await this.memberService.withdraw(user.id, meeting_id);
   }
 
   @Post('invite')
@@ -47,9 +47,8 @@ export class MemberController {
     description: 'necessary info for invite to meeting',
     type: MemberInviteRequest,
   })
-  async invite(@Body() req: MemberInviteRequest): Promise<string> {
-    const requester_id: number = 0; // TODO: getRequester info from token
-    return this.memberService.invite(requester_id, req);
+  async invite(@Body() req: MemberInviteRequest, @Token() user: AuthUser): Promise<string> {
+    return this.memberService.invite(user.id, req);
   }
 
   @Get('invite/accept')
@@ -57,8 +56,7 @@ export class MemberController {
   @ApiOkResponse({ status: 200, description: 'invite accepted successfully' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.WRONG_INVITE_URL })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.MALFORMED_INVITE_URL })
-  async accept(@Query('usersId') usersId: number, @Query('meetingId') meetingId: string) {
-    const requester_id: number = 0; // TODO: getRequester info from token
-    await this.memberService.accept(requester_id, usersId, meetingId);
+  async accept(@Query('usersId') usersId: number, @Query('meetingId') meetingId: string, @Token() user: AuthUser) {
+    await this.memberService.accept(user.id, usersId, meetingId);
   }
 }

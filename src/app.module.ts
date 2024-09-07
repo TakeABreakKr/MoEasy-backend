@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { DiscordModule } from '@discord-nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 
 import configuration from '@config/configuration';
@@ -14,6 +15,7 @@ import { DomainModule } from '@domain/domain.module';
 import { FileModule } from '@file/file.module';
 import { FileModeEnum } from '@enums/file.mode.enum';
 import { AppController } from '@root/controller/app.controller';
+import AuthGuard from '@root/middleware/auth.guard';
 
 @Module({
   imports: [
@@ -34,6 +36,9 @@ import { AppController } from '@root/controller/app.controller';
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
+    JwtModule.register({
+      global: true,
+    }),
     DiscordModule.forRootAsync({
       imports: [ConfigModule],
       useClass: DiscordConfig,
@@ -44,6 +49,7 @@ import { AppController } from '@root/controller/app.controller';
       fileMode: FileModeEnum.local,
     }),
   ],
+  providers: [AuthGuard],
   controllers: [AppController],
 })
 export class AppModule {}
