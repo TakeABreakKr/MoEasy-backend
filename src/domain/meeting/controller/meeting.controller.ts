@@ -17,6 +17,7 @@ import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.
 import { AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { Public } from '@decorator/public.decorator';
 import { AuthUser, Token } from '@decorator/token.decorator';
 
@@ -70,18 +71,37 @@ export class MeetingController {
     return this.meetingService.getMeeting(meetingId);
   }
 
-  @Get('get/list')
+  @Post('get/list')
   @ApiOkResponse({
     status: 200,
     description: 'Meeting list retrieved successfully',
     type: MeetingListResponse,
   })
   @ApiBearerAuth()
+  @ApiBody({
+    description: 'Filer meetings by authority and sort by options',
+    schema: {
+      type: 'object',
+      properties: {
+        authorities: {
+          type: 'string',
+          items: { type: 'string' },
+          description: 'List of authority types to filter meetings',
+        },
+        options: {
+          type: 'string',
+          enum: [OrderingOptionEnum.LATEST, OrderingOptionEnum.NAME],
+          description: 'Option to sort meetingList (LATEST for latest registered, NAME for alphabetical)',
+        },
+      },
+    },
+  })
   async getMeetingList(
-    @Query('authorities') authorities: AuthorityEnumType[],
-    @Token() user: AuthUser,
+    @Body('authorities') authorities: AuthorityEnumType[],
+    @Body('options') options: OrderingOptionEnumType,
+		@Token() user: AuthUser,
   ): Promise<MeetingListResponse> {
-    return this.meetingService.getMeetingList(user.id, authorities);
+    return this.meetingService.getMeetingList(user.id, authorities, options);
   }
 
   @Public()

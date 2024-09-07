@@ -21,6 +21,7 @@ import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
 import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {
@@ -44,7 +45,16 @@ export class MeetingServiceImpl implements MeetingService {
       thumbnail: thumbnailPath,
     });
 
+    const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
+
+    if (keywordsCount > 10) {
+      throw new Error('키워드 개수는 10개까지 가능합니다.');
+    }
+
     const keywords: Keyword[] = req.keywords.map((keyword) => {
+      if (keyword.length > 10) {
+        throw new Error('키워드 글자수는 10자까지 가능합니다!');
+      }
       return Keyword.create(keyword, meeting.meeting_id);
     });
     await this.keywordDao.saveAll(keywords);
@@ -74,6 +84,7 @@ export class MeetingServiceImpl implements MeetingService {
     const name: string = request.name || meeting.name;
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
+
     meeting.updateBasicInfo({ name, explanation, limit });
     await this.meetingDao.update(meeting);
   }
@@ -99,8 +110,13 @@ export class MeetingServiceImpl implements MeetingService {
     return this.toGetMeetingResponse(meeting);
   }
 
-  public async getMeetingList(usersId?: number, authorities?: AuthorityEnumType[]): Promise<MeetingListResponse> {
+  public async getMeetingList(
+    usersId?: number,
+    authorities?: AuthorityEnumType[],
+    options?: OrderingOptionEnumType,
+  ): Promise<MeetingListResponse> {
     const meetings: Meeting[] = await this.meetingDao.findAll();
+    this.sortMeetings(meetings, options);
     const meetingList: MeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
         meetingId: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
@@ -128,6 +144,15 @@ export class MeetingServiceImpl implements MeetingService {
         return meeting.authority && authorities.includes(meeting.authority);
       }),
     };
+  }
+
+  public sortMeetings(meetings: Meeting[], options: OrderingOptionEnumType): Meeting[] {
+    if (options === OrderingOptionEnum.NAME) {
+      return meetings.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (options === OrderingOptionEnum.LATEST) {
+      return meetings.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    }
+    return meetings;
   }
 
   private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {

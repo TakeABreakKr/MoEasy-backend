@@ -26,7 +26,7 @@ export class MemberDao {
     return this.memberRepository.findBy({ meeting_id });
   }
 
-  async create({ meetingId, usersId, authority = AuthorityEnum.INVITED }: CreateMemberType): Promise<Member> {
+  async create({ meetingId, usersId, authority = AuthorityEnum.WAITING }: CreateMemberType): Promise<Member> {
     const member: Member = this.memberRepository.create({
       meeting_id: meetingId,
       users_id: usersId,
