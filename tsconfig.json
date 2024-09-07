@@ -16,6 +16,7 @@
       "@root/*": ["./src/*"],
       "@bot/*": ["./src/bot/*"],
       "@config/*": ["./src/config/*"],
+      "@decorator/*": ["./src/decorator/*"],
       "@domain/*": ["./src/domain/*"],
       "@enums/*": ["./src/enums/*"],
       "@file/*": ["./src/file/*"],

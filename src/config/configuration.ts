@@ -6,6 +6,10 @@ export default () => ({
   host: process.env.HOST || 'http://localhost:5000',
   port: parseInt(process.env.PORT, 10) || 5000,
   env: EnvEnum[process.env.NODE_ENV || 'DEV'],
+  auth: {
+    ACCESS_TOKEN_SECRET_KEY: process.env.ACCESS_TOKEN_SECRET_KEY || 'M0EaSy_Dev_ACesS_Secret_key',
+    REFRESH_TOKEN_SECRET_KEY: process.env.REFRESH_TOKEN_SECRET_KEY || 'M0EaSy_Dev_ReFResh_Secret_key',
+  },
   frontend: {
     host: process.env.FRONT_HOST || 'http://localhost:4000',
   },

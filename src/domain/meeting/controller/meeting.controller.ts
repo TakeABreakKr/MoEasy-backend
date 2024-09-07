@@ -18,6 +18,8 @@ import { AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
+import { Public } from '@decorator/public.decorator';
+import { AuthUser, Token } from '@decorator/token.decorator';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -29,9 +31,8 @@ export class MeetingController {
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
   @ApiConsumes('multipart/form-data')
-  async createMeeting(@Body() request: MeetingCreateRequest): Promise<string> {
-    const requester_id = 0; // TODO: getRequester info from token
-    return this.meetingService.createMeeting(request, requester_id);
+  async createMeeting(@Body() request: MeetingCreateRequest, @Token() user: AuthUser): Promise<string> {
+    return this.meetingService.createMeeting(request, user.id);
   }
 
   @Post('update')
@@ -98,11 +99,12 @@ export class MeetingController {
   async getMeetingList(
     @Body('authorities') authorities: AuthorityEnumType[],
     @Body('options') options: OrderingOptionEnumType,
+		@Token() user: AuthUser,
   ): Promise<MeetingListResponse> {
-    const requester_id: number = 0; // TODO: getRequester info from token
-    return this.meetingService.getMeetingList(requester_id, authorities, options);
+    return this.meetingService.getMeetingList(user.id, authorities, options);
   }
 
+  @Public()
   @Get('lookAround')
   @ApiOkResponse({
     status: 200,
