@@ -17,7 +17,7 @@ import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.
 import { AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
+import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 
 @ApiTags('meeting')
 @Controller('meeting')
@@ -89,7 +89,7 @@ export class MeetingController {
         },
         options: {
           type: 'string',
-          enum: ['LATEST', 'NAME'],
+          enum: [OrderingOptionEnum.LATEST, OrderingOptionEnum.NAME],
           description: 'Option to sort meetingList (LATEST for latest registered, NAME for alphabetical)',
         },
       },
