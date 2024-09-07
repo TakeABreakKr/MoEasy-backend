@@ -59,4 +59,15 @@ export class MemberController {
   async accept(@Query('usersId') usersId: number, @Query('meetingId') meetingId: string, @Token() user: AuthUser) {
     await this.memberService.accept(user.id, usersId, meetingId);
   }
+
+  @Get('invite/approve')
+  @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'member approved successfully' })
+  async approve(
+    @Query('requesterId') requesterId: number,
+    @Query('userId') usersId: number,
+    @Query('meetingId') meetingId: string,
+  ) {
+    await this.memberService.approve(requesterId, usersId, meetingId);
+  }
 }

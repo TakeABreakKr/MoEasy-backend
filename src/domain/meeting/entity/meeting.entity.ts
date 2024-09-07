@@ -2,9 +2,10 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Schedule } from '@domain/schedule/entity/schedule.entity';
 import { Member } from './member.entity';
 import { Keyword } from './keyword.entity';
+import { BaseEntity } from '../../common/base.entity';
 
 @Entity()
-export class Meeting {
+export class Meeting extends BaseEntity {
   @PrimaryGeneratedColumn()
   meeting_id: number;
 
@@ -14,7 +15,9 @@ export class Meeting {
   })
   name: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   explanation: string;
 
   @Column({

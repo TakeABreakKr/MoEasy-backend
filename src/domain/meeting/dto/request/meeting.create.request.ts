@@ -19,7 +19,7 @@ export class MeetingCreateRequest {
   thumbnail: Express.Multer.File;
 
   @ApiProperty()
-  @MaxLength(5)
+  @MaxLength(10)
   keywords: string[];
 
   @ApiProperty()

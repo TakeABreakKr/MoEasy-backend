@@ -38,7 +38,11 @@ export class MemberServiceImpl implements MemberService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.validateInviteRequester(requester_id, meetingId);
 
-    const member: Member = await this.memberDao.create({ meetingId, usersId: req.newMemberId });
+    const member: Member = await this.memberDao.create({
+      meetingId,
+      usersId: req.newMemberId,
+      authority: AuthorityEnum.INVITED,
+    });
     return this.createInvitationAcceptUrl(member.users_id, member.meeting_id);
   }
 
@@ -53,7 +57,20 @@ export class MemberServiceImpl implements MemberService {
     if (!member) {
       throw new BadRequestException(ErrorMessageType.MALFORMED_INVITE_URL);
     }
+    await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
+  }
 
+  @Transactional()
+  public async approve(requesterId: number, usersId: number, meetingId: string) {
+    const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
+    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
+    const requester: Member | null = await this.memberDao.findByUsersAndMeetingId(requesterId, meeting_id);
+    if (!requester || requester.authority !== AuthorityEnum.OWNER) {
+      throw new Error('Requester does not have the authority to approve members');
+    }
+    if (!member || member.authority !== AuthorityEnum.WAITING) {
+      throw new Error('no member found');
+    }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
   }
 

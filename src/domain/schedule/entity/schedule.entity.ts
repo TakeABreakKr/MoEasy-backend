@@ -1,9 +1,10 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Participant } from './participant.entity';
+import { BaseEntity } from '../../common/base.entity';
 
 @Entity()
-export class Schedule {
+export class Schedule extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   schedule_id: number;
 

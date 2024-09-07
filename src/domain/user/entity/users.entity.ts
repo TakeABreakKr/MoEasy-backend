@@ -2,9 +2,10 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColum
 import { Member } from '@domain/meeting/entity/member.entity';
 import { Participant } from '@domain/schedule/entity/participant.entity';
 import { Settings } from './settings.embedded';
+import { BaseEntity } from '../../common/base.entity';
 
 @Entity()
-export class Users {
+export class Users extends BaseEntity {
   @PrimaryGeneratedColumn()
   users_id: number;
 
