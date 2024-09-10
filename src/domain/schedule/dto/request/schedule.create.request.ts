@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMaxSize, IsArray, IsDate, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ReminderEnumType } from '@enums/reminder.enum';
+import { Address } from '@domain/schedule/entity/address.embedded';
 
 export class ScheduleCreateRequest {
   @ApiProperty()
@@ -26,8 +28,7 @@ export class ScheduleCreateRequest {
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(13)
-  @IsInt({ each: true })
-  reminder: number[];
+  reminder: ReminderEnumType[];
 
   @ApiProperty()
   @IsOptional()
@@ -36,8 +37,7 @@ export class ScheduleCreateRequest {
 
   @ApiProperty()
   @IsOptional()
-  @IsString()
-  address: string;
+  addressDTO: Address;
 
   @ApiProperty()
   @IsOptional()

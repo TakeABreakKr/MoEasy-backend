@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Participant } from './participant.entity';
 import { BaseEntity } from '../../common/base.entity';
+import { Address } from '@domain/schedule/entity/address.embedded';
 
 @Entity()
 export class Schedule extends BaseEntity {
@@ -33,6 +34,9 @@ export class Schedule extends BaseEntity {
 
   @OneToMany(() => Participant, (participant) => participant.schedule)
   participants: Promise<Participant>;
+
+  @Column(() => Address)
+  address: Address;
 
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
