@@ -4,6 +4,6 @@ import { ScheduleUpdateRequest } from '@domain/schedule/dto/request/schedule.upd
 
 export interface ScheduleService {
   createSchedule(req: ScheduleCreateRequest, requester_id: number): Promise<string>;
-  updateSchedule(req: ScheduleUpdateRequest): Promise<void>;
+  updateSchedule(req: ScheduleUpdateRequest, requester_id: number): Promise<void>;
   getScheduleList(meeting_id: string, requester_id: number): Promise<ScheduleListResponse>;
 }

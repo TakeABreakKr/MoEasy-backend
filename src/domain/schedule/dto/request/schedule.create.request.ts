@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMaxSize, IsArray, IsBoolean, IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ReminderEnumType } from '@enums/reminder.enum';
-import { Address } from '@domain/schedule/entity/address.embedded';
+import { AddressDto } from '@domain/schedule/dto/request/schedule.address.dto';
 
 export class ScheduleCreateRequest {
   @ApiProperty()
@@ -44,9 +44,11 @@ export class ScheduleCreateRequest {
   @IsNotEmpty()
   online: boolean;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: AddressDto,
+  })
   @IsOptional()
-  addressDTO: Address;
+  addressDTO: AddressDto;
 
   @ApiProperty()
   @IsOptional()

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { addressDto } from '@domain/schedule/dto/request/schedule.address';
+import { AddressDto } from '@domain/schedule/dto/request/schedule.address.dto';
 
 export class ScheduleListDto {
   @ApiProperty()
@@ -21,7 +21,7 @@ export class ScheduleListDto {
   endDate: Date;
 
   @ApiProperty()
-  Address: addressDto; //수정
+  Address: AddressDto; //수정
 
   @ApiProperty()
   announcement: string;

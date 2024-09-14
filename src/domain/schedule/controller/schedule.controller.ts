@@ -29,8 +29,8 @@ export class ScheduleController {
     description: 'values to modify schedule.',
     type: ScheduleUpdateRequest,
   })
-  async updateSchedule(@Body() request: ScheduleUpdateRequest): Promise<void> {
-    await this.scheduleService.updateSchedule(request);
+  async updateSchedule(@Body() request: ScheduleUpdateRequest, @Token() user: AuthUser): Promise<void> {
+    await this.scheduleService.updateSchedule(request, user.id);
   }
 
   @Get('get/list')
@@ -41,7 +41,7 @@ export class ScheduleController {
     type: ScheduleListResponse,
   })
   @ApiBody({ description: 'Filter schedules by options.' })
-  async getScheduleList(@Query('meetingId') meetingId: string, @Token() user: AuthUser): Promise<ScheduleListResponse>{
+  async getScheduleList(@Query('meetingId') meetingId: string, @Token() user: AuthUser): Promise<ScheduleListResponse> {
     return this.scheduleService.getScheduleList(meetingId, user.id);
   }
 }
