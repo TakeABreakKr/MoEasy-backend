@@ -1,6 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Member } from '@domain/meeting/entity/member.entity';
 import { Participant } from '@domain/schedule/entity/participant.entity';
+import { Notification } from '@domain/notification/entity/notification.entity';
 import { Settings } from './settings.embedded';
 import { BaseEntity } from '../../common/base.entity';
 
@@ -30,21 +31,12 @@ export class Users extends BaseEntity {
   @OneToMany(() => Participant, (participant) => participant.user)
   participants: Promise<Participant[]>;
 
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Promise<Notification[]>;
+
   @ManyToMany(() => Users, (users) => users.friends)
   @JoinTable({
     name: 'friend',
   })
   friends: Promise<Users[]>;
-
-  async getMembers(): Promise<Member[]> {
-    return this.members;
-  }
-
-  async getParticipants(): Promise<Participant[]> {
-    return this.participants;
-  }
-
-  async getFriends(): Promise<Users[]> {
-    return this.friends;
-  }
 }
