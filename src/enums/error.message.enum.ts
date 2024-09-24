@@ -6,6 +6,8 @@ export const ErrorMessageType = {
   MALFORMED_INVITE_URL: '초대 링크가 변조되었습니다.',
   FORBIDDEN_INVITE_REQUEST: '모임 구성원만 초대 요청을 할 수 있습니다.',
 
+  WRONG_NOTIFICATION_OWNER: '알림의 소유자가 다릅니다.',
+
   SERVER_ERROR: '서버 내 예상하지 못한 에러가 발생했습니다.',
 } as const;
 

@@ -6,6 +6,7 @@ import { MeetingListResponse } from '@domain/meeting/dto/response/meeting.list.r
 import { MeetingUpdateRequest } from '@domain/meeting/dto/request/meeting.update.request';
 import { MeetingThumbnailUpdateRequest } from '@domain/meeting/dto/request/meeting.thumbnail.update.request';
 import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
+import { AuthUser } from '@decorator/token.decorator';
 
 class MockMeetingService implements MeetingService {
   public static createMeetingResult: string = 'OOOOOOO1';
@@ -68,7 +69,13 @@ describe('MeetingController', () => {
       members: [],
     };
 
-    const result = await meetingController.createMeeting(request);
+    const user: AuthUser = {
+      id: 1,
+      name: '',
+      issueDate: Date.now(),
+    };
+
+    const result = await meetingController.createMeeting(request, user);
     expect(result).toBe(MockMeetingService.createMeetingResult);
   });
 
