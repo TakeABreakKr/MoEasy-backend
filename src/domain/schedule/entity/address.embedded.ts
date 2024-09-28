@@ -8,13 +8,20 @@ export class Address {
   @Column()
   address: string;
 
-  /*
+  @Column()
   addressEnglish: string;
+
+  @Column()
   addressType: 'R' | 'J';
+
+  @Column()
   userSelectedType: 'R' | 'J';
+
+  @Column()
   noSelected: 'Y' | 'N';
+
+  @Column()
   userLanguageType: 'K' | 'E';
-   */
 
   @Column()
   roadAddress: string;
@@ -79,13 +86,33 @@ export class Address {
   @Column()
   bname: string;
 
-  /*
+  @Column()
   bnameEnglish: string;
+
+  @Column()
   bname1: string;
+
+  @Column()
   bname1English: string;
+
+  @Column()
   bname2: string;
+
+  @Column()
   bname2English: string;
+
+  @Column()
   hname: string;
+
+  @Column()
   query: string;
-  */
+
+  public static create(addressDto: AddressDto): Address {
+    const address = new Address();
+    address.zonecode = addressDto.zonecode;
+    address.address = addressDto.address;
+
+    //마저 해줘 : 넹
+    return address;
+  }
 }

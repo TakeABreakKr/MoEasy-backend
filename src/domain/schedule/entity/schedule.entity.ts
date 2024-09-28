@@ -11,20 +11,33 @@ export class Schedule extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   schedule_id: number;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   name: string;
+
+  @Column()
+  explanation: string;
 
   @Column({
     type: 'datetime',
     nullable: false,
   })
-  startAt: Date;
+  startDate: Date;
 
   @Column({
-    type: 'tinyint',
-    default: false,
+    type: 'datetime',
+    nullable: true,
   })
-  confirmYn: boolean;
+  endDate: Date;
+
+  @Column({
+    nullable: false,
+  })
+  reminder: number;
+
+  @Column()
+  announcement: string;
 
   @Column({
     type: 'tinyint',
@@ -49,9 +62,6 @@ export class Schedule extends BaseEntity {
 
   @OneToMany(() => Participant, (participant) => participant.schedule)
   participants: Promise<Participant>;
-
-  @Column(() => Address)
-  address: Address;
 
   async getMeeting(): Promise<Meeting> {
     return this.meeting;

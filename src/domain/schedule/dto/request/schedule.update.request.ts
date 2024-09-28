@@ -10,7 +10,7 @@ export class ScheduleUpdateRequest {
 
   @ApiProperty()
   @IsNotEmpty()
-  schedule_id: string;
+  schedule_id: number;
 
   @ApiProperty()
   @IsOptional()
@@ -43,7 +43,12 @@ export class ScheduleUpdateRequest {
 
   @ApiProperty()
   @IsOptional()
-  addressDto: Address;
+  addressDto: AddressDto;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  detailAddress: string;
 
   @ApiProperty()
   @IsOptional()
