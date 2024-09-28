@@ -5,19 +5,22 @@ import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { MemberController } from '@domain/meeting/controller/member.controller';
 
 class MockMemberService implements MemberService {
-  search(keyword: string): Promise<MemberSearchResponse> {
+  async approve(requesterId: number, usersId: number, meetingId: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  async search(keyword: string): Promise<MemberSearchResponse> {
     throw new Error('Method not implemented.');
   }
 
-  withdraw(requester_id: number, meeting_id: string): Promise<void> {
+  async withdraw(requester_id: number, meeting_id: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
 
-  invite(requester_id: number, request: MemberInviteRequest): Promise<string> {
+  async invite(requester_id: number, request: MemberInviteRequest): Promise<string> {
     throw new Error('Method not implemented.');
   }
 
-  accept(requester_id: number, usersId: number, meetingId: string): Promise<void> {
+  async accept(requester_id: number, usersId: number, meetingId: string): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

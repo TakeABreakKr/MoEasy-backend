@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ReminderEnumType } from '@enums/reminder.enum';
-import { Address } from '@domain/schedule/entity/address.embedded';
+import { AddressDto } from '@domain/schedule/dto/request/schedule.address.dto';
 
 export class ScheduleUpdateRequest {
   @ApiProperty()

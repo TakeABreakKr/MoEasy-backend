@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Address } from '@domain/schedule/entity/address.embedded';
 
 export class AddressDto {
   @ApiProperty()
@@ -105,4 +106,8 @@ export class AddressDto {
 
   @ApiProperty()
   query: string;
+
+  public toAddress(): Address {
+    return Address.create(this);
+  }
 }

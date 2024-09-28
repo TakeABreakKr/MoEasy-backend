@@ -7,3 +7,5 @@ export const AuthorityEnum = {
 } as const;
 
 export type AuthorityEnumType = (typeof AuthorityEnum)[keyof typeof AuthorityEnum];
+
+export const MANAGING_AUTHORITIES: AuthorityEnumType[] = [AuthorityEnum.OWNER, AuthorityEnum.MANAGER];

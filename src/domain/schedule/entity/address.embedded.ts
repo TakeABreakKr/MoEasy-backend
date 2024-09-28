@@ -1,4 +1,5 @@
 import { Column } from 'typeorm';
+import { AddressDto } from '@domain/schedule/dto/request/schedule.address.dto';
 
 export class Address {
   @Column()
