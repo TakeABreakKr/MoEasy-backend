@@ -15,22 +15,3 @@ export const ReminderEnum = {
 } as const;
 
 export type ReminderEnumType = (typeof ReminderEnum)[keyof typeof ReminderEnum];
-
-export function reminderListToMask(reminderList: ReminderEnumType[]): number {
-  let mask: number = 0;
-  const enumList = Object.keys(ReminderEnum);
-  reminderList.forEach((reminder) => {
-    const index: number = enumList.indexOf(reminder);
-    mask += 2 ** index; // 2^index
-  });
-
-  return mask;
-}
-
-export function maskToReminderList(mask: number): ReminderEnumType[] {
-  const binary: string = mask.toString(2);
-  const enumList = Object.keys(ReminderEnum);
-  return enumList
-    .filter((reminderKey) => binary.charAt(enumList.indexOf(reminderKey)) === '1')
-    .map((reminderKey) => ReminderEnum[reminderKey]);
-}

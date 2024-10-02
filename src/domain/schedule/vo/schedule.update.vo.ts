@@ -8,7 +8,7 @@ export interface ScheduleUpdateVO {
   endDate: Date;
   reminder: ReminderEnumType[];
   announcement: string;
-  online: boolean;
+  onlineYn: boolean;
   address: AddressDto;
   detailAddress: string;
 }

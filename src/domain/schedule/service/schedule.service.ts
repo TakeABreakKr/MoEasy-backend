@@ -10,6 +10,8 @@ import { Member } from '@domain/meeting/entity/member.entity';
 import { MemberDao } from '@domain/meeting/dao/member.dao';
 import { MANAGING_AUTHORITIES } from '@enums/authority.enum';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
+import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {
@@ -30,7 +32,7 @@ export class ScheduleServiceImpl implements ScheduleService {
       endDate: req.endDate,
       reminder: req.reminder,
       announcement: req.announcement,
-      online: req.online,
+      onlineYn: req.online,
       address: req.addressDTO,
       detailAddress: req.detailAddress,
     });
@@ -56,24 +58,47 @@ export class ScheduleServiceImpl implements ScheduleService {
       endDate: req.endDate,
       reminder: req.reminder,
       announcement: req.announcement,
-      online: req.online,
+      onlineYn: req.online,
       address: req.addressDto,
       detailAddress: req.detailAddress,
     });
 
+    // TODO: 알림 추가
+
     await this.scheduleDao.update(schedule);
   }
 
-  public async getScheduleList(meeting_id: string, requester_id: number): Promise<ScheduleListResponse> {
+  public async getScheduleList(
+    meeting_id: string,
+    requester_id: number,
+    options?: OrderingOptionEnumType,
+  ): Promise<ScheduleListResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     await this.validateAuthority(requester_id, meetingId);
 
-    const schedule: Schedule[] = await this.scheduleDao.findByMeetingId(meetingId);
-    if (!schedule?.length) {
+    const schedules: Schedule[] = await this.scheduleDao.findByMeetingId(meetingId);
+    if (!schedules?.length) {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_SCHEDULE);
     }
 
-    return null;
+    this.sortSchedules(schedules, options);
+    const scheduleList: ScheduleListDto[] = schedules.map((schedule) => {
+      return {
+        meetingId: MeetingUtils.transformMeetingIdToString(meetingId),
+        name: schedule.name,
+        explanation: schedule.explanation,
+        onlineYn: schedule.onlineYn,
+        startDate: schedule.startDate,
+        endDate: schedule.endDate,
+        Address: schedule.address, //도와주세요
+        announcement: schedule.announcement,
+        detailAddress: schedule.detailAddress,
+      };
+    });
+
+    return {
+      scheduleList,
+    };
   }
 
   private async validateAuthority(requester_id: number, meetingId: number) {
@@ -82,4 +107,13 @@ export class ScheduleServiceImpl implements ScheduleService {
       throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
     }
   }
+
+  public sortSchedules(schedules: Schedule[], options: OrderingOptionEnumType): Schedule[] {
+    if (options === OrderingOptionEnum.NAME) {
+      return schedules.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (options === OrderingOptionEnum.LATEST) {
+      return schedules.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    }
+    return schedules;
+  } //이거 sortMeetings랑 겹치는데
 }

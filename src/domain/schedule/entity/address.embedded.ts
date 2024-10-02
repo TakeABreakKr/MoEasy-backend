@@ -111,8 +111,39 @@ export class Address {
     const address = new Address();
     address.zonecode = addressDto.zonecode;
     address.address = addressDto.address;
+    address.addressEnglish = addressDto.addressEnglish;
+    address.addressType = addressDto.addressType;
+    address.noSelected = addressDto.noSelected;
+    address.userSelectedType = addressDto.userSelectedType;
+    address.roadAddress = addressDto.roadAddress;
+    address.roadAddressEnglish = addressDto.roadAddressEnglish;
+    address.userLanguageType = addressDto.userLanguageType;
+    address.jibunAddress = addressDto.jibunAddress;
+    address.jibunAddressEnglish = addressDto.jibunAddressEnglish;
+    address.autoRoadAddress = addressDto.autoRoadAddress;
+    address.autoRoadAddressEnglish = addressDto.autoRoadAddressEnglish;
+    address.autoJibunAddress = addressDto.autoJibunAddress;
+    address.autoJibunAddressEnglish = addressDto.autoJibunAddressEnglish;
+    address.buildingCode = addressDto.buildingCode;
+    address.buildingName = addressDto.buildingName;
+    address.apartment = addressDto.apartment;
+    address.sido = addressDto.sido;
+    address.sidoEnglish = addressDto.sidoEnglish;
+    address.sigungu = addressDto.sigungu;
+    address.sigunguEnglish = addressDto.sigunguEnglish;
+    address.sigunguCode = addressDto.sigunguCode;
+    address.roadnameCode = addressDto.roadnameCode;
+    address.bcode = addressDto.bcode;
+    address.roadname = addressDto.roadname;
+    address.roadnameEnglish = addressDto.roadnameEnglish;
+    address.bnameEnglish = addressDto.bnameEnglish;
+    address.bname1 = addressDto.bname1;
+    address.bname1English = addressDto.bname1English;
+    address.bname2 = addressDto.bname2;
+    address.bname2English = addressDto.bname2English;
+    address.hname = addressDto.hname;
+    address.query = addressDto.query;
 
-    //마저 해줘 : 넹
     return address;
   }
 }

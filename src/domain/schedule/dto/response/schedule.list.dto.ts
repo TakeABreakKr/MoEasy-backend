@@ -12,7 +12,7 @@ export class ScheduleListDto {
   explanation: string;
 
   @ApiProperty()
-  online: boolean;
+  onlineYn: boolean;
 
   @ApiProperty()
   startDate: Date;
@@ -21,8 +21,11 @@ export class ScheduleListDto {
   endDate: Date;
 
   @ApiProperty()
-  Address: AddressDto; //수정
+  Address: AddressDto;
 
   @ApiProperty()
   announcement: string;
+
+  @ApiProperty()
+  detailAddress: string;
 }

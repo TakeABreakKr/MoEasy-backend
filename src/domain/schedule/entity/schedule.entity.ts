@@ -5,6 +5,8 @@ import { BaseEntity } from '../../common/base.entity';
 import { Address } from '@domain/schedule/entity/address.embedded';
 import { ScheduleCreateVO } from '@domain/schedule/vo/schedule.create.vo';
 import { ScheduleUpdateVO } from '@domain/schedule/vo/schedule.update.vo';
+import { ScheduleUtils } from '@utils/schedule.utils';
+import { MeetingUtils } from '@utils/meeting.utils';
 
 @Entity()
 export class Schedule extends BaseEntity {
@@ -70,13 +72,28 @@ export class Schedule extends BaseEntity {
   public static create(scheduleVO: ScheduleCreateVO): Schedule {
     const schedule = new Schedule();
     schedule.name = scheduleVO.name;
-    //생략
+    schedule.explanation = scheduleVO.explanation;
+    schedule.startDate = scheduleVO.startDate;
+    schedule.endDate = scheduleVO.endDate;
+    schedule.reminder = ScheduleUtils.reminderListToMask(scheduleVO.reminder);
+    schedule.announcement = scheduleVO.announcement;
+    schedule.onlineYn = scheduleVO.onlineYn;
+    schedule.address = scheduleVO.address;
+    schedule.detailAddress = scheduleVO.detailAddress;
+    schedule.meeting_id = MeetingUtils.transformMeetingIdToInteger(scheduleVO.meetingId);
 
     return schedule;
   }
 
   update(scheduleUpdateVO: ScheduleUpdateVO) {
     this.name = scheduleUpdateVO.name;
-    //생략
+    this.explanation = scheduleUpdateVO.explanation;
+    this.startDate = scheduleUpdateVO.startDate;
+    this.endDate = scheduleUpdateVO.endDate;
+    this.reminder = ScheduleUtils.reminderListToMask(scheduleUpdateVO.reminder);
+    this.announcement = scheduleUpdateVO.announcement;
+    this.onlineYn = scheduleUpdateVO.onlineYn;
+    this.address = scheduleUpdateVO.address;
+    this.detailAddress = scheduleUpdateVO.detailAddress;
   }
 }
