@@ -48,7 +48,7 @@ export class ScheduleCreateRequest {
     type: AddressDto,
   })
   @IsOptional()
-  addressDTO: AddressDto;
+  address: AddressDto;
 
   @ApiProperty()
   @IsOptional()
