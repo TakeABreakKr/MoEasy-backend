@@ -33,7 +33,7 @@ export class ScheduleServiceImpl implements ScheduleService {
       reminder: req.reminder,
       announcement: req.announcement,
       onlineYn: req.online,
-      address: req.addressDTO,
+      address: req.address,
       detailAddress: req.detailAddress,
     });
 
@@ -90,7 +90,7 @@ export class ScheduleServiceImpl implements ScheduleService {
         onlineYn: schedule.onlineYn,
         startDate: schedule.startDate,
         endDate: schedule.endDate,
-        Address: schedule.address, //도와주세요
+        address: schedule.address.toAddressDto(),
         announcement: schedule.announcement,
         detailAddress: schedule.detailAddress,
       };

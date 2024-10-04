@@ -78,7 +78,7 @@ export class Schedule extends BaseEntity {
     schedule.reminder = ScheduleUtils.reminderListToMask(scheduleVO.reminder);
     schedule.announcement = scheduleVO.announcement;
     schedule.onlineYn = scheduleVO.onlineYn;
-    schedule.address = scheduleVO.address;
+    schedule.address = scheduleVO.address.toAddress();
     schedule.detailAddress = scheduleVO.detailAddress;
     schedule.meeting_id = MeetingUtils.transformMeetingIdToInteger(scheduleVO.meetingId);
 
@@ -93,7 +93,7 @@ export class Schedule extends BaseEntity {
     this.reminder = ScheduleUtils.reminderListToMask(scheduleUpdateVO.reminder);
     this.announcement = scheduleUpdateVO.announcement;
     this.onlineYn = scheduleUpdateVO.onlineYn;
-    this.address = scheduleUpdateVO.address;
+    this.address = scheduleUpdateVO.address.toAddress();
     this.detailAddress = scheduleUpdateVO.detailAddress;
   }
 }

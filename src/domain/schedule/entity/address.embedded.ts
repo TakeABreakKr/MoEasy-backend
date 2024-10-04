@@ -146,4 +146,42 @@ export class Address {
 
     return address;
   }
+
+  public toAddressDto(): AddressDto {
+    const addressDto = new AddressDto();
+    addressDto.zonecode = this.zonecode;
+    addressDto.address = this.address;
+    addressDto.addressEnglish = this.addressEnglish;
+    addressDto.addressType = addressDto.addressType;
+    addressDto.noSelected = this.noSelected;
+    addressDto.userSelectedType = this.userSelectedType;
+    addressDto.roadAddress = this.roadAddress;
+    addressDto.roadAddressEnglish = this.roadAddressEnglish;
+    addressDto.userLanguageType = this.userLanguageType;
+    addressDto.jibunAddress = this.jibunAddress;
+    addressDto.jibunAddressEnglish = this.jibunAddressEnglish;
+    addressDto.autoRoadAddress = this.autoRoadAddress;
+    addressDto.autoRoadAddressEnglish = this.autoJibunAddressEnglish;
+    addressDto.autoJibunAddress = this.autoJibunAddressEnglish;
+    addressDto.autoJibunAddressEnglish = this.autoJibunAddressEnglish;
+    addressDto.buildingCode = this.buildingCode;
+    addressDto.apartment = this.apartment;
+    addressDto.sido = this.sido;
+    addressDto.sigungu = this.sigungu;
+    addressDto.sigunguEnglish = this.sigunguEnglish;
+    addressDto.sigunguCode = this.sigunguCode;
+    addressDto.roadnameCode = this.roadnameCode;
+    addressDto.bcode = this.bcode;
+    addressDto.roadname = this.roadname;
+    addressDto.roadnameEnglish = this.roadnameEnglish;
+    addressDto.bnameEnglish = this.bnameEnglish;
+    addressDto.bname1 = this.bname1;
+    addressDto.bname1English = this.bname1English;
+    addressDto.bname2 = this.bname2;
+    addressDto.bname2English = this.bname2English;
+    addressDto.hname = this.hname;
+    addressDto.query = this.query;
+
+    return addressDto;
+  }
 }
