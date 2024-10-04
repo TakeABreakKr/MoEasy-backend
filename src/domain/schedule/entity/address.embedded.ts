@@ -152,7 +152,7 @@ export class Address {
     addressDto.zonecode = this.zonecode;
     addressDto.address = this.address;
     addressDto.addressEnglish = this.addressEnglish;
-    addressDto.addressType = addressDto.addressType;
+    addressDto.addressType = this.addressType;
     addressDto.noSelected = this.noSelected;
     addressDto.userSelectedType = this.userSelectedType;
     addressDto.roadAddress = this.roadAddress;
