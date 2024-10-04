@@ -21,7 +21,7 @@ export class ScheduleListDto {
   endDate: Date;
 
   @ApiProperty()
-  Address: AddressDto;
+  address: AddressDto;
 
   @ApiProperty()
   announcement: string;
