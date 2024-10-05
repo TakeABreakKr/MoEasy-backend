@@ -10,8 +10,9 @@ import { Member } from '@domain/meeting/entity/member.entity';
 import { MemberDao } from '@domain/meeting/dao/member.dao';
 import { MANAGING_AUTHORITIES } from '@enums/authority.enum';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
+import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
+import { SortUtils } from '@utils/sort.utils';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {
@@ -25,16 +26,9 @@ export class ScheduleServiceImpl implements ScheduleService {
     await this.validateAuthority(requester_id, meetingId);
 
     const schedule: Schedule = await this.scheduleDao.create({
-      name: req.name,
+      ...req,
       meetingId: req.meeting_id,
-      explanation: req.explanation,
-      startDate: req.startDate,
-      endDate: req.endDate,
-      reminder: req.reminder,
-      announcement: req.announcement,
       onlineYn: req.online,
-      address: req.address,
-      detailAddress: req.detailAddress,
     });
 
     // TODO: 알림 추가
@@ -52,15 +46,9 @@ export class ScheduleServiceImpl implements ScheduleService {
     }
 
     schedule.update({
-      name: req.name,
-      explanation: req.explanation,
-      startDate: req.startDate,
-      endDate: req.endDate,
-      reminder: req.reminder,
-      announcement: req.announcement,
+      ...req,
       onlineYn: req.online,
       address: req.addressDto,
-      detailAddress: req.detailAddress,
     });
 
     // TODO: 알림 추가
@@ -81,18 +69,12 @@ export class ScheduleServiceImpl implements ScheduleService {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_SCHEDULE);
     }
 
-    this.sortSchedules(schedules, options);
+    SortUtils.sort<Schedule>(schedules, options);
     const scheduleList: ScheduleListDto[] = schedules.map((schedule) => {
       return {
+        ...schedule,
         meetingId: MeetingUtils.transformMeetingIdToString(meetingId),
-        name: schedule.name,
-        explanation: schedule.explanation,
-        onlineYn: schedule.onlineYn,
-        startDate: schedule.startDate,
-        endDate: schedule.endDate,
         address: schedule.address.toAddressDto(),
-        announcement: schedule.announcement,
-        detailAddress: schedule.detailAddress,
       };
     });
 
@@ -107,13 +89,4 @@ export class ScheduleServiceImpl implements ScheduleService {
       throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
     }
   }
-
-  public sortSchedules(schedules: Schedule[], options: OrderingOptionEnumType): Schedule[] {
-    if (options === OrderingOptionEnum.NAME) {
-      return schedules.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (options === OrderingOptionEnum.LATEST) {
-      return schedules.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-    }
-    return schedules;
-  } //이거 sortMeetings랑 겹치는데
 }

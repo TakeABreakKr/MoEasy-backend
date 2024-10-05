@@ -21,7 +21,8 @@ import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
 import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
+import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
+import { SortUtils } from '@utils/sort.utils';
 
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {
@@ -116,7 +117,7 @@ export class MeetingServiceImpl implements MeetingService {
     options?: OrderingOptionEnumType,
   ): Promise<MeetingListResponse> {
     const meetings: Meeting[] = await this.meetingDao.findAll();
-    this.sortMeetings(meetings, options);
+    SortUtils.sort<Meeting>(meetings, options);
     const meetingList: MeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
         meetingId: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
@@ -144,15 +145,6 @@ export class MeetingServiceImpl implements MeetingService {
         return meeting.authority && authorities.includes(meeting.authority);
       }),
     };
-  }
-
-  public sortMeetings(meetings: Meeting[], options: OrderingOptionEnumType): Meeting[] {
-    if (options === OrderingOptionEnum.NAME) {
-      return meetings.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (options === OrderingOptionEnum.LATEST) {
-      return meetings.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-    }
-    return meetings;
   }
 
   private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {
