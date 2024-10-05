@@ -22,5 +22,6 @@ import { UsersModule } from '@domain/user/users.module';
     { provide: 'MemberService', useClass: MemberServiceImpl },
   ],
   controllers: [MeetingController, MemberController],
+  exports: [MemberDao],
 })
 export class MeetingModule {}
