@@ -11,7 +11,7 @@ export const ReminderEnum = {
   ONE_D: 'ONE_D',
   TWO_D: 'TWO_D',
   THREE_D: 'THREE_D',
-  SEVEN_D: 'FOUR_D',
+  SEVEN_D: 'SEVEN_D',
 } as const;
 
 export type ReminderEnumType = (typeof ReminderEnum)[keyof typeof ReminderEnum];
