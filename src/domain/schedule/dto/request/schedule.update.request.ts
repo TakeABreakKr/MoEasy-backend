@@ -39,7 +39,7 @@ export class ScheduleUpdateRequest {
   @ApiProperty()
   @IsBoolean()
   @IsOptional()
-  online: boolean;
+  onlineYn: boolean;
 
   @ApiProperty()
   @IsOptional()

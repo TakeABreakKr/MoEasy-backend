@@ -28,7 +28,7 @@ export class ScheduleServiceImpl implements ScheduleService {
     const schedule: Schedule = await this.scheduleDao.create({
       ...req,
       meetingId: req.meeting_id,
-      onlineYn: req.online,
+      onlineYn: req.onlineYn,
     });
 
     // TODO: 알림 추가
@@ -47,7 +47,7 @@ export class ScheduleServiceImpl implements ScheduleService {
 
     schedule.update({
       ...req,
-      onlineYn: req.online,
+      onlineYn: req.onlineYn,
       address: req.addressDto,
     });
 

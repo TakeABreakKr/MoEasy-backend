@@ -42,7 +42,7 @@ export class ScheduleCreateRequest {
   @ApiProperty()
   @IsBoolean()
   @IsNotEmpty()
-  online: boolean;
+  onlineYn: boolean;
 
   @ApiProperty({
     type: AddressDto,
