@@ -1,4 +1,4 @@
-import { ReminderEnum, ReminderEnumType } from '@enums/reminder.enum';
+import { ReminderEnum, ReminderEnumKeyType, ReminderEnumType } from '@enums/reminder.enum';
 
 export class ScheduleUtils {
   public static reminderListToMask(reminderList: ReminderEnumType[]): number {
@@ -14,9 +14,9 @@ export class ScheduleUtils {
 
   public static maskToReminderList(mask: number): ReminderEnumType[] {
     const binary: string = mask.toString(2);
-    const enumList = Object.keys(ReminderEnum) as (keyof typeof ReminderEnum)[];
+    const enumList = Object.keys(ReminderEnum);
     return enumList
       .filter((reminderKey) => binary.charAt(enumList.indexOf(reminderKey)) === '1')
-      .map((reminderKey) => ReminderEnum[reminderKey]) as ReminderEnumType[];
+      .map((reminderKey: ReminderEnumKeyType): ReminderEnumType => ReminderEnum[reminderKey]);
   }
 }

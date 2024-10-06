@@ -14,4 +14,5 @@ export const ReminderEnum = {
   SEVEN_D: 'SEVEN_D',
 } as const;
 
-export type ReminderEnumType = (typeof ReminderEnum)[keyof typeof ReminderEnum];
+export type ReminderEnumKeyType = keyof typeof ReminderEnum;
+export type ReminderEnumType = (typeof ReminderEnum)[ReminderEnumKeyType];
