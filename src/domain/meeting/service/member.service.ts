@@ -32,10 +32,13 @@ export class MemberServiceImpl implements MemberService {
   @Transactional()
   public async withdraw(requester_id: number, meeting_id: string) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+    const user = await this.usersDao.findById(requester_id);
+    if (!user) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
     await this.memberDao.deleteByUsersAndMeetingId(requester_id, meetingId);
 
-    const content = '모임에서 탈퇴하셨습니다.';
-    await this.notificationComponent.addNotification(content, requester_id);
+    const content = user.username + '님이 모임에서 탈퇴하셨습니다.';
+    const memberList = await this.memberDao.findByMeetingId(meetingId);
+    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   @Transactional()
@@ -64,12 +67,15 @@ export class MemberServiceImpl implements MemberService {
     }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
 
-    const content = '모임 가입이 수락되었습니다.';
-    await this.notificationComponent.addNotification(content, usersId);
+    const user = await member.getUser();
+    const content = user.username + '님의 가입이 수락되었습니다.';
+    const memberList = await this.memberDao.findByMeetingId(meeting_id);
+    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   @Transactional()
   public async approve(requesterId: number, usersId: number, meetingId: string) {
+    // 초대 플로우 수정 : approve와 accept 둘 중 하나
     const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
     const requester: Member | null = await this.memberDao.findByUsersAndMeetingId(requesterId, meeting_id);
@@ -81,8 +87,10 @@ export class MemberServiceImpl implements MemberService {
     }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
 
-    const content = '모임 가입이 수락되었습니다.';
-    await this.notificationComponent.addNotification(content, usersId);
+    const user = await member.getUser();
+    const content = user.username + '님의 가입이 수락되었습니다.';
+    const memberList = await this.memberDao.findByMeetingId(meeting_id);
+    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   private async validateInviteRequester(users_id: number, meetingId: number) {

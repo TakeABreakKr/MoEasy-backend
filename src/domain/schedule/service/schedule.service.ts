@@ -34,7 +34,8 @@ export class ScheduleServiceImpl implements ScheduleService {
     });
 
     const content = schedule.name + ' 일정이 생성되었습니다.';
-    await this.notificationComponent.addNotification(content, requester_id);
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
 
     return schedule.schedule_id.toString();
   }
@@ -55,7 +56,8 @@ export class ScheduleServiceImpl implements ScheduleService {
     });
 
     const content = schedule.name + ' 일정이 수정되었습니다.';
-    await this.notificationComponent.addNotification(content, requester_id);
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
 
     await this.scheduleDao.update(schedule);
   }

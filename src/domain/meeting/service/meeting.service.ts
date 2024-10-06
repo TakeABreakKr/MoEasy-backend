@@ -73,7 +73,7 @@ export class MeetingServiceImpl implements MeetingService {
     await this.memberDao.saveAll(members);
 
     const content = meeting.name + ' 모임이 생성되었습니다.';
-    await this.notificationComponent.addNotification(content, requester_id);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
 
     return MeetingUtils.transformMeetingIdToString(meeting.meeting_id);
   }
@@ -93,8 +93,10 @@ export class MeetingServiceImpl implements MeetingService {
 
     meeting.updateBasicInfo({ name, explanation, limit });
     await this.meetingDao.update(meeting);
+
     const content = meeting.name + ' 모임 설정이 변경되었습니다.';
-    await this.notificationComponent.addNotification(content, requester_id);
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   @Transactional()
@@ -106,6 +108,10 @@ export class MeetingServiceImpl implements MeetingService {
 
     meeting.thumbnail = thumbnailPath;
     await this.meetingDao.update(meeting);
+
+    const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   public async getMeeting(meeting_id: string): Promise<MeetingResponse> {
