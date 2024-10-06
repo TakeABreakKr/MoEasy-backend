@@ -48,7 +48,7 @@ export class ScheduleServiceImpl implements ScheduleService {
     schedule.update({
       ...req,
       onlineYn: req.onlineYn,
-      address: req.addressDto,
+      address: req.address,
     });
 
     // TODO: 알림 추가
