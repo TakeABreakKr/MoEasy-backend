@@ -99,7 +99,7 @@ export class MeetingController {
   async getMeetingList(
     @Body('authorities') authorities: AuthorityEnumType[],
     @Body('options') options: OrderingOptionEnumType,
-		@Token() user: AuthUser,
+    @Token() user: AuthUser,
   ): Promise<MeetingListResponse> {
     return this.meetingService.getMeetingList(user.id, authorities, options);
   }

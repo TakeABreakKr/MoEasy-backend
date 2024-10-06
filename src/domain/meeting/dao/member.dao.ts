@@ -18,7 +18,7 @@ export class MemberDao {
     await this.memberRepository.save(members);
   }
 
-  async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member> {
+  async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
     return this.memberRepository.findOneBy({ users_id: usersId, meeting_id: meetingId });
   }
 
