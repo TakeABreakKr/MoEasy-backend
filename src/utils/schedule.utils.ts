@@ -14,9 +14,9 @@ export class ScheduleUtils {
 
   public static maskToReminderList(mask: number): ReminderEnumType[] {
     const binary: string = mask.toString(2);
-    const enumList = Object.keys(ReminderEnum);
+    const enumList = Object.keys(ReminderEnum) as (keyof typeof ReminderEnum)[];
     return enumList
       .filter((reminderKey) => binary.charAt(enumList.indexOf(reminderKey)) === '1')
-      .map((reminderKey) => ReminderEnum[reminderKey]);
+      .map((reminderKey) => ReminderEnum[reminderKey]) as ReminderEnumType[];
   }
 }
