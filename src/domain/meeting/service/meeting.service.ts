@@ -23,6 +23,7 @@ import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { SortUtils } from '@utils/sort.utils';
+import { NotificationComponent } from '@domain/notification/component/notification.component';
 
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {
@@ -34,6 +35,7 @@ export class MeetingServiceImpl implements MeetingService {
     private memberDao: MemberDao,
     private keywordDao: KeywordDao,
     private usersDao: UsersDao,
+    private readonly notificationComponent: NotificationComponent,
   ) {}
 
   @Transactional()
@@ -49,12 +51,12 @@ export class MeetingServiceImpl implements MeetingService {
     const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
 
     if (keywordsCount > 10) {
-      throw new Error('키워드 개수는 10개까지 가능합니다.');
+      throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
     }
 
     const keywords: Keyword[] = req.keywords.map((keyword) => {
       if (keyword.length > 10) {
-        throw new Error('키워드 글자수는 10자까지 가능합니다!');
+        throw new BadRequestException(ErrorMessageType.INVALID_KEYWORD_LENGTH);
       }
       return Keyword.create(keyword, meeting.meeting_id);
     });
@@ -70,11 +72,14 @@ export class MeetingServiceImpl implements MeetingService {
     });
     await this.memberDao.saveAll(members);
 
+    const content = meeting.name + ' 모임이 생성되었습니다.';
+    await this.notificationComponent.addNotification(content, requester_id);
+
     return MeetingUtils.transformMeetingIdToString(meeting.meeting_id);
   }
 
   @Transactional()
-  public async updateMeeting(request: MeetingUpdateRequest) {
+  public async updateMeeting(request: MeetingUpdateRequest, requester_id: number) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
 
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
@@ -88,6 +93,8 @@ export class MeetingServiceImpl implements MeetingService {
 
     meeting.updateBasicInfo({ name, explanation, limit });
     await this.meetingDao.update(meeting);
+    const content = meeting.name + ' 모임 설정이 변경되었습니다.';
+    await this.notificationComponent.addNotification(content, requester_id);
   }
 
   @Transactional()

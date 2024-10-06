@@ -12,6 +12,7 @@ import { Member } from '../entity/member.entity';
 import { AuthorityEnum } from '@enums/authority.enum';
 import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { NotificationComponent } from '@domain/notification/component/notification.component';
 
 @Injectable()
 export class MemberServiceImpl implements MemberService {
@@ -19,6 +20,7 @@ export class MemberServiceImpl implements MemberService {
     private configService: ConfigService,
     private usersDao: UsersDao,
     private memberDao: MemberDao,
+    private readonly notificationComponent: NotificationComponent,
   ) {}
 
   public async search(keyword: string): Promise<MemberSearchResponse> {
@@ -31,6 +33,9 @@ export class MemberServiceImpl implements MemberService {
   public async withdraw(requester_id: number, meeting_id: string) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     await this.memberDao.deleteByUsersAndMeetingId(requester_id, meetingId);
+
+    const content = '모임에서 탈퇴하셨습니다.';
+    await this.notificationComponent.addNotification(content, requester_id);
   }
 
   @Transactional()
@@ -58,6 +63,9 @@ export class MemberServiceImpl implements MemberService {
       throw new BadRequestException(ErrorMessageType.MALFORMED_INVITE_URL);
     }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
+
+    const content = '모임 가입이 수락되었습니다.';
+    await this.notificationComponent.addNotification(content, usersId);
   }
 
   @Transactional()
@@ -72,6 +80,9 @@ export class MemberServiceImpl implements MemberService {
       throw new Error('no member found');
     }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
+
+    const content = '모임 가입이 수락되었습니다.';
+    await this.notificationComponent.addNotification(content, usersId);
   }
 
   private async validateInviteRequester(users_id: number, meetingId: number) {

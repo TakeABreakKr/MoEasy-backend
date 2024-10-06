@@ -8,7 +8,7 @@ import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 
 export interface MeetingService {
   createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string>;
-  updateMeeting(request: MeetingUpdateRequest): Promise<void>;
+  updateMeeting(request: MeetingUpdateRequest, requester_id: number): Promise<void>;
   updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest): Promise<void>;
   getMeeting(meeting_id: string): Promise<MeetingResponse>;
   getMeetingList(

@@ -11,9 +11,10 @@ import { Keyword } from './entity/keyword.entity';
 import { MemberController } from './controller/member.controller';
 import { MemberServiceImpl } from './service/member.service';
 import { UsersModule } from '@domain/user/users.module';
+import { NotificationModule } from '@domain/notification/notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Meeting, Member, Keyword]), UsersModule],
+  imports: [TypeOrmModule.forFeature([Meeting, Member, Keyword]), UsersModule, NotificationModule],
   providers: [
     MeetingDao,
     MemberDao,
