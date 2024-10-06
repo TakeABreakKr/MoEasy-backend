@@ -3,7 +3,7 @@ import { ArrayMaxSize, IsArray, IsBoolean, IsDate, IsNotEmpty, IsOptional, IsStr
 import { ReminderEnumType } from '@enums/reminder.enum';
 import { AddressDto } from '@domain/schedule/dto/request/schedule.address.dto';
 
-export class ScheduleRequest {
+export abstract class ScheduleRequest {
   @ApiProperty()
   @IsNotEmpty()
   meeting_id: string;
