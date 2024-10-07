@@ -23,6 +23,7 @@ import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { SortUtils } from '@utils/sort.utils';
+import { AuthorityComponent } from '@domain/user/component/authority.component';
 
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {
@@ -34,6 +35,7 @@ export class MeetingServiceImpl implements MeetingService {
     private memberDao: MemberDao,
     private keywordDao: KeywordDao,
     private usersDao: UsersDao,
+    private readonly authorityComponent: AuthorityComponent,
   ) {}
 
   @Transactional()
@@ -61,7 +63,7 @@ export class MeetingServiceImpl implements MeetingService {
     await this.keywordDao.saveAll(keywords);
 
     const members: Member[] = req.members.map((member) => {
-      const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.INVITED;
+      const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.MEMBER; //기획변경시 변경
       return Member.create({
         authority,
         meeting_id: meeting.meeting_id,
@@ -74,8 +76,9 @@ export class MeetingServiceImpl implements MeetingService {
   }
 
   @Transactional()
-  public async updateMeeting(request: MeetingUpdateRequest) {
+  public async updateMeeting(request: MeetingUpdateRequest, requester_id: number) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
 
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
     if (!meeting) {
@@ -91,10 +94,11 @@ export class MeetingServiceImpl implements MeetingService {
   }
 
   @Transactional()
-  public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest) {
+  public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requester_id: number) {
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(request.thumbnail);
 
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
     const meeting: Meeting = await this.meetingDao.findById(meetingId);
 
     meeting.thumbnail = thumbnailPath;

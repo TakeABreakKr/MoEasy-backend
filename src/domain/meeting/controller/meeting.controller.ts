@@ -44,8 +44,8 @@ export class MeetingController {
     description: 'Basic values to modify meetings',
     type: MeetingUpdateRequest,
   })
-  async updateMeeting(@Body() request: MeetingUpdateRequest): Promise<void> {
-    await this.meetingService.updateMeeting(request);
+  async updateMeeting(@Body() request: MeetingUpdateRequest, @Token() user: AuthUser): Promise<void> {
+    await this.meetingService.updateMeeting(request, user.id);
   }
 
   @Post('update/thumbnail')
@@ -53,8 +53,8 @@ export class MeetingController {
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
-  async updateMeetingThumbnail(@Body() request: MeetingThumbnailUpdateRequest): Promise<void> {
-    await this.meetingService.updateMeetingThumbnail(request);
+  async updateMeetingThumbnail(@Body() request: MeetingThumbnailUpdateRequest, @Token() user: AuthUser): Promise<void> {
+    await this.meetingService.updateMeetingThumbnail(request, user.id);
   }
 
   @Get('get')
