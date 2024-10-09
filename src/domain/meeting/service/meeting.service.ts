@@ -105,6 +105,13 @@ export class MeetingServiceImpl implements MeetingService {
     await this.meetingDao.update(meeting);
   }
 
+  @Transactional()
+  public async deleteMeeting(meeting_id: string, requester_id: number) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+    //
+  }
+
   public async getMeeting(meeting_id: string): Promise<MeetingResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);

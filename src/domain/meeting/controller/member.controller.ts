@@ -14,6 +14,8 @@ import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { AuthUser, Token } from '@decorator/token.decorator';
+import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
+import { MemberAuthorityModifyRequest } from '@domain/meeting/dto/request/member.authority.modify.request';
 
 @ApiTags('member')
 @Controller('member')
@@ -37,6 +39,33 @@ export class MemberController {
     await this.memberService.withdraw(user.id, meeting_id);
   }
 
+  @Post('authority/modify')
+  @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'authority modified succeed' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    description: 'data for modifying member authority',
+    type: MemberAuthorityModifyRequest,
+  })
+  async modify(@Body() req: MemberAuthorityModifyRequest, @Token() user: AuthUser) {
+    await this.memberService.modifyAuthority(user.id, req);
+  }
+
+  @Post('delete')
+  @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'member deleted successfully' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    description: 'info for deleting a member',
+    type: MemberDeleteRequest,
+  })
+  async delete(@Body() req: MemberDeleteRequest, @Token() user: AuthUser) {
+    await this.memberService.delete(user.id, req);
+  }
+
+  //기획 결정 후 변경
   @Post('invite')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'invite url created', type: String })

@@ -57,6 +57,17 @@ export class MeetingController {
     await this.meetingService.updateMeetingThumbnail(request, user.id);
   }
 
+  @Get('delete')
+  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully deleted.' })
+  @ApiBearerAuth()
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
+  @ApiQuery({
+    name: 'meetingId',
+  })
+  async deleteMeeting(@Query('meetingId') meetingId: string, @Token() user: AuthUser): Promise<void> {
+    await this.meetingService.deleteMeeting(meetingId, user.id);
+  }
+
   @Get('get')
   @ApiOkResponse({
     status: 200,

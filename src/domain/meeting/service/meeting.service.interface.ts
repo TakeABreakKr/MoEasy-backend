@@ -10,6 +10,7 @@ export interface MeetingService {
   createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string>;
   updateMeeting(request: MeetingUpdateRequest, requester_id: number): Promise<void>;
   updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requester_id: number): Promise<void>;
+  deleteMeeting(meeting_id: string, requester_id: number): Promise<void>;
   getMeeting(meeting_id: string): Promise<MeetingResponse>;
   getMeetingList(
     userId?: number,

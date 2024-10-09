@@ -9,9 +9,13 @@ import { MemberDao } from '../dao/member.dao';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '../entity/member.entity';
-import { AuthorityEnum, MANAGING_AUTHORITIES } from '@enums/authority.enum';
+import { AuthorityEnum, AuthorityEnumType, MANAGING_AUTHORITIES } from '@enums/authority.enum';
 import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { NotificationComponent } from '@domain/notification/component/notification.component';
+import { AuthorityComponent } from '@domain/user/component/authority.component';
+import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
+import { MemberAuthorityModifyRequest } from '@domain/meeting/dto/request/member.authority.modify.request';
 
 @Injectable()
 export class MemberServiceImpl implements MemberService {
@@ -19,6 +23,8 @@ export class MemberServiceImpl implements MemberService {
     private configService: ConfigService,
     private usersDao: UsersDao,
     private memberDao: MemberDao,
+    private readonly notificationComponent: NotificationComponent,
+    private readonly authorityComponent: AuthorityComponent,
   ) {}
 
   public async search(keyword: string): Promise<MemberSearchResponse> {
@@ -29,9 +35,53 @@ export class MemberServiceImpl implements MemberService {
 
   @Transactional()
   public async withdraw(requester_id: number, meeting_id: string) {
-    //모임장의 경우 매니저 랜덤이전, 매니저 없으면 모임원 랜덤이전
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+    const user = await this.usersDao.findById(requester_id);
+    if (!user) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
+
+    const member = await this.memberDao.findByUsersAndMeetingId(requester_id, meetingId);
+    if (!member) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
+    let content = user.username + '님이 모임에서 탈퇴하셨습니다.';
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+
+    if (member.authority === AuthorityEnum.OWNER) {
+      const managers = members.filter((member) => member.authority === AuthorityEnum.MANAGER);
+      if (managers.length === 0) {
+        const owner = this.select(members);
+        await this.updateAuthority(owner, AuthorityEnum.OWNER);
+      }
+      const owner = this.select(managers);
+      await this.updateAuthority(owner, AuthorityEnum.OWNER);
+      content = (await owner.getUser()).username + ' 님이 모임장이 되었습니다.';
+      members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+    }
+
     await this.memberDao.deleteByUsersAndMeetingId(requester_id, meetingId);
+  }
+
+  public select(members: Member[]): Member {
+    return members[Math.random() * members.length];
+  }
+
+  public async updateAuthority(member: Member, authorityEnum: AuthorityEnumType): Promise<void> {
+    await this.memberDao.updateAuthority(member, authorityEnum);
+  }
+
+  @Transactional()
+  public async modifyAuthority(requester_id: number, req: MemberAuthorityModifyRequest) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+
+    const member = await this.memberDao.findByUsersAndMeetingId(req.usersId, meetingId);
+    if (member.authority === AuthorityEnum.MEMBER && req.manager) {
+    }
+  }
+
+  @Transactional()
+  public async delete(requester_id: number, req: MemberDeleteRequest): Promise<void> {
+    console.log(requester_id);
+    console.log(req);
   }
 
   @Transactional()
@@ -59,10 +109,16 @@ export class MemberServiceImpl implements MemberService {
       throw new BadRequestException(ErrorMessageType.MALFORMED_INVITE_URL);
     }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
+
+    const user = await member.getUser();
+    const content = user.username + '님의 가입이 수락되었습니다.';
+    const memberList = await this.memberDao.findByMeetingId(meeting_id);
+    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   @Transactional()
   public async approve(requesterId: number, usersId: number, meetingId: string) {
+    // 초대 플로우 수정 : approve와 accept 둘 중 하나
     const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
     const requester: Member | null = await this.memberDao.findByUsersAndMeetingId(requesterId, meeting_id);
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
@@ -74,6 +130,11 @@ export class MemberServiceImpl implements MemberService {
       throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
     }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
+
+    const user = await member.getUser();
+    const content = user.username + '님의 가입이 수락되었습니다.';
+    const memberList = await this.memberDao.findByMeetingId(meeting_id);
+    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   private async validateInviteRequester(users_id: number, meetingId: number) {
