@@ -79,7 +79,7 @@ export class MeetingServiceImpl implements MeetingService {
   }
 
   @Transactional()
-  public async updateMeeting(request: MeetingUpdateRequest, requester_id: number) {
+  public async updateMeeting(request: MeetingUpdateRequest) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
 
     const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
@@ -91,10 +91,20 @@ export class MeetingServiceImpl implements MeetingService {
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
 
+    let content = '';
+    if (!request.name) {
+      content = meeting.name + '이 ' + name + '으로 변경되었습니다.';
+    }
+    if (!request.explanation) {
+      content = meeting.name + '의 소개 내용이 변경되었습니다.';
+    }
+    if (!request.limit) {
+      content = meeting.name + '의 인원 제한이 ' + request.limit + '명으로 변경되었습니다.';
+    }
+
     meeting.updateBasicInfo({ name, explanation, limit });
     await this.meetingDao.update(meeting);
 
-    const content = meeting.name + ' 모임 설정이 변경되었습니다.';
     const members = await this.memberDao.findByMeetingId(meetingId);
     members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
