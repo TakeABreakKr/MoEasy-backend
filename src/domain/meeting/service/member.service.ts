@@ -9,7 +9,7 @@ import { MemberDao } from '../dao/member.dao';
 import { MemberInviteRequest } from '../dto/request/member.invite.request';
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '../entity/member.entity';
-import { AuthorityEnum } from '@enums/authority.enum';
+import { AuthorityEnum, MANAGING_AUTHORITIES } from '@enums/authority.enum';
 import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
@@ -31,6 +31,7 @@ export class MemberServiceImpl implements MemberService {
 
   @Transactional()
   public async withdraw(requester_id: number, meeting_id: string) {
+    //모임장의 경우 매니저 랜덤이전, 매니저 없으면 모임원 랜덤이전
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const user = await this.usersDao.findById(requester_id);
     if (!user) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
@@ -49,7 +50,7 @@ export class MemberServiceImpl implements MemberService {
     const member: Member = await this.memberDao.create({
       meetingId,
       usersId: req.newMemberId,
-      authority: AuthorityEnum.INVITED,
+      authority: AuthorityEnum.WAITING,
     });
     return this.createInvitationAcceptUrl(member.users_id, member.meeting_id);
   }
@@ -77,13 +78,14 @@ export class MemberServiceImpl implements MemberService {
   public async approve(requesterId: number, usersId: number, meetingId: string) {
     // 초대 플로우 수정 : approve와 accept 둘 중 하나
     const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
-    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
     const requester: Member | null = await this.memberDao.findByUsersAndMeetingId(requesterId, meeting_id);
-    if (!requester || requester.authority !== AuthorityEnum.OWNER) {
-      throw new Error('Requester does not have the authority to approve members');
+    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
+
+    if (!requester || !MANAGING_AUTHORITIES.includes(requester.authority)) {
+      throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
     }
     if (!member || member.authority !== AuthorityEnum.WAITING) {
-      throw new Error('no member found');
+      throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
     }
     await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
 
