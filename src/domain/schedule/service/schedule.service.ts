@@ -12,6 +12,7 @@ import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
 import { SortUtils } from '@utils/sort.utils';
 import { AuthorityComponent } from '@domain/user/component/authority.component';
+import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {
@@ -57,9 +58,10 @@ export class ScheduleServiceImpl implements ScheduleService {
   }
 
   public async getScheduleList(
-    meeting_id: string,
     requester_id: number,
-    options?: OrderingOptionEnumType,
+    meeting_id: string,
+    status: ScheduleStatusEnumType[],
+    options: OrderingOptionEnumType,
   ): Promise<ScheduleListResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId);
@@ -69,7 +71,15 @@ export class ScheduleServiceImpl implements ScheduleService {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_SCHEDULE);
     }
 
-    SortUtils.sort<Schedule>(schedules, options);
+    const now = new Date();
+    const filteredSchedules = schedules.filter((schedule) => {
+      if (status.includes(ScheduleStatusEnum.IN_PROGRESS) && schedule.startDate <= now && schedule.endDate >= now)
+        return true;
+      if (status.includes(ScheduleStatusEnum.UPCOMING) && schedule.startDate > now) return true;
+      return status.includes(ScheduleStatusEnum.COMPLETED) && schedule.endDate < now;
+    });
+
+    SortUtils.sort<Schedule>(filteredSchedules, options);
     const scheduleList: ScheduleListDto[] = schedules.map((schedule) => {
       return {
         ...schedule,

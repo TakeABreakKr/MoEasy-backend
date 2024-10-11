@@ -33,6 +33,18 @@ export class MemberServiceImpl implements MemberService {
     }; // TODO: develop after friend system
   }
 
+  public async get(meeting_id: string, user_id: number) {
+    const meetingId = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+    const member = await this.memberDao.findByUsersAndMeetingId(user_id, meetingId);
+    const user = await this.usersDao.findById(user_id);
+    if (!user) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEMBER);
+    return {
+      username: user.username,
+      explanation: '안녕하세요?',
+      authority: member.authority,
+    }; //이걸로 그냥 response에 담긴다니 미친거 아님?
+  }
+
   @Transactional()
   public async withdraw(requester_id: number, meeting_id: string) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);

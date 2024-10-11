@@ -1,11 +1,21 @@
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ScheduleCreateRequest } from '@domain/schedule/dto/request/schedule.create.request';
 import { ScheduleService } from '@domain/schedule/service/schedule.service.interface';
 import { AuthUser, Token } from '@decorator/token.decorator';
 import { ScheduleListResponse } from '@domain/schedule/dto/response/schedule.list.response';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { ScheduleUpdateRequest } from '@domain/schedule/dto/request/schedule.update.request';
+import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
+import { ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 
 @ApiTags('schedule')
 @Controller('schedule')
@@ -16,17 +26,21 @@ export class ScheduleController {
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Schedule Entity has been created.' })
   @ApiConsumes('application/json')
+  @ApiBody({
+    type: ScheduleCreateRequest,
+    description: 'info for creating a new schedule.',
+  })
   async createSchedule(@Body() request: ScheduleCreateRequest, @Token() user: AuthUser): Promise<string> {
     return this.scheduleService.createSchedule(request, user.id);
   }
 
   @Post('update')
+  @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Schedule has been updated.' })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
-  @ApiBearerAuth()
   @ApiConsumes('application/json')
   @ApiBody({
-    description: 'values to modify schedule.',
+    description: 'data to modify schedule.',
     type: ScheduleUpdateRequest,
   })
   async updateSchedule(@Body() request: ScheduleUpdateRequest, @Token() user: AuthUser): Promise<void> {
@@ -40,8 +54,31 @@ export class ScheduleController {
     description: 'Schedule list retrieved',
     type: ScheduleListResponse,
   })
-  @ApiBody({ description: 'Filter schedules by options.' })
-  async getScheduleList(@Query('meetingId') meetingId: string, @Token() user: AuthUser): Promise<ScheduleListResponse> {
-    return this.scheduleService.getScheduleList(meetingId, user.id);
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
+  @ApiQuery({
+    description: 'Filter schedules by status and sort by options',
+    schema: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          items: { type: 'string' },
+          description: 'schedule status: in_progress, upcoming, completed.',
+        },
+        options: {
+          type: 'string',
+          enum: [OrderingOptionEnum.LATEST, OrderingOptionEnum.NAME],
+          description: 'Option to sort scheduleList (LATEST for latest registered, NAME for alphabetical).',
+        },
+      },
+    },
+  })
+  async getScheduleList(
+    @Query('meetingId') meetingId: string,
+    @Query('status') status: ScheduleStatusEnumType[],
+    @Query('options') options: OrderingOptionEnumType,
+    @Token() user: AuthUser,
+  ): Promise<ScheduleListResponse> {
+    return this.scheduleService.getScheduleList(meetingId, user.id, status, options);
   }
 }

@@ -5,6 +5,7 @@ import {
   ApiConsumes,
   ApiForbiddenResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -16,6 +17,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { AuthUser, Token } from '@decorator/token.decorator';
 import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
 import { MemberAuthorityModifyRequest } from '@domain/meeting/dto/request/member.authority.modify.request';
+import { MemberResponse } from '@domain/meeting/dto/response/member.response';
 
 @ApiTags('member')
 @Controller('member')
@@ -25,8 +27,34 @@ export class MemberController {
   @Get('search')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'withdraw succeed', type: MemberSearchResponse })
+  @ApiQuery({
+    name: 'keyword',
+    type: 'string',
+    required: true,
+  })
   async search(@Query() keyword: string): Promise<MemberSearchResponse> {
     return this.memberService.search(keyword);
+  }
+
+  @Get('get')
+  @ApiOkResponse({
+    status: 200,
+    description: 'Member retrieved successfully',
+    type: MemberResponse,
+  })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEMBER })
+  @ApiQuery({
+    name: 'meetingId',
+    type: 'string',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'userId',
+    type: Number,
+    required: true,
+  })
+  async getMember(@Query('meetingId') meetingId: string, @Query('userId') userId: number): Promise<MemberResponse> {
+    return this.memberService.get(meetingId, userId);
   }
 
   @Post('withdraw')
@@ -34,9 +62,12 @@ export class MemberController {
   @ApiOkResponse({ status: 200, description: 'withdraw succeed' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
-  @ApiBody({})
-  async withdraw(@Body('meetingId') meeting_id: string, @Token() user: AuthUser) {
-    await this.memberService.withdraw(user.id, meeting_id);
+  @ApiBody({
+    type: 'string',
+    required: true,
+  })
+  async withdraw(@Body('meetingId') meetingId: string, @Token() user: AuthUser) {
+    await this.memberService.withdraw(user.id, meetingId);
   }
 
   @Post('authority/modify')
@@ -85,6 +116,16 @@ export class MemberController {
   @ApiOkResponse({ status: 200, description: 'invite accepted successfully' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.WRONG_INVITE_URL })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.MALFORMED_INVITE_URL })
+  @ApiQuery({
+    name: 'usersId',
+    type: Number,
+    required: true,
+  })
+  @ApiQuery({
+    name: 'meetingId',
+    type: 'string',
+    required: true,
+  })
   async accept(@Query('usersId') usersId: number, @Query('meetingId') meetingId: string, @Token() user: AuthUser) {
     await this.memberService.accept(user.id, usersId, meetingId);
   }
@@ -92,6 +133,22 @@ export class MemberController {
   @Get('invite/approve')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'member approved successfully' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiQuery({
+    name: 'requesterId',
+    type: Number,
+    required: true,
+  })
+  @ApiQuery({
+    name: 'usersId',
+    type: Number,
+    required: true,
+  })
+  @ApiQuery({
+    name: 'meetingId',
+    type: 'string',
+    required: true,
+  })
   async approve(
     @Query('requesterId') requesterId: number,
     @Query('userId') usersId: number,

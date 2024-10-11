@@ -31,14 +31,18 @@ export class MeetingController {
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: MeetingCreateRequest,
+    description: 'data required to create a new meeting',
+  })
   async createMeeting(@Body() request: MeetingCreateRequest, @Token() user: AuthUser): Promise<string> {
     return this.meetingService.createMeeting(request, user.id);
   }
 
   @Post('update')
+  @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
-  @ApiBearerAuth()
   @ApiConsumes('application/json')
   @ApiBody({
     description: 'Basic values to modify meetings',
@@ -49,20 +53,26 @@ export class MeetingController {
   }
 
   @Post('update/thumbnail')
+  @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('thumbnail'))
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
-  @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: MeetingThumbnailUpdateRequest,
+    description: 'data required to update thumbnail',
+  })
   async updateMeetingThumbnail(@Body() request: MeetingThumbnailUpdateRequest, @Token() user: AuthUser): Promise<void> {
     await this.meetingService.updateMeetingThumbnail(request, user.id);
   }
 
   @Get('delete')
-  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully deleted.' })
   @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully deleted.' })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',
+    type: 'string',
+    required: true,
   })
   async deleteMeeting(@Query('meetingId') meetingId: string, @Token() user: AuthUser): Promise<void> {
     await this.meetingService.deleteMeeting(meetingId, user.id);
@@ -77,32 +87,34 @@ export class MeetingController {
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',
+    type: 'string',
+    required: true,
   })
   async getMeeting(@Query('meetingId') meetingId: string): Promise<MeetingResponse> {
     return this.meetingService.getMeeting(meetingId);
   }
 
   @Post('get/list')
+  @ApiBearerAuth()
   @ApiOkResponse({
     status: 200,
-    description: 'Meeting list retrieved successfully',
+    description: 'Meeting list retrieved successfully.',
     type: MeetingListResponse,
   })
-  @ApiBearerAuth()
   @ApiBody({
-    description: 'Filer meetings by authority and sort by options',
+    description: 'Filter meetings by authority and sort by options.',
     schema: {
       type: 'object',
       properties: {
         authorities: {
           type: 'string',
           items: { type: 'string' },
-          description: 'List of authority types to filter meetings',
+          description: 'List of authority types to filter meetings.',
         },
         options: {
           type: 'string',
           enum: [OrderingOptionEnum.LATEST, OrderingOptionEnum.NAME],
-          description: 'Option to sort meetingList (LATEST for latest registered, NAME for alphabetical)',
+          description: 'Option to sort meetingList (LATEST for latest registered, NAME for alphabetical).',
         },
       },
     },
