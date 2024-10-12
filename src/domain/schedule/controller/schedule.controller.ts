@@ -79,6 +79,6 @@ export class ScheduleController {
     @Query('options') options: OrderingOptionEnumType,
     @Token() user: AuthUser,
   ): Promise<ScheduleListResponse> {
-    return this.scheduleService.getScheduleList(meetingId, user.id, status, options);
+    return this.scheduleService.getScheduleList(user.id, meetingId, status, options);
   }
 }

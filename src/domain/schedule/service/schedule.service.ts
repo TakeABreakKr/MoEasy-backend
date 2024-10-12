@@ -73,10 +73,11 @@ export class ScheduleServiceImpl implements ScheduleService {
 
     const now = new Date();
     const filteredSchedules = schedules.filter((schedule) => {
-      if (status.includes(ScheduleStatusEnum.IN_PROGRESS) && schedule.startDate <= now && schedule.endDate >= now)
-        return true;
-      if (status.includes(ScheduleStatusEnum.UPCOMING) && schedule.startDate > now) return true;
-      return status.includes(ScheduleStatusEnum.COMPLETED) && schedule.endDate < now;
+      const inProgressCondition =
+        status.includes(ScheduleStatusEnum.IN_PROGRESS) && schedule.startDate <= now && schedule.endDate >= now;
+      const upcomingCondition = status.includes(ScheduleStatusEnum.UPCOMING) && schedule.startDate > now;
+      const completedCondition = status.includes(ScheduleStatusEnum.COMPLETED) && schedule.endDate < now;
+      return inProgressCondition || upcomingCondition || completedCondition;
     });
 
     SortUtils.sort<Schedule>(filteredSchedules, options);
