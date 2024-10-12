@@ -54,7 +54,7 @@ export class MemberController {
     required: true,
   })
   async getMember(@Query('meetingId') meetingId: string, @Query('userId') userId: number): Promise<MemberResponse> {
-    return this.memberService.get(meetingId, userId);
+    return this.memberService.getMember(meetingId, userId);
   }
 
   @Post('withdraw')

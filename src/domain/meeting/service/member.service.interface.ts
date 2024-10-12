@@ -6,7 +6,7 @@ import { MemberResponse } from '@domain/meeting/dto/response/member.response';
 
 export interface MemberService {
   search(keyword: string): Promise<MemberSearchResponse>;
-  get(meeting_id: string, user_id: number): Promise<MemberResponse>;
+  getMember(meeting_id: string, user_id: number): Promise<MemberResponse>;
   withdraw(requester_id: number, meeting_id: string): Promise<void>;
   modifyAuthority(requester_id: number, request: MemberAuthorityModifyRequest): Promise<void>;
   delete(requester_id: number, request: MemberDeleteRequest): Promise<void>;

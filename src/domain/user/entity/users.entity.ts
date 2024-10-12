@@ -22,6 +22,9 @@ export class Users extends BaseEntity {
   @Column()
   email: string;
 
+  @Column()
+  explanation: string;
+
   @Column(() => Settings)
   settings: Settings;
 
