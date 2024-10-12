@@ -109,7 +109,7 @@ export class MeetingServiceImpl implements MeetingService {
   public async deleteMeeting(meeting_id: string, requester_id: number) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
-    // TODO :
+    // TODO : API 확인 후 개발 진행
   }
 
   public async getMeeting(meeting_id: string): Promise<MeetingResponse> {
