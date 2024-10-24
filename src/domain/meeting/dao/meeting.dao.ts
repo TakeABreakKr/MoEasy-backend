@@ -34,4 +34,8 @@ export class MeetingDao {
   async findAll(): Promise<Meeting[]> {
     return this.meetingRepository.find();
   }
+
+  async delete(id: number) {
+    await this.meetingRepository.delete(id);
+  }
 }
