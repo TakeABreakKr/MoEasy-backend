@@ -23,6 +23,7 @@ import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { SortUtils } from '@utils/sort.utils';
+import { NotificationComponent } from '@domain/notification/component/notification.component';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 
 @Injectable()
@@ -36,6 +37,7 @@ export class MeetingServiceImpl implements MeetingService {
     private keywordDao: KeywordDao,
     private usersDao: UsersDao,
     private readonly authorityComponent: AuthorityComponent,
+    private readonly notificationComponent: NotificationComponent,
   ) {}
 
   @Transactional()
@@ -51,12 +53,12 @@ export class MeetingServiceImpl implements MeetingService {
     const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
 
     if (keywordsCount > 10) {
-      throw new Error('키워드 개수는 10개까지 가능합니다.');
+      throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
     }
 
     const keywords: Keyword[] = req.keywords.map((keyword) => {
       if (keyword.length > 10) {
-        throw new Error('키워드 글자수는 10자까지 가능합니다!');
+        throw new BadRequestException(ErrorMessageType.INVALID_KEYWORD_LENGTH);
       }
       return Keyword.create(keyword, meeting.meeting_id);
     });
@@ -71,6 +73,9 @@ export class MeetingServiceImpl implements MeetingService {
       });
     });
     await this.memberDao.saveAll(members);
+
+    const content = meeting.name + ' 모임이 생성되었습니다.';
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
 
     return MeetingUtils.transformMeetingIdToString(meeting.meeting_id);
   }
@@ -89,8 +94,22 @@ export class MeetingServiceImpl implements MeetingService {
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
 
+    let content = '';
+    if (!request.name) {
+      content = meeting.name + '이 ' + name + '으로 변경되었습니다.';
+    }
+    if (!request.explanation) {
+      content = meeting.name + '의 소개 내용이 변경되었습니다.';
+    }
+    if (!request.limit) {
+      content = meeting.name + '의 인원 제한이 ' + request.limit + '명으로 변경되었습니다.';
+    }
+
     meeting.updateBasicInfo({ name, explanation, limit });
     await this.meetingDao.update(meeting);
+
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   @Transactional()
@@ -103,6 +122,10 @@ export class MeetingServiceImpl implements MeetingService {
 
     meeting.thumbnail = thumbnailPath;
     await this.meetingDao.update(meeting);
+
+    const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   @Transactional()

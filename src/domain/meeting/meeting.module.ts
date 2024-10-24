@@ -11,7 +11,6 @@ import { Keyword } from './entity/keyword.entity';
 import { MemberController } from './controller/member.controller';
 import { MemberServiceImpl } from './service/member.service';
 import { UsersModule } from '@domain/user/users.module';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { NotificationModule } from '@domain/notification/notification.module';
 
 @Module({
@@ -22,7 +21,6 @@ import { NotificationModule } from '@domain/notification/notification.module';
     KeywordDao,
     { provide: 'MeetingService', useClass: MeetingServiceImpl },
     { provide: 'MemberService', useClass: MemberServiceImpl },
-    AuthorityComponent,
   ],
   controllers: [MeetingController, MemberController],
   exports: [MemberDao],

@@ -11,6 +11,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
 import { SortUtils } from '@utils/sort.utils';
+import { NotificationComponent } from '@domain/notification/component/notification.component';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 
@@ -19,7 +20,8 @@ export class ScheduleServiceImpl implements ScheduleService {
   constructor(
     private scheduleDao: ScheduleDao,
     private memberDao: MemberDao,
-    private readonly authorityComponent: AuthorityComponent,
+    private authorityComponent: AuthorityComponent,
+    private notificationComponent: NotificationComponent,
   ) {}
 
   public async createSchedule(req: ScheduleCreateRequest, requester_id: number): Promise<string> {
@@ -32,7 +34,9 @@ export class ScheduleServiceImpl implements ScheduleService {
       onlineYn: req.onlineYn,
     });
 
-    // TODO: 알림 추가
+    const content = schedule.name + ' 일정이 생성되었습니다.';
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
 
     return schedule.schedule_id.toString();
   }
@@ -52,7 +56,9 @@ export class ScheduleServiceImpl implements ScheduleService {
       address: req.address,
     });
 
-    // TODO: 알림 추가
+    const content = schedule.name + ' 일정이 수정되었습니다.';
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
 
     await this.scheduleDao.update(schedule);
   }

@@ -23,8 +23,8 @@ export class MemberServiceImpl implements MemberService {
     private configService: ConfigService,
     private usersDao: UsersDao,
     private memberDao: MemberDao,
-    private readonly notificationComponent: NotificationComponent,
-    private readonly authorityComponent: AuthorityComponent,
+    private notificationComponent: NotificationComponent,
+    private authorityComponent: AuthorityComponent,
   ) {}
 
   public async search(keyword: string): Promise<MemberSearchResponse> {
@@ -49,6 +49,7 @@ export class MemberServiceImpl implements MemberService {
 
   @Transactional()
   public async withdraw(requester_id: number, meeting_id: string) {
+    //모임장의 경우 매니저 랜덤이전, 매니저 없으면 모임원 랜덤이전
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const user: Users | null = await this.usersDao.findById(requester_id);
     if (!user) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
@@ -69,6 +70,10 @@ export class MemberServiceImpl implements MemberService {
     }
 
     await this.memberDao.deleteByUsersAndMeetingId(requester_id, meetingId);
+
+    const content = user.username + '님이 모임에서 탈퇴하셨습니다.';
+    const memberList = await this.memberDao.findByMeetingId(meetingId);
+    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   private getNewOwner(members: Member[]): Member {
