@@ -16,7 +16,6 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { ScheduleUpdateRequest } from '@domain/schedule/dto/request/schedule.update.request';
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
-import { Or } from 'typeorm';
 
 @ApiTags('schedule')
 @Controller('schedule')
@@ -60,7 +59,7 @@ export class ScheduleController {
     name: 'status',
     isArray: true,
     enum: ScheduleStatusEnum,
-    description: 'schedule status: in_progress, upcoming, completed.'
+    description: 'schedule status: in_progress, upcoming, completed.',
   })
   @ApiQuery({
     name: 'options',
