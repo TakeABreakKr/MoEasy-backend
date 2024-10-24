@@ -6,12 +6,11 @@ import { UsersDao } from './dao/users.dao';
 import { AuthService } from './service/auth.service';
 import { AuthController } from './controller/auth.controller';
 import { DiscordComponent } from './component/discord.component';
-import { AuthorityComponent } from '@domain/user/component/authority.component';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Users]), HttpModule],
   controllers: [AuthController],
-  providers: [UsersDao, DiscordComponent, AuthService, AuthorityComponent],
+  providers: [UsersDao, DiscordComponent, AuthService],
   exports: [UsersDao],
 })
 export class UsersModule {}

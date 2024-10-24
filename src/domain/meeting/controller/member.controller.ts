@@ -57,16 +57,17 @@ export class MemberController {
     return this.memberService.getMember(meetingId, userId);
   }
 
-  @Post('withdraw')
+  @Get('withdraw')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'withdraw succeed' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
-  @ApiBody({
+  @ApiQuery({
+    name: 'meetingId',
     type: 'string',
     required: true,
   })
-  async withdraw(@Body('meetingId') meetingId: string, @Token() user: AuthUser) {
+  async withdraw(@Query('meetingId') meetingId: string, @Token() user: AuthUser) {
     await this.memberService.withdraw(user.id, meetingId);
   }
 

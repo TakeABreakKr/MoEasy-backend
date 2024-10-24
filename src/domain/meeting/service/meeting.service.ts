@@ -23,7 +23,7 @@ import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { SortUtils } from '@utils/sort.utils';
-import { AuthorityComponent } from '@domain/user/component/authority.component';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {

@@ -15,7 +15,8 @@ import { ScheduleListResponse } from '@domain/schedule/dto/response/schedule.lis
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { ScheduleUpdateRequest } from '@domain/schedule/dto/request/schedule.update.request';
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
-import { ScheduleStatusEnumType } from '@enums/schedule.status.enum';
+import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
+import { Or } from 'typeorm';
 
 @ApiTags('schedule')
 @Controller('schedule')
@@ -56,22 +57,15 @@ export class ScheduleController {
   })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
   @ApiQuery({
-    description: 'Filter schedules by status and sort by options',
-    schema: {
-      type: 'object',
-      properties: {
-        status: {
-          type: 'string',
-          items: { type: 'string' },
-          description: 'schedule status: in_progress, upcoming, completed.',
-        },
-        options: {
-          type: 'string',
-          enum: [OrderingOptionEnum.LATEST, OrderingOptionEnum.NAME],
-          description: 'Option to sort scheduleList (LATEST for latest registered, NAME for alphabetical).',
-        },
-      },
-    },
+    name: 'status',
+    isArray: true,
+    enum: ScheduleStatusEnum,
+    description: 'schedule status: in_progress, upcoming, completed.'
+  })
+  @ApiQuery({
+    name: 'options',
+    enum: OrderingOptionEnum,
+    description: 'Option to sort scheduleList (LATEST for latest registered, NAME for alphabetical).',
   })
   async getScheduleList(
     @Query('meetingId') meetingId: string,

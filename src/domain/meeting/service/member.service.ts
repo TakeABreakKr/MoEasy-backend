@@ -13,7 +13,7 @@ import { AuthorityEnum, MANAGING_AUTHORITIES } from '@enums/authority.enum';
 import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
-import { AuthorityComponent } from '@domain/user/component/authority.component';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
 import { MemberAuthorityModifyRequest } from '@domain/meeting/dto/request/member.authority.modify.request';
 

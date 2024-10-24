@@ -11,7 +11,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
 import { SortUtils } from '@utils/sort.utils';
-import { AuthorityComponent } from '@domain/user/component/authority.component';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 
 @Injectable()
