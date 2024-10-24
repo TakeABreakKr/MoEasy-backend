@@ -16,6 +16,8 @@ import { NotificationComponent } from '@domain/notification/component/notificati
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
 import { MemberAuthorityModifyRequest } from '@domain/meeting/dto/request/member.authority.modify.request';
+import { MemberApplyRequest } from '@domain/meeting/dto/request/member.apply.request';
+import { MemberManageRequest } from '@domain/meeting/dto/request/member.manage.request';
 
 @Injectable()
 export class MemberServiceImpl implements MemberService {
@@ -100,73 +102,41 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async invite(requester_id: number, req: MemberInviteRequest): Promise<string> {
+  public async apply(requester_id: number, req: MemberApplyRequest) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-    await this.validateInviteRequester(requester_id, meetingId);
 
-    const member: Member = await this.memberDao.create({
+    await this.memberDao.create({
       meetingId,
-      usersId: req.newMemberId,
+      usersId: requester_id,
       authority: AuthorityEnum.WAITING,
+      applicationMessage: req.applicationMessage,
     });
-    return this.createInvitationAcceptUrl(member.users_id, member.meeting_id);
   }
 
   @Transactional()
-  public async accept(requester_id: number, usersId: number, meetingId: string) {
-    if (requester_id !== usersId) {
-      throw new UnauthorizedException(ErrorMessageType.WRONG_INVITE_URL);
-    }
-
+  public async getWaiting(requesterId: number, meetingId: string) {
     const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
-    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
-    if (!member) {
-      throw new BadRequestException(ErrorMessageType.MALFORMED_INVITE_URL);
-    }
-    await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
-
-    const user = await member.getUser();
-    const content = user.username + '님의 가입이 수락되었습니다.';
-    const memberList = await this.memberDao.findByMeetingId(meeting_id);
-    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+    await this.authorityComponent.validateAuthority(requesterId, meeting_id);
+    // TODO : 아직
   }
 
   @Transactional()
-  public async approve(requesterId: number, usersId: number, meetingId: string) {
-    // 초대 플로우 수정 : approve와 accept 둘 중 하나
-    const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
-    const requester: Member | null = await this.memberDao.findByUsersAndMeetingId(requesterId, meeting_id);
-    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(usersId, meeting_id);
+  public async manageMember(requesterId: number, req: MemberManageRequest) {
+    // TODO : API 확인 후 개발
+    const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+    await this.authorityComponent.validateAuthority(requesterId, meeting_id);
+    await this.authorityComponent.validateAuthority(req.memberId, meeting_id, [AuthorityEnum.WAITING]);
 
-    if (!requester || !MANAGING_AUTHORITIES.includes(requester.authority)) {
-      throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
+    const member = await this.memberDao.findByUsersAndMeetingId(req.memberId, meeting_id);
+    if (req.isAccepted) {
+      await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
+
+      const user = await member.getUser();
+      const content = user.username + '님의 가입이 수락되었습니다.';
+      const memberList = await this.memberDao.findByMeetingId(meeting_id);
+      memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+    } else {
+      await this.memberDao.deleteByUsersAndMeetingId(req.memberId, meeting_id);
     }
-    if (!member || member.authority !== AuthorityEnum.WAITING) {
-      throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
-    }
-    await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
-
-    const user = await member.getUser();
-    const content = user.username + '님의 가입이 수락되었습니다.';
-    const memberList = await this.memberDao.findByMeetingId(meeting_id);
-    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
-  }
-
-  private async validateInviteRequester(users_id: number, meetingId: number) {
-    const user: Users | null = await this.usersDao.findById(users_id);
-    if (!user) {
-      throw new UnauthorizedException(ErrorMessageType.NOT_EXIST_REQUESTER);
-    }
-
-    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(users_id, meetingId);
-    if (!member) {
-      throw new ForbiddenException(ErrorMessageType.FORBIDDEN_INVITE_REQUEST);
-    }
-  }
-
-  private createInvitationAcceptUrl(users_id: number, meeting_id: number): string {
-    const meetingId: string = MeetingUtils.transformMeetingIdToString(meeting_id);
-    const host: string = this.configService.get('host');
-    return `${host}/member/invite/accept?usersId=${users_id}&meetingId=${meetingId}`;
   }
 }

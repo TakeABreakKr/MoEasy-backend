@@ -14,6 +14,7 @@ import { SortUtils } from '@utils/sort.utils';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
+import { Member } from '@domain/meeting/entity/member.entity';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {

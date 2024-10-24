@@ -8,6 +8,7 @@ type CreateMemberType = {
   meetingId: number;
   usersId: number;
   authority?: AuthorityEnumType;
+  applicationMessage?: string;
 };
 
 @Injectable()
@@ -26,11 +27,18 @@ export class MemberDao {
     return this.memberRepository.findBy({ meeting_id });
   }
 
-  async create({ meetingId, usersId, authority = AuthorityEnum.WAITING }: CreateMemberType): Promise<Member> {
+  async create({
+    meetingId,
+    usersId,
+    authority = AuthorityEnum.WAITING,
+    applicationMessage,
+  }: CreateMemberType): Promise<Member> {
     const member: Member = this.memberRepository.create({
       meeting_id: meetingId,
       users_id: usersId,
       authority: authority,
+      appliedAt: new Date(),
+      applicationMessage: applicationMessage,
     });
     await this.memberRepository.save(member);
     return member;

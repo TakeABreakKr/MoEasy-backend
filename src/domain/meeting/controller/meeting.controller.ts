@@ -14,7 +14,7 @@ import { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
 import { MeetingResponse } from '../dto/response/meeting.response';
 import { MeetingListResponse } from '../dto/response/meeting.list.response';
 import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
-import { AuthorityEnumType } from '@enums/authority.enum';
+import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
@@ -71,7 +71,7 @@ export class MeetingController {
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',
-    type: 'string',
+    type: String,
     required: true,
   })
   async deleteMeeting(@Query('meetingId') meetingId: string, @Token() user: AuthUser): Promise<void> {
@@ -87,7 +87,7 @@ export class MeetingController {
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',
-    type: 'string',
+    type: String,
     required: true,
   })
   async getMeeting(@Query('meetingId') meetingId: string): Promise<MeetingResponse> {
@@ -107,8 +107,11 @@ export class MeetingController {
       type: 'object',
       properties: {
         authorities: {
-          type: 'string',
-          items: { type: 'string' },
+          type: 'array',
+          items: {
+            type: 'string',
+            enum: Object.values(AuthorityEnum),
+          },
           description: 'List of authority types to filter meetings.',
         },
         options: {

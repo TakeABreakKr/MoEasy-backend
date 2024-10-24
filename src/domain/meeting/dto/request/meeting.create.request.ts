@@ -13,7 +13,7 @@ export class MeetingCreateRequest {
   explanation: string;
 
   @ApiProperty({
-    type: 'string',
+    type: String,
     format: 'binary',
   })
   thumbnail: Express.Multer.File;
