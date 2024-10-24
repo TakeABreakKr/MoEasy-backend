@@ -8,7 +8,7 @@ type CreateMemberDto = {
   meeting_id: number;
   users_id: number;
   authority?: AuthorityEnumType;
-  appliedAt: Date;
+  appliedAt?: Date;
   applicationMessage?: string;
 };
 
