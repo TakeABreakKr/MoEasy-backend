@@ -36,8 +36,8 @@ export class MeetingServiceImpl implements MeetingService {
     private memberDao: MemberDao,
     private keywordDao: KeywordDao,
     private usersDao: UsersDao,
-    private readonly authorityComponent: AuthorityComponent,
-    private readonly notificationComponent: NotificationComponent,
+    private authorityComponent: AuthorityComponent,
+    private notificationComponent: NotificationComponent,
   ) {}
 
   @Transactional()

@@ -88,7 +88,7 @@ export class ScheduleServiceImpl implements ScheduleService {
     });
 
     SortUtils.sort<Schedule>(filteredSchedules, options);
-    const scheduleList: ScheduleListDto[] = schedules.map((schedule) => {
+    const scheduleList: ScheduleListDto[] = filteredSchedules.map((schedule) => {
       return {
         ...schedule,
         meetingId: MeetingUtils.transformMeetingIdToString(meetingId),

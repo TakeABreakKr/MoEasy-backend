@@ -1,15 +1,14 @@
 import type { Users } from '@domain/user/entity/users.entity';
 
-import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { ConfigService } from '@nestjs/config';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { UsersDao } from '@domain/user/dao/users.dao';
 import { MemberDao } from '../dao/member.dao';
-import { MemberInviteRequest } from '../dto/request/member.invite.request';
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '../entity/member.entity';
-import { AuthorityEnum, MANAGING_AUTHORITIES } from '@enums/authority.enum';
+import { AuthorityEnum } from '@enums/authority.enum';
 import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
@@ -18,6 +17,9 @@ import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.r
 import { MemberAuthorityModifyRequest } from '@domain/meeting/dto/request/member.authority.modify.request';
 import { MemberApplyRequest } from '@domain/meeting/dto/request/member.apply.request';
 import { MemberManageRequest } from '@domain/meeting/dto/request/member.manage.request';
+import { SortUtils } from '@utils/sort.utils';
+import { OrderingOptionEnum } from '@enums/ordering.option.enum';
+import { MemberWaitingListDto } from '@domain/meeting/dto/response/member.waiting.list.dto';
 
 @Injectable()
 export class MemberServiceImpl implements MemberService {
@@ -76,6 +78,7 @@ export class MemberServiceImpl implements MemberService {
     const content = user.username + '님이 모임에서 탈퇴하셨습니다.';
     const memberList = await this.memberDao.findByMeetingId(meetingId);
     memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+    //todo : addNotification 멤버 모두에게 추가하는거 중복됨
   }
 
   private getNewOwner(members: Member[]): Member {
@@ -114,10 +117,22 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async getWaiting(requesterId: number, meetingId: string) {
-    const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(meetingId);
-    await this.authorityComponent.validateAuthority(requesterId, meeting_id);
-    // TODO : 아직
+  public async getWaiting(requester_id: number, meeting_id: string) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId);
+    const members = await this.memberDao.findByMeetingId(meetingId);
+    const filteredMembers = members.filter((member: Member) => member.authority === AuthorityEnum.WAITING);
+    SortUtils.sort<Member>(filteredMembers, OrderingOptionEnum.OLDEST);
+    const waitingList: MemberWaitingListDto[] = await Promise.all(
+      filteredMembers.map(async (member) => {
+        const users = await member.getUser();
+        return {
+          name: users.username,
+          applicationMessage: member.applicationMessage,
+        };
+      }),
+    );
+    return waitingList;
   }
 
   @Transactional()

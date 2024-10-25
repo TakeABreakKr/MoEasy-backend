@@ -37,7 +37,7 @@ export class MemberDao {
       meeting_id: meetingId,
       users_id: usersId,
       authority: authority,
-      appliedAt: new Date(),
+      updatedAt: new Date(),
       applicationMessage: applicationMessage,
     });
     await this.memberRepository.save(member);

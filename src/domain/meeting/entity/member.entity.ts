@@ -8,7 +8,7 @@ type CreateMemberDto = {
   meeting_id: number;
   users_id: number;
   authority?: AuthorityEnumType;
-  appliedAt?: Date;
+  updatedAt?: Date;
   applicationMessage?: string;
 };
 
@@ -42,20 +42,15 @@ export class Member extends BaseEntity {
   authority: AuthorityEnumType;
 
   @Column({
-    type: 'timestamp',
-  })
-  appliedAt: Date;
-
-  @Column({
     type: String,
   })
   applicationMessage: string;
 
-  static create({ meeting_id, users_id, authority, appliedAt, applicationMessage }: CreateMemberDto): Member {
+  static create({ meeting_id, users_id, authority, updatedAt, applicationMessage }: CreateMemberDto): Member {
     const member = new Member();
     member.meeting_id = meeting_id;
     member.users_id = users_id;
-    member.appliedAt = appliedAt;
+    member.updatedAt = updatedAt;
     if (authority) {
       member.authority = authority;
     }

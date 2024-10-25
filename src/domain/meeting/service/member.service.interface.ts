@@ -4,6 +4,7 @@ import { MemberAuthorityModifyRequest } from '@domain/meeting/dto/request/member
 import { MemberResponse } from '@domain/meeting/dto/response/member.response';
 import { MemberManageRequest } from '@domain/meeting/dto/request/member.manage.request';
 import { MemberApplyRequest } from '@domain/meeting/dto/request/member.apply.request';
+import { MemberWaitingListDto } from '@domain/meeting/dto/response/member.waiting.list.dto';
 
 export interface MemberService {
   search(keyword: string): Promise<MemberSearchResponse>;
@@ -12,6 +13,6 @@ export interface MemberService {
   modifyAuthority(requester_id: number, request: MemberAuthorityModifyRequest): Promise<void>;
   delete(requester_id: number, request: MemberDeleteRequest): Promise<void>;
   apply(requester_id: number, request: MemberApplyRequest): Promise<void>;
-  getWaiting(requester_id: number, meetingId: string): Promise<void>;
+  getWaiting(requester_id: number, meetingId: string): Promise<MemberWaitingListDto[]>;
   manageMember(requester_id: number, request: MemberManageRequest): Promise<void>;
 }
