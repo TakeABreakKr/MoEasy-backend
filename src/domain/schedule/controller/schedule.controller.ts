@@ -6,7 +6,7 @@ import {
   ApiConsumes,
   ApiOkResponse,
   ApiQuery,
-  ApiTags,
+  ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ScheduleCreateRequest } from '@domain/schedule/dto/request/schedule.create.request';
 import { ScheduleService } from '@domain/schedule/service/schedule.service.interface';
@@ -16,6 +16,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { ScheduleUpdateRequest } from '@domain/schedule/dto/request/schedule.update.request';
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
+import { ScheduleResponse } from '@domain/schedule/dto/response/schedule.response';
 
 @ApiTags('schedule')
 @Controller('schedule')
@@ -25,6 +26,7 @@ export class ScheduleController {
   @Post('create')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Schedule Entity has been created.' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
   @ApiBody({
     type: ScheduleCreateRequest,
@@ -38,6 +40,7 @@ export class ScheduleController {
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Schedule has been updated.' })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
   @ApiBody({
     description: 'data to modify schedule.',
@@ -45,6 +48,22 @@ export class ScheduleController {
   })
   async updateSchedule(@Body() request: ScheduleUpdateRequest, @Token() user: AuthUser): Promise<void> {
     await this.scheduleService.updateSchedule(request, user.id);
+  }
+
+  @Get('get')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    status: 200,
+    description: 'schedule entity retrieved successfully',
+    type: ScheduleResponse,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: ErrorMessageType.NOT_FOUND_SCHEDULE,
+  })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  async getSchedule(@Query('scheduleId') scheduleId: number): Promise<ScheduleResponse> {
+    return this.scheduleService.getSchedule(scheduleId);
   }
 
   @Get('get/list')
@@ -55,6 +74,7 @@ export class ScheduleController {
     type: ScheduleListResponse,
   })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiQuery({
     name: 'status',
     isArray: true,
@@ -73,5 +93,23 @@ export class ScheduleController {
     @Token() user: AuthUser,
   ): Promise<ScheduleListResponse> {
     return this.scheduleService.getScheduleList(user.id, meetingId, status, options);
+  }
+
+  @Get('withdraw')
+  @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'withdraw successfully' })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  async withdraw(@Query('scheduleId') scheduleId: number, @Token() user: AuthUser): Promise<void> {
+    await this.scheduleService.withdraw(user.id, scheduleId);
+  }
+
+  @Get('delete')
+  @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'schedule deleted successfully' })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  async delete(@Query('scheduleId') scheduleId: number, @Token() user: AuthUser): Promise<void> {
+    await this.scheduleService.delete(user.id, scheduleId);
   }
 }

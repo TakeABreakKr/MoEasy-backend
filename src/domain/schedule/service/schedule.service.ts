@@ -15,12 +15,16 @@ import { NotificationComponent } from '@domain/notification/component/notificati
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 import { Member } from '@domain/meeting/entity/member.entity';
+import { Participant } from '@domain/schedule/entity/participant.entity';
+import { ParticipantDao } from '@domain/schedule/dao/participant.dao';
+import { ScheduleResponse } from '@domain/schedule/dto/response/schedule.response';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {
   constructor(
     private scheduleDao: ScheduleDao,
     private memberDao: MemberDao,
+    private participantDao: ParticipantDao,
     private authorityComponent: AuthorityComponent,
     private notificationComponent: NotificationComponent,
   ) {}
@@ -34,6 +38,14 @@ export class ScheduleServiceImpl implements ScheduleService {
       meetingId: req.meeting_id,
       onlineYn: req.onlineYn,
     });
+
+    const participants: Participant[] = req.participants.map((participant) => {
+      return Participant.create({
+        schedule_id: schedule.schedule_id,
+        users_id: participant,
+      });
+    });
+    await this.participantDao.saveAll(participants);
 
     const content = schedule.name + ' 일정이 생성되었습니다.';
     const members = await this.memberDao.findByMeetingId(meetingId);
@@ -62,6 +74,20 @@ export class ScheduleServiceImpl implements ScheduleService {
     members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
 
     await this.scheduleDao.update(schedule);
+  }
+
+  public async getSchedule(scheduleId: number): Promise<ScheduleResponse> {
+    const schedule: Schedule | null = await this.scheduleDao.findById(scheduleId);
+    if (!schedule) throw new BadRequestException(ErrorMessageType.NOT_FOUND_SCHEDULE);
+    return {
+      name: schedule.name,
+      explanation: schedule.explanation,
+      startDate: schedule.startDate,
+      endDate: schedule.endDate,
+      announcement: schedule.announcement,
+      onlineYn: schedule.onlineYn,
+      address: schedule.address.toAddressDto(),
+    };
   }
 
   public async getScheduleList(
@@ -99,5 +125,13 @@ export class ScheduleServiceImpl implements ScheduleService {
     return {
       scheduleList,
     };
+  }
+  public async withdraw(requester_id: number, schedule_id: number): Promise<void> {
+    requester_id || schedule_id;
+    //TODO : API 확인 후 만들어
+  }
+  public async delete(requester_id: number, schedule_id: number): Promise<void> {
+    requester_id || schedule_id;
+    //TODO : API 확인 후 만들어
   }
 }

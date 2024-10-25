@@ -3,6 +3,11 @@ import { Schedule } from './schedule.entity';
 import { Users } from '@domain/user/entity/users.entity';
 import { BaseEntity } from '@domain/common/base.entity';
 
+type CreateParticipantDto = {
+  schedule_id: number;
+  users_id: number;
+};
+
 @Entity()
 export class Participant extends BaseEntity {
   @PrimaryColumn()
@@ -24,4 +29,11 @@ export class Participant extends BaseEntity {
   })
   @JoinColumn({ name: 'users_id' })
   user: Promise<Users>;
+
+  static create({ schedule_id, users_id }: CreateParticipantDto): Participant {
+    const participant = new Participant();
+    participant.schedule_id = schedule_id;
+    participant.users_id = users_id;
+    return participant;
+  }
 }

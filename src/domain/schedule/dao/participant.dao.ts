@@ -9,4 +9,8 @@ export class ParticipantDao {
     @InjectRepository(Participant)
     private participantRepository: Repository<Participant>,
   ) {}
+
+  async saveAll(participants: Participant[]): Promise<void> {
+    await this.participantRepository.save(participants);
+  }
 }

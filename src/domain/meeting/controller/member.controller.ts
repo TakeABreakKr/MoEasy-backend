@@ -61,7 +61,6 @@ export class MemberController {
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'withdraw succeed' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  @ApiConsumes('application/json')
   @ApiQuery({
     name: 'meetingId',
     type: String,
