@@ -5,13 +5,16 @@ import { NotificationServiceImpl } from '@domain/notification/service/notificati
 import { NotificationController } from '@domain/notification/controller/notification.controller';
 import { NotificationDao } from '@domain/notification/dao/notification.dao';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
+import { MemberDao } from '@domain/meeting/dao/member.dao';
+import { Member } from '@domain/meeting/entity/member.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification])],
+  imports: [TypeOrmModule.forFeature([Notification]), TypeOrmModule.forFeature([Member])],
   exports: [NotificationComponent],
   providers: [
     NotificationDao,
     NotificationComponent,
+    MemberDao,
     { provide: 'NotificationService', useClass: NotificationServiceImpl },
   ],
   controllers: [NotificationController],
