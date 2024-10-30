@@ -4,6 +4,8 @@ import { ScheduleUpdateRequest } from '@domain/schedule/dto/request/schedule.upd
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 import { ScheduleResponse } from '@domain/schedule/dto/response/schedule.response';
+import { ScheduleWithdrawRequest } from '@domain/schedule/dto/request/schedule.withdraw.request';
+import { ScheduleDeleteRequest } from '@domain/schedule/dto/request/schedule.delete.request';
 
 export interface ScheduleService {
   createSchedule(req: ScheduleCreateRequest, requester_id: number): Promise<string>;
@@ -15,6 +17,6 @@ export interface ScheduleService {
     status: ScheduleStatusEnumType[],
     options: OrderingOptionEnumType,
   ): Promise<ScheduleListResponse>;
-  withdraw(requester_id: number, schedule_id: number): Promise<void>;
-  delete(requester_id: number, schedule_id: number): Promise<void>;
+  withdraw(requester_id: number, req: ScheduleWithdrawRequest): Promise<void>;
+  delete(requester_id: number, req: ScheduleDeleteRequest): Promise<void>;
 }

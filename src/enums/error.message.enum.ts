@@ -2,7 +2,9 @@ export const ErrorMessageType = {
   NOT_FOUND_MEETING: '해당 모임을 찾을 수 없습니다.',
   NOT_FOUND_SCHEDULE: '해당 일정을 찾을 수 없습니다.',
   NOT_FOUND_MEMBER: '해당 멤버를 찾을 수 없습니다.',
+  NOT_FOUND_PARTICIPANT: '일정 참여자가 아닙니다.',
   NOT_EXIST_REQUESTER: '존재하지 않는 요청자입니다.',
+
   INVALID_TOKEN: '토큰이 전송되지 않았거나 잘못 되었습니다.',
   KEYWORD_LIMIT_EXCEEDED: '키워드 개수는 10개까지 가능합니다.',
   INVALID_KEYWORD_LENGTH: '키워드 글자 수는 10자까지 가능합니다.',

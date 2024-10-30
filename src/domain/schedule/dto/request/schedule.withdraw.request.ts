@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class MemberDeleteRequest {
+export class ScheduleWithdrawRequest {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  meetingId: string;
+  meeting_id: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  memberId: number;
+  schedule_id: number;
 }

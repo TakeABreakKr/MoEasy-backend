@@ -18,6 +18,9 @@ import { Member } from '@domain/meeting/entity/member.entity';
 import { Participant } from '@domain/schedule/entity/participant.entity';
 import { ParticipantDao } from '@domain/schedule/dao/participant.dao';
 import { ScheduleResponse } from '@domain/schedule/dto/response/schedule.response';
+import { AuthorityEnum } from '@enums/authority.enum';
+import { ScheduleWithdrawRequest } from '@domain/schedule/dto/request/schedule.withdraw.request';
+import { ScheduleDeleteRequest } from '@domain/schedule/dto/request/schedule.delete.request';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {
@@ -48,8 +51,7 @@ export class ScheduleServiceImpl implements ScheduleService {
     await this.participantDao.saveAll(participants);
 
     const content = schedule.name + ' 일정이 생성되었습니다.';
-    const members = await this.memberDao.findByMeetingId(meetingId);
-    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
 
     return schedule.schedule_id.toString();
   }
@@ -68,10 +70,9 @@ export class ScheduleServiceImpl implements ScheduleService {
       onlineYn: req.onlineYn,
       address: req.address,
     });
-
+    //todo : participant?
     const content = schedule.name + ' 일정이 수정되었습니다.';
-    const members = await this.memberDao.findByMeetingId(meetingId);
-    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
 
     await this.scheduleDao.update(schedule);
   }
@@ -96,6 +97,7 @@ export class ScheduleServiceImpl implements ScheduleService {
     status: ScheduleStatusEnumType[],
     options: OrderingOptionEnumType,
   ): Promise<ScheduleListResponse> {
+    //todo : 수정
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId);
 
@@ -126,12 +128,22 @@ export class ScheduleServiceImpl implements ScheduleService {
       scheduleList,
     };
   }
-  public async withdraw(requester_id: number, schedule_id: number): Promise<void> {
-    requester_id || schedule_id;
-    //TODO : API 확인 후 만들어
+
+  public async withdraw(requester_id: number, req: ScheduleWithdrawRequest): Promise<void> {
+    const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
+    const requester = await this.memberDao.findByUsersAndMeetingId(requester_id, meetingId);
+    if (requester.authority === AuthorityEnum.OWNER) {
+      throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_ACCESS);
+    } else if (!this.participantDao.findByUserIdAndScheduleId(requester_id, req.schedule_id)) {
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_PARTICIPANT);
+    } else {
+      await this.participantDao.delete(requester_id, req.schedule_id);
+    }
   }
-  public async delete(requester_id: number, schedule_id: number): Promise<void> {
-    requester_id || schedule_id;
-    //TODO : API 확인 후 만들어
+
+  public async delete(requester_id: number, req: ScheduleDeleteRequest): Promise<void> {
+    const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId);
+    await this.scheduleDao.delete(req.schedule_id);
   }
 }

@@ -13,4 +13,12 @@ export class ParticipantDao {
   async saveAll(participants: Participant[]): Promise<void> {
     await this.participantRepository.save(participants);
   }
+
+  async findByUserIdAndScheduleId(user_id: number, schedule_id: number) {
+    return await this.participantRepository.findOneBy({ schedule_id: schedule_id, users_id: user_id });
+  }
+
+  async delete(user_id: number, schedule_id: number): Promise<void> {
+    await this.participantRepository.delete({ schedule_id: schedule_id, users_id: user_id });
+  }
 }

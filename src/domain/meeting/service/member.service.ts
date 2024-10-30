@@ -13,13 +13,13 @@ import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
-import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
-import { MemberAuthorityModifyRequest } from '@domain/meeting/dto/request/member.authority.modify.request';
+import { MemberAuthorityUpdateRequest } from '@domain/meeting/dto/request/member.authority.update.request';
 import { MemberApplyRequest } from '@domain/meeting/dto/request/member.apply.request';
-import { MemberManageRequest } from '@domain/meeting/dto/request/member.manage.request';
+import { MemberJoinManageRequest } from '@domain/meeting/dto/request/member.join.manage.request';
 import { SortUtils } from '@utils/sort.utils';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
 import { MemberWaitingListDto } from '@domain/meeting/dto/response/member.waiting.list.dto';
+import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
 
 @Injectable()
 export class MemberServiceImpl implements MemberService {
@@ -53,7 +53,6 @@ export class MemberServiceImpl implements MemberService {
 
   @Transactional()
   public async withdraw(requester_id: number, meeting_id: string) {
-    //모임장의 경우 매니저 랜덤이전, 매니저 없으면 모임원 랜덤이전
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const user: Users | null = await this.usersDao.findById(requester_id);
     if (!user) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
@@ -61,24 +60,21 @@ export class MemberServiceImpl implements MemberService {
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(requester_id, meetingId);
     if (!member) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
 
-    const withdrawContent = user.username + '님이 모임에서 탈퇴하셨습니다.';
+    let content = user.username + '님이 모임에서 탈퇴하였습니다.';
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
     const members = await this.memberDao.findByMeetingId(meetingId);
-    members.forEach((member: Member) => this.notificationComponent.addNotification(withdrawContent, member.users_id));
 
     if (member.authority === AuthorityEnum.OWNER) {
       const owner: Member = this.getNewOwner(members);
       await this.memberDao.updateAuthority(owner, AuthorityEnum.OWNER);
 
-      const newOwnerContent = (await owner.getUser()).username + ' 님이 모임장이 되었습니다.';
-      members.forEach((member: Member) => this.notificationComponent.addNotification(newOwnerContent, member.users_id));
+      content = (await owner.getUser()).username + ' 님이 모임장이 되었습니다.';
+      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
     }
-
     await this.memberDao.deleteByUsersAndMeetingId(requester_id, meetingId);
 
-    const content = user.username + '님이 모임에서 탈퇴하셨습니다.';
-    const memberList = await this.memberDao.findByMeetingId(meetingId);
-    memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
-    //todo : addNotification 멤버 모두에게 추가하는거 중복됨
+    content = user.username + '님이 모임에서 탈퇴하였습니다.';
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
   }
 
   private getNewOwner(members: Member[]): Member {
@@ -88,13 +84,13 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async modifyAuthority(requester_id: number, req: MemberAuthorityModifyRequest) {
+  public async updateAuthority(requester_id: number, req: MemberAuthorityUpdateRequest) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
 
     const member = await this.memberDao.findByUsersAndMeetingId(req.usersId, meetingId);
-    if (member.authority === AuthorityEnum.MEMBER && req.manager) {
-      // TODO : API 확인 후 개발 진행
+    if (member.authority === AuthorityEnum.MEMBER && req.isManager) {
+      await this.memberDao.updateAuthority(member, AuthorityEnum.MANAGER);
     }
   }
 
@@ -119,10 +115,14 @@ export class MemberServiceImpl implements MemberService {
   @Transactional()
   public async getWaiting(requester_id: number, meeting_id: string) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+
     await this.authorityComponent.validateAuthority(requester_id, meetingId);
+
     const members = await this.memberDao.findByMeetingId(meetingId);
+
     const filteredMembers = members.filter((member: Member) => member.authority === AuthorityEnum.WAITING);
     SortUtils.sort<Member>(filteredMembers, OrderingOptionEnum.OLDEST);
+
     const waitingList: MemberWaitingListDto[] = await Promise.all(
       filteredMembers.map(async (member) => {
         const users = await member.getUser();
@@ -132,26 +132,25 @@ export class MemberServiceImpl implements MemberService {
         };
       }),
     );
+
     return waitingList;
   }
 
   @Transactional()
-  public async manageMember(requesterId: number, req: MemberManageRequest) {
-    // TODO : API 확인 후 개발
-    const meeting_id: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-    await this.authorityComponent.validateAuthority(requesterId, meeting_id);
-    await this.authorityComponent.validateAuthority(req.memberId, meeting_id, [AuthorityEnum.WAITING]);
+  public async manageMemberJoin(requesterId: number, req: MemberJoinManageRequest) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId);
+    await this.authorityComponent.validateAuthority(req.memberId, meetingId, [AuthorityEnum.WAITING]);
 
-    const member = await this.memberDao.findByUsersAndMeetingId(req.memberId, meeting_id);
+    const member = await this.memberDao.findByUsersAndMeetingId(req.memberId, meetingId);
     if (req.isAccepted) {
       await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
 
       const user = await member.getUser();
       const content = user.username + '님의 가입이 수락되었습니다.';
-      const memberList = await this.memberDao.findByMeetingId(meeting_id);
-      memberList.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
     } else {
-      await this.memberDao.deleteByUsersAndMeetingId(req.memberId, meeting_id);
+      await this.memberDao.deleteByUsersAndMeetingId(req.memberId, meetingId);
     }
   }
 }

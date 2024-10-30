@@ -17,6 +17,8 @@ import { ScheduleUpdateRequest } from '@domain/schedule/dto/request/schedule.upd
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 import { ScheduleResponse } from '@domain/schedule/dto/response/schedule.response';
+import { ScheduleWithdrawRequest } from '@domain/schedule/dto/request/schedule.withdraw.request';
+import { ScheduleDeleteRequest } from '@domain/schedule/dto/request/schedule.delete.request';
 
 @ApiTags('schedule')
 @Controller('schedule')
@@ -95,21 +97,29 @@ export class ScheduleController {
     return this.scheduleService.getScheduleList(user.id, meetingId, status, options);
   }
 
-  @Get('withdraw')
+  @Post('withdraw')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'withdraw successfully' })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  async withdraw(@Query('scheduleId') scheduleId: number, @Token() user: AuthUser): Promise<void> {
-    await this.scheduleService.withdraw(user.id, scheduleId);
+  @ApiBody({
+    description: 'data to withdraw schedule.',
+    type: ScheduleWithdrawRequest,
+  })
+  async withdraw(@Body() req: ScheduleWithdrawRequest, @Token() user: AuthUser): Promise<void> {
+    await this.scheduleService.withdraw(user.id, req);
   }
 
-  @Get('delete')
+  @Post('delete')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'schedule deleted successfully' })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_SCHEDULE })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  async delete(@Query('scheduleId') scheduleId: number, @Token() user: AuthUser): Promise<void> {
-    await this.scheduleService.delete(user.id, scheduleId);
+  @ApiBody({
+    description: 'data to delete schedule',
+    type: ScheduleDeleteRequest,
+  })
+  async delete(@Body() req: ScheduleDeleteRequest, @Token() user: AuthUser): Promise<void> {
+    await this.scheduleService.delete(user.id, req);
   }
 }

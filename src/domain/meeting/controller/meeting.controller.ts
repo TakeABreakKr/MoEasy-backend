@@ -5,7 +5,7 @@ import {
   ApiConsumes,
   ApiOkResponse,
   ApiQuery,
-  ApiTags,
+  ApiTags, ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Body, Controller, Get, Inject, Post, Query, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -30,6 +30,7 @@ export class MeetingController {
   @UseInterceptors(FileInterceptor('thumbnail'))
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
+  @ApiUnauthorizedResponse({status:401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: MeetingCreateRequest,
@@ -42,6 +43,7 @@ export class MeetingController {
   @Post('update')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
+  @ApiUnauthorizedResponse({status:401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiConsumes('application/json')
   @ApiBody({
@@ -56,6 +58,7 @@ export class MeetingController {
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('thumbnail'))
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
+  @ApiUnauthorizedResponse({status:401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: MeetingThumbnailUpdateRequest,
@@ -68,6 +71,7 @@ export class MeetingController {
   @Get('delete')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully deleted.' })
+  @ApiUnauthorizedResponse({status:401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',

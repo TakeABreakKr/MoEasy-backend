@@ -26,4 +26,8 @@ export class ScheduleDao {
   async findByMeetingId(meeting_id: number) {
     return this.scheduleRepository.findBy({ meeting_id });
   }
+
+  async delete(schedule_id: number) {
+    await this.scheduleRepository.delete(schedule_id);
+  }
 }

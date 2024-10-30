@@ -65,7 +65,7 @@ export class MeetingServiceImpl implements MeetingService {
     await this.keywordDao.saveAll(keywords);
 
     const members: Member[] = req.members.map((member) => {
-      const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.MEMBER; //기획변경시 변경
+      const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.MEMBER;
       return Member.create({
         authority,
         meeting_id: meeting.meeting_id,
@@ -75,8 +75,7 @@ export class MeetingServiceImpl implements MeetingService {
     await this.memberDao.saveAll(members);
 
     const content = meeting.name + ' 모임이 생성되었습니다.';
-    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
-
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meeting.meeting_id);
     return MeetingUtils.transformMeetingIdToString(meeting.meeting_id);
   }
 
@@ -96,20 +95,20 @@ export class MeetingServiceImpl implements MeetingService {
 
     let content = '';
     if (!request.name) {
-      content = meeting.name + '이 ' + name + '으로 변경되었습니다.';
+      content = meeting.name + '모임 이름이 ' + name + '으로 변경되었습니다.';
+      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
     }
     if (!request.explanation) {
-      content = meeting.name + '의 소개 내용이 변경되었습니다.';
+      content = meeting.name + '모임 소개가 변경되었습니다.';
+      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
     }
     if (!request.limit) {
       content = meeting.name + '의 인원 제한이 ' + request.limit + '명으로 변경되었습니다.';
+      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
     }
 
     meeting.updateBasicInfo({ name, explanation, limit });
     await this.meetingDao.update(meeting);
-
-    const members = await this.memberDao.findByMeetingId(meetingId);
-    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
   }
 
   @Transactional()
@@ -124,8 +123,7 @@ export class MeetingServiceImpl implements MeetingService {
     await this.meetingDao.update(meeting);
 
     const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
-    const members = await this.memberDao.findByMeetingId(meetingId);
-    members.forEach((member: Member) => this.notificationComponent.addNotification(content, member.users_id));
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
   }
 
   @Transactional()
