@@ -6,7 +6,8 @@ import {
   ApiConsumes,
   ApiOkResponse,
   ApiQuery,
-  ApiTags, ApiUnauthorizedResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ScheduleCreateRequest } from '@domain/schedule/dto/request/schedule.create.request';
 import { ScheduleService } from '@domain/schedule/service/schedule.service.interface';

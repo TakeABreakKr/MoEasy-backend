@@ -32,6 +32,7 @@ export class ScheduleServiceImpl implements ScheduleService {
     private notificationComponent: NotificationComponent,
   ) {}
 
+  @Transactional()
   public async createSchedule(req: ScheduleCreateRequest, requester_id: number): Promise<string> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId);
@@ -56,6 +57,7 @@ export class ScheduleServiceImpl implements ScheduleService {
     return schedule.schedule_id.toString();
   }
 
+  @Transactional()
   public async updateSchedule(req: ScheduleUpdateRequest, requester_id: number): Promise<void> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId);
@@ -133,9 +135,12 @@ export class ScheduleServiceImpl implements ScheduleService {
     const filteredSchedules = schedules.filter((schedule) => {
       const inProgressCondition =
         status.includes(ScheduleStatusEnum.IN_PROGRESS) && schedule.startDate <= now && schedule.endDate >= now;
+      if (inProgressCondition) return true;
+
       const upcomingCondition = status.includes(ScheduleStatusEnum.UPCOMING) && schedule.startDate > now;
-      const completedCondition = status.includes(ScheduleStatusEnum.COMPLETED) && schedule.endDate < now;
-      return inProgressCondition || upcomingCondition || completedCondition;
+      if (upcomingCondition) return true;
+
+      return status.includes(ScheduleStatusEnum.COMPLETED) && schedule.endDate < now;
     });
 
     SortUtils.sort<Schedule>(filteredSchedules, options);
@@ -152,6 +157,7 @@ export class ScheduleServiceImpl implements ScheduleService {
     };
   }
 
+  @Transactional()
   public async withdraw(requester_id: number, req: ScheduleWithdrawRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
     const requester = await this.memberDao.findByUsersAndMeetingId(requester_id, meetingId);
@@ -165,11 +171,12 @@ export class ScheduleServiceImpl implements ScheduleService {
     );
     if (!participant) {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_PARTICIPANT);
-    } else {
-      await this.participantDao.delete(requester_id, req.schedule_id);
     }
+
+    await this.participantDao.delete(requester_id, req.schedule_id);
   }
 
+  @Transactional()
   public async delete(requester_id: number, req: ScheduleDeleteRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId);
