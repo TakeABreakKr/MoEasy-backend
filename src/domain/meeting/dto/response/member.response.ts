@@ -6,7 +6,7 @@ export class MemberResponse {
   username: string;
 
   @ApiProperty()
-  explanation: string; // 엔티티 위치 기획에 물어봄
+  explanation: string;
 
   @ApiProperty()
   authority: AuthorityEnumType; //이거 기획에 따라 삭제될수도

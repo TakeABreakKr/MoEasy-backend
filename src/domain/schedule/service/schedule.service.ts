@@ -21,12 +21,15 @@ import { AuthorityEnum } from '@enums/authority.enum';
 import { ScheduleWithdrawRequest } from '@domain/schedule/dto/request/schedule.withdraw.request';
 import { ScheduleDeleteRequest } from '@domain/schedule/dto/request/schedule.delete.request';
 import { Transactional } from 'typeorm-transactional';
+import { ScheduleListMeetingListDto } from '@domain/schedule/dto/response/schedule.list.meeting.list.dto';
+import { MeetingDao } from '@domain/meeting/dao/meeting.dao';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {
   constructor(
     private scheduleDao: ScheduleDao,
     private memberDao: MemberDao,
+    private meetingDao: MeetingDao,
     private participantDao: ParticipantDao,
     private authorityComponent: AuthorityComponent,
     private notificationComponent: NotificationComponent,
@@ -152,8 +155,19 @@ export class ScheduleServiceImpl implements ScheduleService {
       };
     });
 
+    const meetings = await this.memberDao.findByUserId(requester_id);
+    const meetingIds = meetings.map((meeting) => meeting.meeting_id);
+    const meetingList = await this.meetingDao.findByMeetingIds(meetingIds);
+    const meetingListDtos: ScheduleListMeetingListDto[] = meetingList.map((meeting) => {
+      return {
+        name: meeting.name,
+        thumbnail: meeting.thumbnail,
+      };
+    });
+
     return {
       scheduleList,
+      meetings : meetingListDtos,
     };
   }
 

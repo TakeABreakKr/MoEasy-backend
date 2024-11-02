@@ -89,6 +89,10 @@ export class ScheduleController {
     enum: OrderingOptionEnum,
     description: 'Option to sort scheduleList (LATEST for latest registered, NAME for alphabetical).',
   })
+  @ApiQuery({
+    name: 'meetingId',
+    required: false,
+  })
   async getScheduleList(
     @Token() user: AuthUser,
     @Query('status') status: ScheduleStatusEnumType[],

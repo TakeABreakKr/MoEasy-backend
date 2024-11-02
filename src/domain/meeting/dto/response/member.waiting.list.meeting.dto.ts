@@ -5,6 +5,9 @@ export class MemberWaitingListMeetingDto{
 	@ApiProperty()
 	name: string;
 
-	@ApiProperty()
+	@ApiProperty({
+		type: MemberWaitingListDto,
+		isArray: true,
+	})
 	members: MemberWaitingListDto[];
 }

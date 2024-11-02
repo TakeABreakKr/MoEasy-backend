@@ -110,7 +110,7 @@ export class MemberServiceImpl implements MemberService {
   @Transactional()
   public async join(requester_id: number, req: MemberJoinRequest) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-    const meeting = await this.meetingDao.findById(meetingId);
+    const meeting = await this.meetingDao.findByMeetingId(meetingId);
     if (meeting.canJoin) throw new BadRequestException(ErrorMessageType.JOIN_REQUEST_DISABLED);
     await this.memberDao.create({
       meetingId,
@@ -122,16 +122,15 @@ export class MemberServiceImpl implements MemberService {
 
   @Transactional()
   public async getWaitingList(requester_id: number): Promise<MemberWaitingListResponse> {
-    const meetingIds: number[] = (
-      await this.memberDao.findByUsersAndAuthorities(requester_id, MANAGING_AUTHORITIES)
-    ).map((member) => member.meeting_id);
+    const members = await this.memberDao.findByUsersAndAuthorities(requester_id, MANAGING_AUTHORITIES);
+    const meetingIds: number[] = members.map((member) => member.meeting_id);
 
     const response: MemberWaitingListResponse = {
       meetings: [],
     };
     for (const meetingId of meetingIds) {
       const memberList: MemberWaitingListDto[] = await this.getMemberWaitingListDtos(meetingId);
-      const meeting = await this.meetingDao.findById(meetingId);
+      const meeting = await this.meetingDao.findByMeetingId(meetingId);
       const meetingDto: MemberWaitingListMeetingDto = {
         name: meeting.name,
         members: memberList,

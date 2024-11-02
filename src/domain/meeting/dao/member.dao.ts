@@ -31,6 +31,10 @@ export class MemberDao {
     return this.memberRepository.findBy({ users_id: users_id, authority: In(authority) });
   }
 
+  async findByUserId(users_id: number){
+    return this.memberRepository.findBy({users_id: users_id});
+  }
+
   async create({ authority = AuthorityEnum.WAITING, ...props }: CreateMemberType): Promise<Member> {
     const member: Member = this.memberRepository.create({
       ...props,

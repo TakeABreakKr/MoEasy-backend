@@ -85,7 +85,7 @@ export class MeetingServiceImpl implements MeetingService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
 
-    const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
+    const meeting: Meeting | null = await this.meetingDao.findByMeetingId(meetingId);
     if (!meeting) {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
     }
@@ -119,7 +119,7 @@ export class MeetingServiceImpl implements MeetingService {
 
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
     await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
-    const meeting: Meeting = await this.meetingDao.findById(meetingId);
+    const meeting: Meeting = await this.meetingDao.findByMeetingId(meetingId);
 
     meeting.thumbnail = thumbnailPath;
     await this.meetingDao.update(meeting);
@@ -133,7 +133,7 @@ export class MeetingServiceImpl implements MeetingService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
 
-    const meeting = await this.meetingDao.findById(meetingId);
+    const meeting = await this.meetingDao.findByMeetingId(meetingId);
     const content = meeting.name + ' 모임이 삭제되었습니다.';
     await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
 
@@ -142,7 +142,7 @@ export class MeetingServiceImpl implements MeetingService {
 
   public async getMeeting(meeting_id: string): Promise<MeetingResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
-    const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
+    const meeting: Meeting | null = await this.meetingDao.findByMeetingId(meetingId);
     if (!meeting) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
 
     return this.toGetMeetingResponse(meeting);

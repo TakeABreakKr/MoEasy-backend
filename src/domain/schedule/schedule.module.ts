@@ -9,13 +9,17 @@ import { ScheduleServiceImpl } from '@domain/schedule/service/schedule.service';
 import { MeetingModule } from '@domain/meeting/meeting.module';
 import { NotificationModule } from '@domain/notification/notification.module';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
+import { Meeting } from '@domain/meeting/entity/meeting.entity';
+import { MeetingDao } from '@domain/meeting/dao/meeting.dao';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Schedule, Participant]), MeetingModule, NotificationModule],
+  imports: [TypeOrmModule.forFeature([Schedule, Participant, Meeting]), MeetingModule, NotificationModule],
   controllers: [ScheduleController],
   providers: [
     ScheduleDao,
     ParticipantDao,
+    MeetingDao,
+    NotificationModule,
     { provide: 'ScheduleService', useClass: ScheduleServiceImpl },
     AuthorityComponent,
   ],
