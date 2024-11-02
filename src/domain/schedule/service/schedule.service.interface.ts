@@ -13,9 +13,9 @@ export interface ScheduleService {
   getSchedule(schedule_id: number): Promise<ScheduleResponse>;
   getScheduleList(
     requester_id: number,
-    meeting_id: string,
     status: ScheduleStatusEnumType[],
     options: OrderingOptionEnumType,
+    meetingId?: string,
   ): Promise<ScheduleListResponse>;
   withdraw(requester_id: number, req: ScheduleWithdrawRequest): Promise<void>;
   delete(requester_id: number, req: ScheduleDeleteRequest): Promise<void>;

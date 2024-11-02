@@ -1,4 +1,4 @@
-import type { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,7 +14,7 @@ export class UsersDao {
   }
 
   public async findByIds(usersIds: number[]) {
-    return this.usersRepository.findByIds(usersIds);
+    return this.usersRepository.findBy({ users_id: In(usersIds) });
   }
 
   public async findByDiscordId(discord_id: string): Promise<Users | null> {

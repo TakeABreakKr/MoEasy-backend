@@ -36,4 +36,8 @@ export class Participant extends BaseEntity {
     participant.users_id = users_id;
     return participant;
   }
+
+  async getSchedule(): Promise<Schedule> {
+    return this.schedule;
+  }
 }

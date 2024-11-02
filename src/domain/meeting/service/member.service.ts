@@ -2,31 +2,33 @@ import type { Users } from '@domain/user/entity/users.entity';
 
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
-import { ConfigService } from '@nestjs/config';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
 import { UsersDao } from '@domain/user/dao/users.dao';
 import { MemberDao } from '../dao/member.dao';
+import { MeetingDao } from '../dao/meeting.dao';
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '../entity/member.entity';
-import { AuthorityEnum } from '@enums/authority.enum';
+import { AuthorityEnum, MANAGING_AUTHORITIES } from '@enums/authority.enum';
 import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { MemberAuthorityUpdateRequest } from '@domain/meeting/dto/request/member.authority.update.request';
-import { MemberApplyRequest } from '@domain/meeting/dto/request/member.apply.request';
+import { MemberJoinRequest } from '@domain/meeting/dto/request/member.join.request';
 import { MemberJoinManageRequest } from '@domain/meeting/dto/request/member.join.manage.request';
 import { SortUtils } from '@utils/sort.utils';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
-import { MemberWaitingListDto } from '@domain/meeting/dto/response/member.waiting.list.dto';
 import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
+import { MemberWaitingListDto } from '@domain/meeting/dto/response/member.waiting.list.dto';
+import { MemberWaitingListResponse } from '@domain/meeting/dto/response/member.waiting.list.response';
+import { MemberWaitingListMeetingDto } from '@domain/meeting/dto/response/member.waiting.list.meeting.dto';
 
 @Injectable()
 export class MemberServiceImpl implements MemberService {
   constructor(
-    private configService: ConfigService,
     private usersDao: UsersDao,
     private memberDao: MemberDao,
+    private meetingDao: MeetingDao,
     private notificationComponent: NotificationComponent,
     private authorityComponent: AuthorityComponent,
   ) {}
@@ -95,15 +97,21 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async delete(requester_id: number, req: MemberDeleteRequest): Promise<void> {
-    // TODO : API 확인 후 개발 진행
-    requester_id || req; // 에러 안나오게 깡통 처리
+  public async deleteMember(requester_id: number, req: MemberDeleteRequest): Promise<void> {
+    const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId);
+
+    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(requester_id, meetingId);
+    if (!member) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEMBER);
+
+    await this.memberDao.deleteByUsersAndMeetingId(req.memberId, meetingId);
   }
 
   @Transactional()
-  public async apply(requester_id: number, req: MemberApplyRequest) {
+  public async join(requester_id: number, req: MemberJoinRequest) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-
+    const meeting = await this.meetingDao.findById(meetingId);
+    if (meeting.canJoin) throw new BadRequestException(ErrorMessageType.JOIN_REQUEST_DISABLED);
     await this.memberDao.create({
       meetingId,
       usersId: requester_id,
@@ -113,27 +121,46 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async getWaiting(requester_id: number, meeting_id: string) {
-    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+  public async getWaitingList(requester_id: number): Promise<MemberWaitingListResponse> {
+    const meetingIds: number[] = (
+      await this.memberDao.findByUsersAndAuthorities(requester_id, MANAGING_AUTHORITIES)
+    ).map((member) => member.meeting_id);
 
-    await this.authorityComponent.validateAuthority(requester_id, meetingId);
+    const response: MemberWaitingListResponse = {
+      meetings: [],
+    };
+    for (const meetingId of meetingIds) {
+      const memberList: MemberWaitingListDto[] = await this.getMemberWaitingListDtos(meetingId);
+      const meeting = await this.meetingDao.findById(meetingId);
+      const meetingDto: MemberWaitingListMeetingDto = {
+        name: meeting.name,
+        members: memberList,
+      };
+      response.meetings.push(meetingDto);
+    }
+    return response;
+  }
 
+  private async getMemberWaitingListDtos(meetingId: number): Promise<MemberWaitingListDto[]> {
     const members = await this.memberDao.findByMeetingId(meetingId);
 
     const filteredMembers = members.filter((member: Member) => member.authority === AuthorityEnum.WAITING);
-    SortUtils.sort<Member>(filteredMembers, OrderingOptionEnum.OLDEST);
+    const sortedMembers = SortUtils.sort<Member>(filteredMembers, OrderingOptionEnum.OLDEST);
 
-    const waitingList: MemberWaitingListDto[] = await Promise.all(
-      filteredMembers.map(async (member) => {
-        const users = await member.getUser();
-        return {
-          name: users.username,
-          applicationMessage: member.applicationMessage,
-        };
-      }),
-    );
+    const userIds: number[] = sortedMembers.map((member: Member) => member.users_id);
+    const userList: Users[] = await this.usersDao.findByIds(userIds);
+    const usernameMap: Map<number, string> = new Map();
+    userList.forEach((user) => {
+      usernameMap.set(user.users_id, user.username);
+    });
 
-    return waitingList;
+    return sortedMembers.map((member) => {
+      const username: string = usernameMap.get(member.users_id);
+      return {
+        name: username,
+        applicationMessage: member.applicationMessage,
+      };
+    });
   }
 
   @Transactional()
@@ -143,14 +170,16 @@ export class MemberServiceImpl implements MemberService {
     await this.authorityComponent.validateAuthority(req.memberId, meetingId, [AuthorityEnum.WAITING]);
 
     const member = await this.memberDao.findByUsersAndMeetingId(req.memberId, meetingId);
+    const user = await member.getUser();
     if (req.isAccepted) {
       await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
 
-      const user = await member.getUser();
       const content = user.username + '님의 가입이 수락되었습니다.';
       await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
     } else {
+      const content = user.username + '님의 가입이 거절되었습니다.';
       await this.memberDao.deleteByUsersAndMeetingId(req.memberId, meetingId);
+      await this.notificationComponent.addNotification(content, requesterId);
     }
   }
 }

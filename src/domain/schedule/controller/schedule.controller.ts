@@ -89,12 +89,12 @@ export class ScheduleController {
     description: 'Option to sort scheduleList (LATEST for latest registered, NAME for alphabetical).',
   })
   async getScheduleList(
-    @Query('meetingId') meetingId: string,
+    @Token() user: AuthUser,
     @Query('status') status: ScheduleStatusEnumType[],
     @Query('options') options: OrderingOptionEnumType,
-    @Token() user: AuthUser,
+    @Query('meetingId') meetingId?: string,
   ): Promise<ScheduleListResponse> {
-    return this.scheduleService.getScheduleList(user.id, meetingId, status, options);
+    return this.scheduleService.getScheduleList(user.id, status, options, meetingId);
   }
 
   @Post('withdraw')

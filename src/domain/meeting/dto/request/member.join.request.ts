@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class MemberApplyRequest {
+export class MemberJoinRequest {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

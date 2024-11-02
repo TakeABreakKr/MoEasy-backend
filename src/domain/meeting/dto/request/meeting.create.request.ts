@@ -33,5 +33,5 @@ export class MeetingCreateRequest {
 
   @ApiProperty()
   @IsBoolean()
-  isJoinClosed: boolean;
+  canJoin: boolean = true;
 }

@@ -18,7 +18,19 @@ export class ParticipantDao {
     return await this.participantRepository.findOneBy({ schedule_id: schedule_id, users_id: user_id });
   }
 
+  async findByScheduleId(schedule_id: number): Promise<Participant[]> {
+    return this.participantRepository.findBy({ schedule_id: schedule_id });
+  }
+
+  async findAllByUserId(user_id: number) {
+    return this.participantRepository.findBy({ users_id: user_id });
+  }
+
   async delete(user_id: number, schedule_id: number): Promise<void> {
     await this.participantRepository.delete({ schedule_id: schedule_id, users_id: user_id });
+  }
+
+  async deleteAll(userIds: number[], scheduleId: number): Promise<void> {
+    await this.participantRepository.delete({ users_id: In(userIds), schedule_id: scheduleId });
   }
 }

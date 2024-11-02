@@ -48,6 +48,7 @@ export class MeetingServiceImpl implements MeetingService {
       explanation: req.explanation,
       limit: req.limit,
       thumbnail: thumbnailPath,
+      canJoin: req.canJoin,
     });
 
     const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
@@ -92,6 +93,7 @@ export class MeetingServiceImpl implements MeetingService {
     const name: string = request.name || meeting.name;
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
+    const canJoin = request.canJoin || meeting.canJoin;
 
     let content = '';
     if (!request.name) {
@@ -107,7 +109,7 @@ export class MeetingServiceImpl implements MeetingService {
       await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
     }
 
-    meeting.updateBasicInfo({ name, explanation, limit });
+    meeting.updateBasicInfo({ name, explanation, limit, canJoin });
     await this.meetingDao.update(meeting);
   }
 
@@ -130,6 +132,11 @@ export class MeetingServiceImpl implements MeetingService {
   public async deleteMeeting(meeting_id: string, requester_id: number) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+
+    const meeting = await this.meetingDao.findById(meetingId);
+    const content = meeting.name + ' 모임이 삭제되었습니다.';
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+
     await this.meetingDao.delete(meetingId);
   }
 
@@ -153,6 +160,7 @@ export class MeetingServiceImpl implements MeetingService {
         meetingId: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
         name: meeting.name,
         explanation: meeting.explanation,
+        canJoin: meeting.canJoin,
       };
     });
 
@@ -200,6 +208,7 @@ export class MeetingServiceImpl implements MeetingService {
       limit: meeting.limit,
       thumbnail: meeting.thumbnail,
       members: memberDtos,
+      canJoin: meeting.canJoin,
     };
   }
 }

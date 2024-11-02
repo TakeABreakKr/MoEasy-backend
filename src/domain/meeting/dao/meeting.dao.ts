@@ -12,17 +12,15 @@ export class MeetingDao {
   }
 
   async create({
-    name,
-    explanation,
-    limit,
-    thumbnail,
+    ...props
   }: {
     name: string;
     explanation: string;
     limit: number;
     thumbnail: string;
+    canJoin: boolean;
   }): Promise<Meeting> {
-    const meeting = this.meetingRepository.create({ name, limit, explanation, thumbnail });
+    const meeting = this.meetingRepository.create({ ...props });
     await this.meetingRepository.save(meeting);
     return meeting;
   }

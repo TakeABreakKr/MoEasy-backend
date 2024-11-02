@@ -15,9 +15,10 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { AuthUser, Token } from '@decorator/token.decorator';
 import { MemberAuthorityUpdateRequest } from '@domain/meeting/dto/request/member.authority.update.request';
 import { MemberResponse } from '@domain/meeting/dto/response/member.response';
-import { MemberApplyRequest } from '@domain/meeting/dto/request/member.apply.request';
+import { MemberJoinRequest } from '@domain/meeting/dto/request/member.join.request';
 import { MemberJoinManageRequest } from '@domain/meeting/dto/request/member.join.manage.request';
 import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
+import { MemberWaitingListResponse } from '@domain/meeting/dto/response/member.waiting.list.response';
 
 @ApiTags('member')
 @Controller('member')
@@ -93,7 +94,7 @@ export class MemberController {
     type: MemberDeleteRequest,
   })
   async delete(@Body() req: MemberDeleteRequest, @Token() user: AuthUser) {
-    await this.memberService.delete(user.id, req);
+    await this.memberService.deleteMember(user.id, req);
   }
 
   @Post('apply')
@@ -107,10 +108,10 @@ export class MemberController {
   @ApiConsumes('application/json')
   @ApiBody({
     description: 'data required for applying to become a meeting member.',
-    type: MemberApplyRequest,
+    type: MemberJoinRequest,
   })
-  async apply(@Body() req: MemberApplyRequest, @Token() user: AuthUser) {
-    return this.memberService.apply(user.id, req);
+  async apply(@Body() req: MemberJoinRequest, @Token() user: AuthUser) {
+    return this.memberService.join(user.id, req);
   }
 
   @Get('waiting/get')
@@ -118,11 +119,11 @@ export class MemberController {
   @ApiOkResponse({ status: 200, description: 'waiting list retrieved successfully' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiQuery({ name: 'meetingId', type: String, required: true })
-  async getWaiting(@Query('meetingId') meetingId: string, @Token() user: AuthUser) {
-    await this.memberService.getWaiting(user.id, meetingId);
+  async getWaiting(@Token() user: AuthUser): Promise<MemberWaitingListResponse> {
+    return this.memberService.getWaitingList(user.id);
   }
 
-  @Post('waiting/accept')
+  @Post('manage')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'member join approved successfully' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
@@ -131,20 +132,7 @@ export class MemberController {
     description: 'data required for member approval',
     type: MemberJoinManageRequest,
   })
-  async acceptMemberJoin(req: MemberJoinManageRequest, @Token() user: AuthUser) {
-    await this.memberService.manageMemberJoin(user.id, req);
-  }
-
-  @Post('waiting/delete')
-  @ApiBearerAuth()
-  @ApiOkResponse({ status: 200, description: 'member join deleted successfully' })
-  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  @ApiConsumes('application/json')
-  @ApiBody({
-    description: 'data required for member denial',
-    type: MemberJoinManageRequest,
-  })
-  async deleteMemberJoin(req: MemberJoinManageRequest, @Token() user: AuthUser) {
+  async manageMemberJoin(req: MemberJoinManageRequest, @Token() user: AuthUser) {
     await this.memberService.manageMemberJoin(user.id, req);
   }
 }
