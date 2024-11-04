@@ -9,7 +9,6 @@ import { MeetingService } from '@domain/meeting/service/meeting.service.interfac
 import { AuthUser } from '@decorator/token.decorator';
 import { AuthorityEnum } from '@enums/authority.enum';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
-import { Meeting } from '@domain/meeting/entity/meeting.entity';
 
 class MockMeetingService implements MeetingService {
   public static meetingId: string = 'OOOOOOO1';
