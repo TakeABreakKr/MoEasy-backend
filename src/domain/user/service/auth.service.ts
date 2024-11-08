@@ -3,11 +3,11 @@ import type { Users } from '../entity/users.entity';
 import type { DiscordProfileDto } from '../dto/discord.profile.dto';
 import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 import type { TokenDto } from '../dto/token.dto';
-import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.info.response';
+import type { DiscordUserByTokenDto } from '../../discord/dto/response/discord.authorized.info.response';
 
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { DiscordComponent } from '../component/discord.component';
+import { UserComponent } from '../../discord/component/user.component';
 import { UsersDao } from '../dao/users.dao';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthUser } from '@decorator/token.decorator';
@@ -24,7 +24,7 @@ export class AuthService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
-    private discordComponent: DiscordComponent,
+    private discordComponent: UserComponent,
     private usersDao: UsersDao,
   ) {
     this.ACCESS_TOKEN_SECRET_KEY = this.configService.get('auth.ACCESS_TOKEN_SECRET_KEY');

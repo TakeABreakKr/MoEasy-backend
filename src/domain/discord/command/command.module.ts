@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SlashCommandModule } from '@bot/command/slash/slash.command.module';
+import { SlashCommandModule } from '@domain/discord/command/slash/slash.command.module';
 
 @Module({
   imports: [SlashCommandModule],

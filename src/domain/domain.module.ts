@@ -3,8 +3,9 @@ import { MeetingModule } from './meeting/meeting.module';
 import { UsersModule } from './user/users.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { NotificationModule } from '@domain/notification/notification.module';
+import { DiscordModule } from '@domain/discord/discord.module';
 
 @Module({
-  imports: [UsersModule, MeetingModule, ScheduleModule, NotificationModule],
+  imports: [UsersModule, MeetingModule, ScheduleModule, NotificationModule, DiscordModule],
 })
 export class DomainModule {}
