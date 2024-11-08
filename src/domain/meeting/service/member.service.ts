@@ -22,6 +22,7 @@ import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.r
 import { MemberWaitingListDto } from '@domain/meeting/dto/response/member.waiting.list.dto';
 import { MemberWaitingListResponse } from '@domain/meeting/dto/response/member.waiting.list.response';
 import { MemberWaitingListMeetingDto } from '@domain/meeting/dto/response/member.waiting.list.meeting.dto';
+import { MemberResponse } from '@domain/meeting/dto/response/member.response';
 
 @Injectable()
 export class MemberServiceImpl implements MemberService {
@@ -40,7 +41,7 @@ export class MemberServiceImpl implements MemberService {
     }; // TODO: develop after friend system
   }
 
-  public async getMember(meeting_id: string, user_id: number) {
+  public async getMember(meeting_id: string, user_id: number) : Promise<MemberResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(user_id, meetingId);
     const user: Users | null = await this.usersDao.findById(user_id);
@@ -116,7 +117,7 @@ export class MemberServiceImpl implements MemberService {
       meetingId,
       usersId: requester_id,
       authority: AuthorityEnum.WAITING,
-      applicationMessage: req.applicationMessage,
+      applicationMessage: req.joinMessage,
     });
   }
 

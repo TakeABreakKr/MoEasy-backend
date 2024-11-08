@@ -16,7 +16,7 @@ export class MeetingDao {
   }
 
   async create({
-    ...props
+    ...meetingProps
   }: {
     name: string;
     explanation: string;
@@ -24,7 +24,7 @@ export class MeetingDao {
     thumbnail: string;
     canJoin: boolean;
   }): Promise<Meeting> {
-    const meeting = this.meetingRepository.create({ ...props });
+    const meeting = this.meetingRepository.create({ ...meetingProps });
     await this.meetingRepository.save(meeting);
     return meeting;
   }

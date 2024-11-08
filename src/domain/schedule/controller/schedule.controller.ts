@@ -124,7 +124,7 @@ export class ScheduleController {
     description: 'data to delete schedule',
     type: ScheduleDeleteRequest,
   })
-  async delete(@Body() req: ScheduleDeleteRequest, @Token() user: AuthUser): Promise<void> {
+  async deleteSchedule(@Body() req: ScheduleDeleteRequest, @Token() user: AuthUser): Promise<void> {
     await this.scheduleService.delete(user.id, req);
   }
 }
