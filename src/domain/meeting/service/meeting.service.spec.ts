@@ -1,4 +1,3 @@
-import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MeetingServiceImpl } from '@domain/meeting/service/meeting.service';
 import { FileService } from '@file/service/file.service';

@@ -41,7 +41,7 @@ export class MemberServiceImpl implements MemberService {
     }; // TODO: develop after friend system
   }
 
-  public async getMember(meeting_id: string, user_id: number) : Promise<MemberResponse> {
+  public async getMember(meeting_id: string, user_id: number): Promise<MemberResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(user_id, meetingId);
     const user: Users | null = await this.usersDao.findById(user_id);
