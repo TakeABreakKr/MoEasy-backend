@@ -127,15 +127,18 @@ export class MemberServiceImpl implements MemberService {
     const response: MemberWaitingListResponse = {
       meetings: [],
     };
-    for (const meetingId of meetingIds) {
+    const promises = meetingIds.map(async (meetingId) => {
       const memberList: MemberWaitingListDto[] = await this.getMemberWaitingListDtos(meetingId);
       const meeting = await this.meetingDao.findByMeetingId(meetingId);
-      const meetingDto: MemberWaitingListMeetingDto = {
+      return {
         name: meeting.name,
         members: memberList,
       };
-      response.meetings.push(meetingDto);
-    }
+    });
+
+    const results: MemberWaitingListMeetingDto[] = await Promise.all(promises);
+    response.meetings.push(...results);
+
     return response;
   }
 
