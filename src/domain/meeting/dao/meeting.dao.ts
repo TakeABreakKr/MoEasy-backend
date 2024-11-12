@@ -11,19 +11,11 @@ export class MeetingDao {
     return this.meetingRepository.findOneBy({ meeting_id: id });
   }
 
-  async findByMeetingIds(ids: number[]){
-    return this.meetingRepository.findBy({ meeting_id: In(ids)});
+  async findByMeetingIds(ids: number[]) {
+    return this.meetingRepository.findBy({ meeting_id: In(ids) });
   }
 
-  async create({
-    props : {
-      name: string;
-      explanation: string;
-      limit: number;
-      thumbnail: string;
-      canJoin: boolean;
-    }
-  }: {
+  async create(props: {
     name: string;
     explanation: string;
     limit: number;
