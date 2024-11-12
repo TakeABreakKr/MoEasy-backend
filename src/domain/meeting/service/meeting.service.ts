@@ -23,6 +23,8 @@ import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { SortUtils } from '@utils/sort.utils';
+import { NotificationComponent } from '@domain/notification/component/notification.component';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {
@@ -34,6 +36,8 @@ export class MeetingServiceImpl implements MeetingService {
     private memberDao: MemberDao,
     private keywordDao: KeywordDao,
     private usersDao: UsersDao,
+    private authorityComponent: AuthorityComponent,
+    private notificationComponent: NotificationComponent,
   ) {}
 
   @Transactional()
@@ -44,24 +48,25 @@ export class MeetingServiceImpl implements MeetingService {
       explanation: req.explanation,
       limit: req.limit,
       thumbnail: thumbnailPath,
+      canJoin: req.canJoin,
     });
 
     const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
 
     if (keywordsCount > 10) {
-      throw new Error('키워드 개수는 10개까지 가능합니다.');
+      throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
     }
 
     const keywords: Keyword[] = req.keywords.map((keyword) => {
       if (keyword.length > 10) {
-        throw new Error('키워드 글자수는 10자까지 가능합니다!');
+        throw new BadRequestException(ErrorMessageType.INVALID_KEYWORD_LENGTH);
       }
       return Keyword.create(keyword, meeting.meeting_id);
     });
     await this.keywordDao.saveAll(keywords);
 
     const members: Member[] = req.members.map((member) => {
-      const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.INVITED;
+      const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.MEMBER;
       return Member.create({
         authority,
         meeting_id: meeting.meeting_id,
@@ -70,14 +75,17 @@ export class MeetingServiceImpl implements MeetingService {
     });
     await this.memberDao.saveAll(members);
 
+    const content = meeting.name + ' 모임이 생성되었습니다.';
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meeting.meeting_id);
     return MeetingUtils.transformMeetingIdToString(meeting.meeting_id);
   }
 
   @Transactional()
-  public async updateMeeting(request: MeetingUpdateRequest) {
+  public async updateMeeting(request: MeetingUpdateRequest, requester_id: number) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
 
-    const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
+    const meeting: Meeting | null = await this.meetingDao.findByMeetingId(meetingId);
     if (!meeting) {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
     }
@@ -85,28 +93,57 @@ export class MeetingServiceImpl implements MeetingService {
     const name: string = request.name || meeting.name;
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
+    const canJoin = request.canJoin || meeting.canJoin;
 
-    meeting.updateBasicInfo({ name, explanation, limit });
+    let content = '';
+    if (!request.name) {
+      content = meeting.name + '모임 이름이 ' + name + '으로 변경되었습니다.';
+      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+    }
+    if (!request.explanation) {
+      content = meeting.name + '모임 소개가 변경되었습니다.';
+      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+    }
+    if (!request.limit) {
+      content = meeting.name + '의 인원 제한이 ' + request.limit + '명으로 변경되었습니다.';
+      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+    }
+
+    meeting.updateBasicInfo({ name, explanation, limit, canJoin });
     await this.meetingDao.update(meeting);
   }
 
   @Transactional()
-  public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest) {
+  public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requester_id: number) {
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(request.thumbnail);
 
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
-    const meeting: Meeting = await this.meetingDao.findById(meetingId);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+    const meeting: Meeting = await this.meetingDao.findByMeetingId(meetingId);
 
     meeting.thumbnail = thumbnailPath;
     await this.meetingDao.update(meeting);
+
+    const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+  }
+
+  @Transactional()
+  public async deleteMeeting(meeting_id: string, requester_id: number) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+
+    const meeting = await this.meetingDao.findByMeetingId(meetingId);
+    const content = meeting.name + ' 모임이 삭제되었습니다.';
+    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+
+    await this.meetingDao.delete(meetingId);
   }
 
   public async getMeeting(meeting_id: string): Promise<MeetingResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
-    const meeting: Meeting | null = await this.meetingDao.findById(meetingId);
-    if (!meeting) {
-      throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
-    }
+    const meeting: Meeting | null = await this.meetingDao.findByMeetingId(meetingId);
+    if (!meeting) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
 
     return this.toGetMeetingResponse(meeting);
   }
@@ -123,6 +160,7 @@ export class MeetingServiceImpl implements MeetingService {
         meetingId: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
         name: meeting.name,
         explanation: meeting.explanation,
+        canJoin: meeting.canJoin,
       };
     });
 
@@ -170,6 +208,7 @@ export class MeetingServiceImpl implements MeetingService {
       limit: meeting.limit,
       thumbnail: meeting.thumbnail,
       members: memberDtos,
+      canJoin: meeting.canJoin,
     };
   }
 }

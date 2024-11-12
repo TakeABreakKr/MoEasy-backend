@@ -54,4 +54,7 @@ export abstract class ScheduleRequest {
   @IsOptional()
   @IsString()
   detailAddress: string;
+
+  @ApiProperty()
+  participants: number[];
 }

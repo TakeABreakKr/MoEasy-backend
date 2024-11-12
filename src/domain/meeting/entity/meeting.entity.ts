@@ -29,6 +29,9 @@ export class Meeting extends BaseEntity {
   @Column()
   thumbnail: string;
 
+  @Column()
+  canJoin: boolean;
+
   @OneToMany(() => Keyword, (keyword) => keyword.meeting)
   keywords: Promise<Keyword[]>;
 
@@ -50,9 +53,20 @@ export class Meeting extends BaseEntity {
     return this.members;
   }
 
-  updateBasicInfo({ name, explanation, limit }: { name: string; explanation: string; limit: number }) {
+  updateBasicInfo({
+    name,
+    explanation,
+    limit,
+    canJoin,
+  }: {
+    name: string;
+    explanation: string;
+    limit: number;
+    canJoin: boolean;
+  }) {
     this.name = name;
     this.explanation = explanation;
     this.limit = limit;
+    this.canJoin = canJoin;
   }
 }
