@@ -19,4 +19,7 @@ export class MeetingResponse {
 
   @ApiProperty()
   thumbnail?: string;
+
+  @ApiProperty()
+  canJoin: boolean;
 }

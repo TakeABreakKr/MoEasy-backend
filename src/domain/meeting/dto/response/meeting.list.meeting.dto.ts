@@ -15,4 +15,7 @@ export class MeetingListMeetingDto {
     enum: AuthorityEnum,
   })
   authority?: AuthorityEnumType;
+
+  @ApiProperty()
+  canJoin: boolean;
 }

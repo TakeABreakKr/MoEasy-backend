@@ -8,7 +8,8 @@ type CreateMemberDto = {
   meeting_id: number;
   users_id: number;
   authority?: AuthorityEnumType;
-  waitingNumber?: number;
+  updatedAt?: Date;
+  applicationMessage?: string;
 };
 
 @Entity()
@@ -41,20 +42,20 @@ export class Member extends BaseEntity {
   authority: AuthorityEnumType;
 
   @Column({
-    type: 'integer',
-    default: null,
+    type: String,
   })
-  waitingNumber: number | null;
+  applicationMessage: string;
 
-  static create({ meeting_id, users_id, authority, waitingNumber }: CreateMemberDto): Member {
+  static create({ meeting_id, users_id, authority, updatedAt, applicationMessage }: CreateMemberDto): Member {
     const member = new Member();
     member.meeting_id = meeting_id;
     member.users_id = users_id;
+    member.updatedAt = updatedAt;
     if (authority) {
       member.authority = authority;
     }
-    if (waitingNumber) {
-      member.waitingNumber = waitingNumber;
+    if (applicationMessage) {
+      member.applicationMessage = applicationMessage;
     }
     return member;
   }
