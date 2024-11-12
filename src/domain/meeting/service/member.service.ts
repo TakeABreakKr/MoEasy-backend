@@ -120,7 +120,6 @@ export class MemberServiceImpl implements MemberService {
     });
   }
 
-  @Transactional()
   public async getWaitingList(requester_id: number): Promise<MemberWaitingListResponse> {
     const members = await this.memberDao.findByUsersAndAuthorities(requester_id, MANAGING_AUTHORITIES);
     const meetingIds: number[] = members.map((member) => member.meeting_id);
