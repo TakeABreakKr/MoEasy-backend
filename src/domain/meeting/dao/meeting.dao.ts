@@ -16,7 +16,13 @@ export class MeetingDao {
   }
 
   async create({
-    ...props
+    props : {
+      name: string;
+      explanation: string;
+      limit: number;
+      thumbnail: string;
+      canJoin: boolean;
+    }
   }: {
     name: string;
     explanation: string;
