@@ -1,7 +1,6 @@
 import type { Response } from 'express';
 import type { Users } from '../entity/users.entity';
 import type { DiscordProfileDto } from '../dto/discord.profile.dto';
-import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 import type { TokenDto } from '../dto/token.dto';
 import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.info.response';
 
@@ -35,9 +34,9 @@ export class AuthService {
     throw new Error('not presented yet!!');
   }
 
-  public async callback(req: AuthCallbackRequest, res: Response) {
+  public async callback(code: string, res: Response) {
     const { accessToken: discordAccessToken, refreshToken: discordRefreshToken }: TokenDto =
-      await this.discordComponent.getTokens(req);
+      await this.discordComponent.getTokens(code);
 
     const discordUser: DiscordUserByTokenDto = await this.discordComponent.getUser({
       accessToken: discordAccessToken,

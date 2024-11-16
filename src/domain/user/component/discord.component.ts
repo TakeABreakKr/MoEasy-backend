@@ -1,4 +1,3 @@
-import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 import type { TokenDto } from '../dto/token.dto';
 import type { DiscordAccessTokenResponse } from '../dto/response/discord.access.token.response';
 import type {
@@ -21,7 +20,7 @@ export class DiscordComponent {
     this.baseURL = this.configService.get('discord.host');
   }
 
-  public async getTokens(req: AuthCallbackRequest): Promise<TokenDto> {
+  public async getTokens(code: string): Promise<TokenDto> {
     const { data }: { data: DiscordAccessTokenResponse } = await this.httpService.axiosRef.request({
       method: 'post',
       baseURL: this.baseURL,
@@ -30,8 +29,8 @@ export class DiscordComponent {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       data: {
+        code,
         grant_type: 'authorization_code',
-        code: req.code,
       },
     });
     return {

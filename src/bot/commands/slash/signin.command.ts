@@ -1,5 +1,5 @@
 import { Command, Handler } from '@discord-nestjs/core';
-import configuration from '../../../config/configuration';
+import configuration from '@config/configuration';
 
 @Command({
   name: 'signin',
@@ -10,6 +10,6 @@ export class SigninCommand {
   onPing(): string {
     const clientId: string = configuration().discord.client_id;
     const redirectUri: string = configuration().host + '/auth/callback';
-    return `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=relationships.read+identify+email`;
+    return `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=identify%20email`;
   }
 }
