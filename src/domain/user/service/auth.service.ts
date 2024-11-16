@@ -24,7 +24,7 @@ export class AuthService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
-    private discordComponent: UserComponent,
+    private userComponent: UserComponent,
     private usersDao: UsersDao,
   ) {
     this.ACCESS_TOKEN_SECRET_KEY = this.configService.get('auth.ACCESS_TOKEN_SECRET_KEY');
@@ -37,9 +37,9 @@ export class AuthService {
 
   public async callback(req: AuthCallbackRequest, res: Response) {
     const { accessToken: discordAccessToken, refreshToken: discordRefreshToken }: TokenDto =
-      await this.discordComponent.getTokens(req);
+      await this.userComponent.getTokens(req);
 
-    const discordUser: DiscordUserByTokenDto = await this.discordComponent.getUser({
+    const discordUser: DiscordUserByTokenDto = await this.userComponent.getUser({
       accessToken: discordAccessToken,
       refreshToken: discordRefreshToken,
     });
