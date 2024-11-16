@@ -1,5 +1,5 @@
-import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
-import type { TokenDto } from '../dto/token.dto';
+import type { AuthCallbackRequest } from '@domain/user/dto/request/auth.callback.request';
+import type { TokenDto } from '@domain/user/dto/token.dto';
 import type { DiscordAccessTokenResponse } from '../dto/response/discord.access.token.response';
 import type {
   DiscordAuthorizedInfoResponse,
@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class DiscordComponent {
+export class UserComponent {
   private readonly baseURL: string;
 
   constructor(

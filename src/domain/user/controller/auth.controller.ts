@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '@decorator/public.decorator';
@@ -18,7 +18,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('callback')
+  @Get('callback')
   async callback(@Body() req: AuthCallbackRequest, @Res() res: Response) {
     await this.authService.callback(req, res);
   }
