@@ -1,4 +1,4 @@
-import type { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,8 +9,12 @@ import { ScheduleCreateVO } from '@domain/schedule/vo/schedule.create.vo';
 export class ScheduleDao {
   constructor(@InjectRepository(Schedule) private scheduleRepository: Repository<Schedule>) {}
 
-  async findById(id: number): Promise<Schedule | null> {
-    return this.scheduleRepository.findOneBy({ schedule_id: id });
+  async findByScheduleId(schedule_id: number): Promise<Schedule | null> {
+    return this.scheduleRepository.findOneBy({ schedule_id: schedule_id });
+  }
+
+  async findAllByScheduleIds(schedule_ids: number[]): Promise<Schedule[]> {
+    return this.scheduleRepository.findBy({ schedule_id: In(schedule_ids) });
   }
 
   async create(scheduleCreateVO: ScheduleCreateVO): Promise<Schedule> {
@@ -25,5 +29,9 @@ export class ScheduleDao {
 
   async findByMeetingId(meeting_id: number) {
     return this.scheduleRepository.findBy({ meeting_id });
+  }
+
+  async delete(schedule_id: number) {
+    await this.scheduleRepository.delete(schedule_id);
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Member } from '../entity/member.entity';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 
@@ -8,6 +8,7 @@ type CreateMemberType = {
   meetingId: number;
   usersId: number;
   authority?: AuthorityEnumType;
+  applicationMessage?: string;
 };
 
 @Injectable()
@@ -26,11 +27,19 @@ export class MemberDao {
     return this.memberRepository.findBy({ meeting_id });
   }
 
-  async create({ meetingId, usersId, authority = AuthorityEnum.WAITING }: CreateMemberType): Promise<Member> {
+  async findByUsersAndAuthorities(users_id: number, authority: AuthorityEnumType[]): Promise<Member[]> {
+    return this.memberRepository.findBy({ users_id: users_id, authority: In(authority) });
+  }
+
+  async findByUserId(users_id: number){
+    return this.memberRepository.findBy({users_id: users_id});
+  }
+
+  async create({ authority = AuthorityEnum.WAITING, ...props }: CreateMemberType): Promise<Member> {
     const member: Member = this.memberRepository.create({
-      meeting_id: meetingId,
-      users_id: usersId,
+      ...props,
       authority: authority,
+      updatedAt: new Date(),
     });
     await this.memberRepository.save(member);
     return member;

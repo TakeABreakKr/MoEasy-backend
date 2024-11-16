@@ -3,17 +3,22 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiForbiddenResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { MemberService } from '../service/member.service.interface';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
-import { MemberInviteRequest } from '../dto/request/member.invite.request';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { AuthUser, Token } from '@decorator/token.decorator';
+import { MemberAuthorityUpdateRequest } from '@domain/meeting/dto/request/member.authority.update.request';
+import { MemberResponse } from '@domain/meeting/dto/response/member.response';
+import { MemberJoinRequest } from '@domain/meeting/dto/request/member.join.request';
+import { MemberJoinManageRequest } from '@domain/meeting/dto/request/member.join.manage.request';
+import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.request';
+import { MemberWaitingListResponse } from '@domain/meeting/dto/response/member.waiting.list.response';
 
 @ApiTags('member')
 @Controller('member')
@@ -23,51 +28,111 @@ export class MemberController {
   @Get('search')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'withdraw succeed', type: MemberSearchResponse })
+  @ApiQuery({
+    name: 'keyword',
+    type: String,
+    required: true,
+  })
   async search(@Query() keyword: string): Promise<MemberSearchResponse> {
     return this.memberService.search(keyword);
   }
 
-  @Post('withdraw')
+  @Get('get')
+  @ApiOkResponse({
+    status: 200,
+    description: 'Member retrieved successfully',
+    type: MemberResponse,
+  })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEMBER })
+  @ApiQuery({
+    name: 'meetingId',
+    type: String,
+    required: true,
+  })
+  @ApiQuery({
+    name: 'userId',
+    type: Number,
+    required: true,
+  })
+  async getMember(@Query('meetingId') meetingId: string, @Query('userId') userId: number): Promise<MemberResponse> {
+    return this.memberService.getMember(meetingId, userId);
+  }
+
+  @Get('withdraw')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'withdraw succeed' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  @ApiConsumes('application/json')
-  @ApiBody({})
-  async withdraw(@Body('meetingId') meeting_id: string, @Token() user: AuthUser) {
-    await this.memberService.withdraw(user.id, meeting_id);
+  @ApiQuery({
+    name: 'meetingId',
+    type: String,
+    required: true,
+  })
+  async withdraw(@Query('meetingId') meetingId: string, @Token() user: AuthUser) {
+    await this.memberService.withdraw(user.id, meetingId);
   }
 
-  @Post('invite')
+  @Post('authority/update')
   @ApiBearerAuth()
-  @ApiOkResponse({ status: 200, description: 'invite url created', type: String })
+  @ApiOkResponse({ status: 200, description: 'authority updated succeed' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  @ApiForbiddenResponse({ status: 403, description: ErrorMessageType.FORBIDDEN_INVITE_REQUEST })
   @ApiConsumes('application/json')
   @ApiBody({
-    description: 'necessary info for invite to meeting',
-    type: MemberInviteRequest,
+    description: 'data to update member authority',
+    type: MemberAuthorityUpdateRequest,
   })
-  async invite(@Body() req: MemberInviteRequest, @Token() user: AuthUser): Promise<string> {
-    return this.memberService.invite(user.id, req);
+  async modify(@Body() req: MemberAuthorityUpdateRequest, @Token() user: AuthUser) {
+    await this.memberService.updateAuthority(user.id, req);
   }
 
-  @Get('invite/accept')
+  @Post('delete')
   @ApiBearerAuth()
-  @ApiOkResponse({ status: 200, description: 'invite accepted successfully' })
-  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.WRONG_INVITE_URL })
-  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.MALFORMED_INVITE_URL })
-  async accept(@Query('usersId') usersId: number, @Query('meetingId') meetingId: string, @Token() user: AuthUser) {
-    await this.memberService.accept(user.id, usersId, meetingId);
+  @ApiOkResponse({ status: 200, description: 'member deleted successfully' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    description: 'info for deleting a member',
+    type: MemberDeleteRequest,
+  })
+  async delete(@Body() req: MemberDeleteRequest, @Token() user: AuthUser) {
+    await this.memberService.deleteMember(user.id, req);
   }
 
-  @Get('invite/approve')
+  @Post('join')
   @ApiBearerAuth()
-  @ApiOkResponse({ status: 200, description: 'member approved successfully' })
-  async approve(
-    @Query('requesterId') requesterId: number,
-    @Query('userId') usersId: number,
-    @Query('meetingId') meetingId: string,
-  ) {
-    await this.memberService.approve(requesterId, usersId, meetingId);
+  @ApiOkResponse({
+    status: 200,
+    description: 'The join request has been successfully submitted and is awaiting approval.',
+  })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    description: 'data required to become a meeting member.',
+    type: MemberJoinRequest,
+  })
+  async join(@Body() req: MemberJoinRequest, @Token() user: AuthUser) {
+    return this.memberService.join(user.id, req);
+  }
+
+  @Get('waiting/get')
+  @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'waiting list retrieved successfully', type: MemberWaitingListResponse })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiQuery({ name: 'meetingId', type: String, required: true })
+  async getWaiting(@Token() user: AuthUser): Promise<MemberWaitingListResponse> {
+    return this.memberService.getWaitingList(user.id);
+  }
+
+  @Post('manage')
+  @ApiBearerAuth()
+  @ApiOkResponse({ status: 200, description: 'member join approved successfully' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiConsumes('application/json')
+  @ApiBody({
+    description: 'data required for member approval',
+    type: MemberJoinManageRequest,
+  })
+  async manageMemberJoin(req: MemberJoinManageRequest, @Token() user: AuthUser) {
+    await this.memberService.manageMemberJoin(user.id, req);
   }
 }

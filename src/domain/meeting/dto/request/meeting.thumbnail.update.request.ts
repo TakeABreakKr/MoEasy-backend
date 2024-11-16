@@ -5,7 +5,7 @@ export class MeetingThumbnailUpdateRequest {
   meetingId: string;
 
   @ApiProperty({
-    type: 'string',
+    type: String,
     format: 'binary',
   })
   thumbnail: Express.Multer.File;
