@@ -9,11 +9,16 @@ import { MeetingService } from '@domain/meeting/service/meeting.service.interfac
 import { AuthUser } from '@decorator/token.decorator';
 import { AuthorityEnum } from '@enums/authority.enum';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
+import { ErrorMessageType } from '@enums/error.message.enum';
+import { ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { BadRequestException } from '@nestjs/common';
 
 class MockMeetingService implements MeetingService {
   public static meetingId: string = 'OOOOOOO1';
 
-  public async createMeeting(): Promise<string> {
+  public async createMeeting(req: MeetingCreateRequest): Promise<string> {
+    if (!req.name) throw new BadRequestException();
+
     return MockMeetingService.meetingId;
   }
 
@@ -62,6 +67,12 @@ describe('MeetingController', () => {
     issueDate: Date.now(),
   };
 
+  const wrongUser: AuthUser = {
+    id: undefined,
+    name: '',
+    issueDate: Date.now(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MeetingController],
@@ -85,6 +96,39 @@ describe('MeetingController', () => {
     expect(result).toBe(MockMeetingService.meetingId);
   });
 
+  it('createMeetingTest - Fail case : wrong user', async () => {
+    const request: MeetingCreateRequest = {
+      thumbnail,
+      name: '',
+      explanation: '',
+      keywords: [],
+      limit: 1,
+      members: [],
+      canJoin: false,
+    };
+
+    try {
+      await meetingController.createMeeting(request, wrongUser);
+    } catch (error) {
+      //expect(error).toBeInstanceOf(ApiUnauthorizedResponse);
+      expect(error.message).toBe(ErrorMessageType.NOT_EXIST_REQUESTER);
+    }
+  });
+
+  it('createMeetingTest - Fail case : wrong request', async () => {
+    const request: MeetingCreateRequest = {
+      thumbnail,
+      name: undefined,
+      explanation: '',
+      keywords: [],
+      limit: 1,
+      members: [],
+      canJoin: false,
+    };
+
+    await expect(meetingController.createMeeting(request, user)).rejects.toThrow(BadRequestException);
+  });
+
   it('updateMeetingTest', async () => {
     const request: MeetingUpdateRequest = {
       meeting_id: '',
@@ -95,6 +139,33 @@ describe('MeetingController', () => {
     };
     const result = await meetingController.updateMeeting(request, user);
     expect(result).toBe(void 0);
+  });
+
+  it('updateMeetingTest - Fail case : wrong user', async () => {
+    const request: MeetingUpdateRequest = {
+      meeting_id: '',
+      name: '',
+      explanation: '',
+      limit: 1,
+      canJoin: false,
+    };
+    try {
+      await meetingController.updateMeeting(request, wrongUser);
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiUnauthorizedResponse);
+      expect(error.message).toBe(ErrorMessageType.NOT_EXIST_REQUESTER);
+    }
+  });
+
+  it('updateMeetingTest - Fail case : wrong req', async () => {
+    const request: MeetingUpdateRequest = {
+      meeting_id: undefined,
+      name: '',
+      explanation: '',
+      limit: 1,
+      canJoin: false,
+    };
+    await expect(meetingController.updateMeeting(request, user)).rejects.toThrow(BadRequestException);
   });
 
   it('updateMeetingThumbnailTest', async () => {
