@@ -11,5 +11,5 @@ export class MemberJoinRequest {
   @IsString()
   @IsOptional()
   @MaxLength(100)
-  applicationMessage: string;
+  joinMessage: string;
 }

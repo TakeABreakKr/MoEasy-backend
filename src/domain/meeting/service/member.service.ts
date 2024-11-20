@@ -116,7 +116,7 @@ export class MemberServiceImpl implements MemberService {
       meetingId,
       usersId: requester_id,
       authority: AuthorityEnum.WAITING,
-      applicationMessage: req.applicationMessage,
+      applicationMessage: req.joinMessage,
     });
   }
 

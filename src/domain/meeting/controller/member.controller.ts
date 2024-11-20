@@ -61,6 +61,7 @@ export class MemberController {
   @Get('withdraw')
   @ApiBearerAuth()
   @ApiOkResponse({ status: 200, description: 'withdraw succeed' })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiQuery({
     name: 'meetingId',
@@ -80,7 +81,7 @@ export class MemberController {
     description: 'data to update member authority',
     type: MemberAuthorityUpdateRequest,
   })
-  async modify(@Body() req: MemberAuthorityUpdateRequest, @Token() user: AuthUser) {
+  async updateAuthority(@Body() req: MemberAuthorityUpdateRequest, @Token() user: AuthUser) {
     await this.memberService.updateAuthority(user.id, req);
   }
 
@@ -93,7 +94,7 @@ export class MemberController {
     description: 'info for deleting a member',
     type: MemberDeleteRequest,
   })
-  async delete(@Body() req: MemberDeleteRequest, @Token() user: AuthUser) {
+  async deleteMember(@Body() req: MemberDeleteRequest, @Token() user: AuthUser) {
     await this.memberService.deleteMember(user.id, req);
   }
 
@@ -119,7 +120,7 @@ export class MemberController {
   @ApiOkResponse({ status: 200, description: 'waiting list retrieved successfully', type: MemberWaitingListResponse })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiQuery({ name: 'meetingId', type: String, required: true })
-  async getWaiting(@Token() user: AuthUser): Promise<MemberWaitingListResponse> {
+  async getWaitingList(@Token() user: AuthUser): Promise<MemberWaitingListResponse> {
     return this.memberService.getWaitingList(user.id);
   }
 

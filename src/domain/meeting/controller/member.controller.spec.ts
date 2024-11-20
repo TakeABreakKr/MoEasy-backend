@@ -10,13 +10,18 @@ import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.r
 import { MemberJoinRequest } from '@domain/meeting/dto/request/member.join.request';
 import { MemberJoinManageRequest } from '@domain/meeting/dto/request/member.join.manage.request';
 import { AuthorityEnum } from '@enums/authority.enum';
+import { MeetingUpdateRequest } from '@domain/meeting/dto/request/meeting.update.request';
+import { BadRequestException } from '@nestjs/common';
+import { ErrorMessageType } from '@enums/error.message.enum';
+import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 class MockMemberService implements MemberService {
   async search(): Promise<MemberSearchResponse> {
     throw new Error('Method not implemented.');
   }
 
-  async getMember(): Promise<MemberResponse> {
+  async getMember(meetingId: string): Promise<MemberResponse> {
+    if (!meetingId) throw new BadRequestException();
     return {
       username: 'yun',
       explanation: 'hi',
@@ -72,18 +77,48 @@ describe('MemberControllerTest', () => {
     expect(result).toStrictEqual(response);
   });
 
+  it('getMemberTest - Fail case : 400 Bad Request', async () => {
+    await expect(memberController.getMember(undefined, user.id)).rejects.toThrow(BadRequestException);
+    try {
+      await memberController.getMember(undefined, user.id);
+    } catch (error) {
+      expect(error).toBeInstanceOf(BadRequestException);
+      expect(error.getStatus()).toBe(400);
+      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEMBER);
+    }
+  });
+
   it('withdrawTest', async () => {
     const result = await memberController.withdraw(meetingId, user);
     expect(result).toBe(void 0);
   });
 
-  it('modifyAuthorityTest', async () => {
+  it('withdrawTest - Fail case : 400 Bad Request', async () => {
+    try {
+      await memberController.withdraw(undefined, user);
+    } catch (error) {
+      expect(error).toBeInstanceOf(BadRequestException);
+      expect(error.getStatus()).toBe(400);
+      expect(error.getMessage()).toBe(ErrorMessageType.NOT_FOUND_MEETING);
+    }
+  });
+
+  it('withdrawTest - Fail case : 401 Unauthorized', async () => {
+    try {
+      await memberController.withdraw(meetingId, undefined);
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiUnauthorizedResponse);
+      expect(error.message).toBe(ErrorMessageType.NOT_EXIST_REQUESTER);
+    }
+  });
+
+  it('updateAuthorityTest', async () => {
     const request: MemberAuthorityUpdateRequest = {
       usersId: 2,
       meetingId: meetingId,
       isManager: false,
     };
-    const result = await memberController.modifyAuthority(request, user);
+    const result = await memberController.updateAuthority(request, user);
     expect(result).toBe(void 0);
   });
 
