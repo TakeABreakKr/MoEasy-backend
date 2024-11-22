@@ -27,15 +27,15 @@ class MockMeetingService implements MeetingService {
   }
 
   public async updateMeetingThumbnail(req: MeetingThumbnailUpdateRequest): Promise<void> {
-    if(!req.meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
+    if (!req.meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
   }
 
   public async deleteMeeting(meetingId: string) {
-    if(!meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
+    if (!meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
   }
 
-  public async getMeeting(meetingId:string): Promise<MeetingResponse> {
-    if(!meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
+  public async getMeeting(meetingId: string): Promise<MeetingResponse> {
+    if (!meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
     return {
       name: '',
       explanation: '',
