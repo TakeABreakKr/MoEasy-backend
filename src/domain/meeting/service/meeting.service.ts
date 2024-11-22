@@ -26,10 +26,10 @@ import { SortUtils } from '@utils/sort.utils';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 
+type lineSeperatorFunctionType = (content: string) => string;
+
 @Injectable()
 export class MeetingServiceImpl implements MeetingService {
-  private static padding: string = 'G';
-
   constructor(
     @Inject('FileService') private fileService: FileService,
     private meetingDao: MeetingDao,
@@ -76,7 +76,8 @@ export class MeetingServiceImpl implements MeetingService {
     await this.memberDao.saveAll(members);
 
     const content = meeting.name + ' 모임이 생성되었습니다.';
-    await this.notificationComponent.addNotificationToMeetingMembers(content, meeting.meeting_id);
+    const userIdList: number[] = members.map((member) => member.users_id);
+    await this.notificationComponent.addNotifications(content, userIdList);
     return MeetingUtils.transformMeetingIdToString(meeting.meeting_id);
   }
 
@@ -95,22 +96,32 @@ export class MeetingServiceImpl implements MeetingService {
     const limit: number = request.limit || meeting.limit;
     const canJoin = request.canJoin || meeting.canJoin;
 
-    let content = '';
-    if (!request.name) {
-      content = meeting.name + '모임 이름이 ' + name + '으로 변경되었습니다.';
-      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
-    }
-    if (!request.explanation) {
-      content = meeting.name + '모임 소개가 변경되었습니다.';
-      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
-    }
-    if (!request.limit) {
-      content = meeting.name + '의 인원 제한이 ' + request.limit + '명으로 변경되었습니다.';
-      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+    const userIdList: number[] = (await this.memberDao.findByMeetingId(meetingId)).map((member) => member.users_id);
+
+    const content: string = this.getUpdateMeetingNotificationContent(request, meeting);
+    if (content !== '') {
+      await this.notificationComponent.addNotifications(content, userIdList);
     }
 
     meeting.updateBasicInfo({ name, explanation, limit, canJoin });
     await this.meetingDao.update(meeting);
+  }
+
+  private getUpdateMeetingNotificationContent(request: MeetingUpdateRequest, meeting: Meeting): string {
+    const getLineSeperator: lineSeperatorFunctionType = (content) => (content === '' ? '\n' : '');
+
+    let content = '';
+    if (!request.name) {
+      content += meeting.name + '모임 이름이 ' + request.name + '으로 변경되었습니다.';
+    }
+    if (!request.explanation) {
+      content += getLineSeperator(content) + meeting.name + '모임 소개가 변경되었습니다.';
+    }
+    if (!request.limit) {
+      content +=
+        getLineSeperator(content) + meeting.name + '의 인원 제한이 ' + request.limit + '명으로 변경되었습니다.';
+    }
+    return content;
   }
 
   @Transactional()
@@ -125,7 +136,8 @@ export class MeetingServiceImpl implements MeetingService {
     await this.meetingDao.update(meeting);
 
     const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
-    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+    const userIdList: number[] = (await this.memberDao.findByMeetingId(meetingId)).map((member) => member.users_id);
+    await this.notificationComponent.addNotifications(content, userIdList);
   }
 
   @Transactional()
@@ -135,7 +147,8 @@ export class MeetingServiceImpl implements MeetingService {
 
     const meeting = await this.meetingDao.findByMeetingId(meetingId);
     const content = meeting.name + ' 모임이 삭제되었습니다.';
-    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+    const userIdList: number[] = (await this.memberDao.findByMeetingId(meetingId)).map((member) => member.users_id);
+    await this.notificationComponent.addNotifications(content, userIdList);
 
     await this.meetingDao.delete(meetingId);
   }

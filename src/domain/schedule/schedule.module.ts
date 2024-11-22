@@ -10,7 +10,6 @@ import { MeetingModule } from '@domain/meeting/meeting.module';
 import { NotificationModule } from '@domain/notification/notification.module';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
-import { MeetingDao } from '@domain/meeting/dao/meeting.dao';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Schedule, Participant, Meeting]), MeetingModule, NotificationModule],
@@ -18,8 +17,6 @@ import { MeetingDao } from '@domain/meeting/dao/meeting.dao';
   providers: [
     ScheduleDao,
     ParticipantDao,
-    MeetingDao,
-    NotificationModule,
     { provide: 'ScheduleService', useClass: ScheduleServiceImpl },
     AuthorityComponent,
   ],

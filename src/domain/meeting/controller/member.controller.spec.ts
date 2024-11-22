@@ -10,10 +10,8 @@ import { MemberDeleteRequest } from '@domain/meeting/dto/request/member.delete.r
 import { MemberJoinRequest } from '@domain/meeting/dto/request/member.join.request';
 import { MemberJoinManageRequest } from '@domain/meeting/dto/request/member.join.manage.request';
 import { AuthorityEnum } from '@enums/authority.enum';
-import { MeetingUpdateRequest } from '@domain/meeting/dto/request/meeting.update.request';
 import { BadRequestException } from '@nestjs/common';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 class MockMemberService implements MemberService {
   async search(): Promise<MemberSearchResponse> {

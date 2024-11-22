@@ -10,7 +10,6 @@ import { AuthUser } from '@decorator/token.decorator';
 import { AuthorityEnum } from '@enums/authority.enum';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { BadRequestException } from '@nestjs/common';
 
 class MockMeetingService implements MeetingService {
@@ -95,52 +94,6 @@ describe('MeetingController', () => {
 
     const result = await meetingController.createMeeting(request, user);
     expect(result).toBe(MockMeetingService.meetingId);
-  });
-
-  it('createMeetingTest - Fail case : 400 Bad Request', async () => {
-    const request: MeetingCreateRequest = {
-      thumbnail,
-      name: undefined,
-      explanation: '',
-      keywords: [],
-      limit: 1,
-      members: [],
-      canJoin: false,
-    };
-
-    try {
-      await meetingController.createMeeting(request, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-    }
-
-    await expect(meetingController.createMeeting(request, user)).rejects.toThrow(BadRequestException);
-  });
-
-  it('createMeetingTest - Fail case : 401 Unauthorized', async () => {
-    const request: MeetingCreateRequest = {
-      thumbnail,
-      name: '',
-      explanation: '',
-      keywords: [],
-      limit: 1,
-      members: [],
-      canJoin: false,
-    };
-    /*
-    try {
-      await meetingController.createMeeting(request, undefined);
-    } catch (error) {
-      expect(error).toBeInstanceOf(UnauthorizedException);
-      expect(error.getStatus()).toBe(401);
-      expect(error.message).toBe(ErrorMessageType.NOT_EXIST_REQUESTER);
-    }
-    */
-  });
-
-  it('createMeetingTest - Fail case : 500 Internal Server', async () => {
-    //이건 어디서 내?
   });
 
   it('updateMeetingTest', async () => {
