@@ -124,7 +124,7 @@ describe('ScheduleController', () => {
       meeting_id: 'OOOOOOO1',
       schedule_id: 1,
     };
-    const result = await scheduleController.deleteSchedule(req, user);
+    const result = await scheduleController.delete(req, user);
     expect(result).toBe(void 0);
   });
 });

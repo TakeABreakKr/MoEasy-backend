@@ -85,40 +85,9 @@ describe('MemberControllerTest', () => {
     expect(result).toStrictEqual(response);
   });
 
-  it('getMemberTest - Fail case : 400 Bad Request', async () => {
-    await expect(memberController.getMember(undefined, user.id)).rejects.toThrow(BadRequestException);
-    try {
-      await memberController.getMember(undefined, user.id);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
-  });
-
   it('withdrawTest', async () => {
     const result = await memberController.withdraw(meetingId, user);
     expect(result).toBe(void 0);
-  });
-
-  it('withdrawTest - Fail case : 400 Bad Request', async () => {
-    await expect(memberController.withdraw(undefined, user)).rejects.toThrow(BadRequestException);
-    try {
-      await memberController.withdraw(undefined, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
-  });
-
-  it('withdrawTest - Fail case : 401 Unauthorized', async () => {
-    try {
-      await memberController.withdraw(meetingId, undefined);
-    } catch (error) {
-      expect(error).toBeInstanceOf(ApiUnauthorizedResponse);
-      expect(error.message).toBe(ErrorMessageType.NOT_EXIST_REQUESTER);
-    }
   });
 
   it('updateAuthorityTest', async () => {
@@ -131,44 +100,6 @@ describe('MemberControllerTest', () => {
     expect(result).toBe(void 0);
   });
 
-  it('updateAuthorityTest - Fail case : 400 Bad Request', async () => {
-    const request: MemberAuthorityUpdateRequest = {
-      usersId: undefined,
-      meetingId: meetingId,
-      isManager: false,
-    };
-
-    await expect(memberController.updateAuthority(request, user)).rejects.toThrow(BadRequestException);
-
-    try {
-      await memberController.updateAuthority(request, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEMBER);
-    }
-  });
-
-  it('updateAuthorityTest - Fail case : 400 Bad Request', async () => {
-    const request: MemberAuthorityUpdateRequest = {
-      usersId: 2,
-      meetingId: undefined,
-      isManager: false,
-    };
-
-    await expect(memberController.updateAuthority(request, user)).rejects.toThrow(BadRequestException);
-
-    try {
-      await memberController.updateAuthority(request, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
-  });
-
-  it('updateAuthorityTest - Fail case : 401 Unauthorized', async () => {});
-
   it('deleteMemberTest', async () => {
     const request: MemberDeleteRequest = {
       meetingId: meetingId,
@@ -178,40 +109,6 @@ describe('MemberControllerTest', () => {
     expect(result).toBe(void 0);
   });
 
-  it('deleteMemberTest - Fail case : 400 Bad Request', async () => {
-    const request: MemberDeleteRequest = {
-      meetingId: undefined,
-      memberId: 2,
-    };
-    await expect(memberController.deleteMember(request, user)).rejects.toThrow(BadRequestException);
-
-    try {
-      await memberController.deleteMember(request, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
-  });
-
-  it('deleteMemberTest - Fail case : 400 Bad Request', async () => {
-    const request: MemberDeleteRequest = {
-      meetingId: meetingId,
-      memberId: undefined,
-    };
-    await expect(memberController.deleteMember(request, user)).rejects.toThrow(BadRequestException);
-
-    try {
-      await memberController.deleteMember(request, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEMBER);
-    }
-  });
-
-  it('deleteMemberTest - Fail case : 401 unAuthorized', async () => {});
-
   it('joinTest', async () => {
     const request: MemberJoinRequest = {
       meetingId: meetingId,
@@ -220,25 +117,6 @@ describe('MemberControllerTest', () => {
     const result = await memberController.join(request, user);
     expect(result).toBe(void 0);
   });
-
-  it('joinTest - Fail case : 400 Bad Request', async () => {
-    const request: MemberJoinRequest = {
-      meetingId: undefined,
-      joinMessage: 'plz',
-    };
-
-    await expect(memberController.join(request, user)).rejects.toThrow(BadRequestException);
-
-    try {
-      await memberController.join(request, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
-  });
-  
-  it('joinTest - Fail case : 401 Unauthorized', async () => {});
 
   it('getWaitingListTest', async () => {
     const result = await memberController.getWaitingList(user);

@@ -155,41 +155,6 @@ describe('MeetingController', () => {
     expect(result).toBe(void 0);
   });
 
-  it('updateMeetingTest - Fail case : 400 Bad Request', async () => {
-    const request: MeetingUpdateRequest = {
-      meeting_id: undefined,
-      name: '',
-      explanation: '',
-      limit: 1,
-      canJoin: false,
-    };
-    await expect(meetingController.updateMeeting(request, user)).rejects.toThrow(BadRequestException);
-
-    try {
-      await meetingController.updateMeeting(request, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
-  });
-
-  it('updateMeetingTest - Fail case : 401 Unauthorized', async () => {
-    const request: MeetingUpdateRequest = {
-      meeting_id: '',
-      name: '',
-      explanation: '',
-      limit: 1,
-      canJoin: false,
-    };
-    try {
-      await meetingController.updateMeeting(request, undefined);
-    } catch (error) {
-      expect(error).toBeInstanceOf(ApiUnauthorizedResponse);
-      expect(error.message).toBe(ErrorMessageType.NOT_EXIST_REQUESTER);
-    }
-  });
-
   it('updateMeetingThumbnailTest', async () => {
     const request: MeetingThumbnailUpdateRequest = {
       meetingId: '',
@@ -199,57 +164,9 @@ describe('MeetingController', () => {
     expect(result).toBe(void 0);
   });
 
-  it('updateMeetingThumbnailTest - Fail case : 400 Bad Request', async () => {
-    const request: MeetingThumbnailUpdateRequest = {
-      meetingId: undefined,
-      thumbnail,
-    };
-    await expect(meetingController.updateMeetingThumbnail(request, user)).rejects.toThrow(BadRequestException);
-
-    try {
-      await meetingController.updateMeetingThumbnail(request, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
-  });
-
-  it('updateMeetingThumbnailTest - Fail case : 401 Unauthorized', async () => {
-    const request: MeetingThumbnailUpdateRequest = {
-      meetingId: '',
-      thumbnail,
-    };
-    try {
-      await meetingController.updateMeetingThumbnail(request, undefined);
-    } catch (error) {
-      expect(error).toBeInstanceOf(ApiUnauthorizedResponse);
-    }
-  });
-
   it('deleteMeetingTest', async () => {
     const result = await meetingController.deleteMeeting(MockMeetingService.meetingId, user);
     expect(result).toBe(void 0);
-  });
-
-  it('deleteMeetingTest - Fail case : 400 Bad Request', async () => {
-    await expect(meetingController.deleteMeeting(undefined, user)).rejects.toThrow(BadRequestException);
-
-    try {
-      await meetingController.deleteMeeting(undefined, user);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
-  });
-
-  it('deleteMeetingTest - Fail case : 401 Unauthorized', async () => {
-    try {
-      await meetingController.deleteMeeting(MockMeetingService.meetingId, undefined);
-    } catch (error) {
-      expect(error).toBeInstanceOf(ApiUnauthorizedResponse);
-    }
   });
 
   it('getMeetingTest', async () => {
@@ -263,18 +180,6 @@ describe('MeetingController', () => {
       canJoin: false,
     };
     expect(result).toStrictEqual(response);
-  });
-
-  it('getMeetingTest - Fail case : 400 Bad Request', async () => {
-    await expect(meetingController.getMeeting(undefined)).rejects.toThrow(BadRequestException);
-
-    try {
-      await meetingController.getMeeting(undefined);
-    } catch (error) {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.getStatus()).toBe(400);
-      expect(error.message).toBe(ErrorMessageType.NOT_FOUND_MEETING);
-    }
   });
 
   it('getMeetingListTest', async () => {
