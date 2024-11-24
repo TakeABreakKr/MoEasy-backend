@@ -2,9 +2,9 @@ import type { Response } from 'express';
 import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 
 import { Body, Controller, Post, Res } from '@nestjs/common';
-import { AuthService } from '../service/auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '@decorator/public.decorator';
+import { AuthService } from '@domain/user/service/auth.service';
 
 @ApiTags('auth')
 @Controller('auth')
