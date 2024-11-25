@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MeetingController } from '@domain/meeting/controller/meeting.controller';
-import { MeetingCreateRequest } from '@domain/meeting/dto/request/meeting.create.request';
-import { MeetingResponse } from '@domain/meeting/dto/response/meeting.response';
-import { MeetingListResponse } from '@domain/meeting/dto/response/meeting.list.response';
-import { MeetingUpdateRequest } from '@domain/meeting/dto/request/meeting.update.request';
-import { MeetingThumbnailUpdateRequest } from '@domain/meeting/dto/request/meeting.thumbnail.update.request';
-import { MeetingService } from '@domain/meeting/service/meeting.service.interface';
+import { MeetingController } from '../controller/meeting.controller';
+import { MeetingCreateRequest } from '../dto/request/meeting.create.request';
+import { MeetingResponse } from '../dto/response/meeting.response';
+import { MeetingListResponse } from '../dto/response/meeting.list.response';
+import { MeetingUpdateRequest } from '../dto/request/meeting.update.request';
+import { MeetingThumbnailUpdateRequest } from '../dto/request/meeting.thumbnail.update.request';
+import { MeetingService } from '../service/meeting.service.interface';
 import { AuthUser } from '@decorator/token.decorator';
 import { AuthorityEnum } from '@enums/authority.enum';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';

@@ -1,7 +1,7 @@
-import { AuthController } from '@domain/user/controller/auth.controller';
+import { AuthController } from '../controller/auth.controller';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthCallbackRequest } from '@domain/user/dto/request/auth.callback.request';
-import { AuthService } from '@domain/user/service/auth.service';
+import { AuthCallbackRequest } from '../dto/request/auth.callback.request';
+import { AuthService } from '../service/auth.service';
 
 class MockAuthService {
   public async login() {}
@@ -10,7 +10,7 @@ class MockAuthService {
     return this.generateAccessToken();
   }
   private async getUser() {}
-  private async createTokends() {}
+  private async createTokens() {}
 
   private generateAccessToken(): string {
     return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY5MjczMjAwMCwiZXhwIjoxNjkyNzM1NjAwfQ.dHhEjsF1XWmQrL3XOEcR-8ZyyKoE9XGQ-Z91Tdcn50E';

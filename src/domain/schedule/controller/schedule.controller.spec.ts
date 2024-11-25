@@ -1,13 +1,13 @@
-import { ScheduleService } from '@domain/schedule/service/schedule.service.interface';
-import { ScheduleResponse } from '@domain/schedule/dto/response/schedule.response';
-import { ScheduleListResponse } from '@domain/schedule/dto/response/schedule.list.response';
-import { ScheduleController } from '@domain/schedule/controller/schedule.controller';
+import { ScheduleService } from '../service/schedule.service.interface';
+import { ScheduleResponse } from '../dto/response/schedule.response';
+import { ScheduleListResponse } from '../dto/response/schedule.list.response';
+import { ScheduleController } from '../controller/schedule.controller';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ScheduleCreateRequest } from '@domain/schedule/dto/request/schedule.create.request';
+import { ScheduleCreateRequest } from '../dto/request/schedule.create.request';
 import { AuthUser } from '@decorator/token.decorator';
-import { ScheduleUpdateRequest } from '@domain/schedule/dto/request/schedule.update.request';
+import { ScheduleUpdateRequest } from '../dto/request/schedule.update.request';
 import { MeetingUtils } from '@utils/meeting.utils';
-import { ScheduleWithdrawRequest } from '@domain/schedule/dto/request/schedule.withdraw.request';
+import { ScheduleWithdrawRequest } from '../dto/request/schedule.withdraw.request';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
 
 class MockScheduleService implements ScheduleService {
