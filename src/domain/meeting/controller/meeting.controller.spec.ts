@@ -9,32 +9,21 @@ import { MeetingService } from '../service/meeting.service.interface';
 import { AuthUser } from '@decorator/token.decorator';
 import { AuthorityEnum } from '@enums/authority.enum';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
-import { ErrorMessageType } from '@enums/error.message.enum';
-import { BadRequestException } from '@nestjs/common';
 
 class MockMeetingService implements MeetingService {
   public static meetingId: string = 'OOOOOOO1';
 
-  public async createMeeting(req: MeetingCreateRequest): Promise<string> {
-    if (!req.name) throw new BadRequestException();
-
+  public async createMeeting(): Promise<string> {
     return MockMeetingService.meetingId;
   }
 
-  public async updateMeeting(req: MeetingUpdateRequest): Promise<void> {
-    if (!req.meeting_id) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
-  }
+  public async updateMeeting(): Promise<void> {}
 
-  public async updateMeetingThumbnail(req: MeetingThumbnailUpdateRequest): Promise<void> {
-    if (!req.meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
-  }
+  public async updateMeetingThumbnail(): Promise<void> {}
 
-  public async deleteMeeting(meetingId: string) {
-    if (!meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
-  }
+  public async deleteMeeting() {}
 
-  public async getMeeting(meetingId: string): Promise<MeetingResponse> {
-    if (!meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
+  public async getMeeting(): Promise<MeetingResponse> {
     return {
       name: '',
       explanation: '',

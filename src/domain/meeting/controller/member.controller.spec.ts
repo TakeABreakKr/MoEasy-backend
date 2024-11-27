@@ -10,16 +10,13 @@ import { MemberDeleteRequest } from '../dto/request/member.delete.request';
 import { MemberJoinRequest } from '../dto/request/member.join.request';
 import { MemberJoinManageRequest } from '../dto/request/member.join.manage.request';
 import { AuthorityEnum } from '@enums/authority.enum';
-import { BadRequestException } from '@nestjs/common';
-import { ErrorMessageType } from '@enums/error.message.enum';
 
 class MockMemberService implements MemberService {
   async search(): Promise<MemberSearchResponse> {
     throw new Error('Method not implemented.');
   }
 
-  async getMember(meetingId: string): Promise<MemberResponse> {
-    if (!meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
+  async getMember(): Promise<MemberResponse> {
     return {
       username: 'yun',
       explanation: 'hi',
@@ -29,19 +26,11 @@ class MockMemberService implements MemberService {
 
   async withdraw(): Promise<void> {}
 
-  async updateAuthority(id: number, req: MemberAuthorityUpdateRequest): Promise<void> {
-    if (!req.usersId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEMBER);
-    if (!req.meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
-  }
+  async updateAuthority(): Promise<void> {}
 
-  async deleteMember(id: number, req: MemberDeleteRequest): Promise<void> {
-    if (!req.memberId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEMBER);
-    if (!req.meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
-  }
+  async deleteMember(): Promise<void> {}
 
-  async join(id: number, req: MemberJoinRequest): Promise<void> {
-    if (!req.meetingId) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
-  }
+  async join(): Promise<void> {}
 
   async getWaitingList(): Promise<MemberWaitingListResponse> {
     return {
