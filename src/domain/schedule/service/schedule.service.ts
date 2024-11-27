@@ -55,7 +55,8 @@ export class ScheduleServiceImpl implements ScheduleService {
     await this.participantDao.saveAll(participants);
 
     const content = schedule.name + ' 일정이 생성되었습니다.';
-    await this.notificationComponent.addNotificationToParticipants(content, schedule.schedule_id);
+    const userIdList: number[] = participants.map((participant) => participant.users_id);
+    await this.notificationComponent.addNotifications(content, userIdList);
 
     return schedule.schedule_id.toString();
   }
@@ -93,7 +94,8 @@ export class ScheduleServiceImpl implements ScheduleService {
     await this.participantDao.saveAll(participants);
 
     const content = schedule.name + ' 일정이 수정되었습니다.';
-    await this.notificationComponent.addNotificationToParticipants(content, schedule.schedule_id);
+    const userIdList: number[] = participants.map((participant) => participant.users_id);
+    await this.notificationComponent.addNotifications(content, userIdList);
 
     await this.scheduleDao.update(schedule);
   }
@@ -167,7 +169,7 @@ export class ScheduleServiceImpl implements ScheduleService {
 
     return {
       scheduleList,
-      meetings : meetingListDtos,
+      meetings: meetingListDtos,
     };
   }
 

@@ -62,21 +62,21 @@ export class MemberServiceImpl implements MemberService {
     const member: Member | null = await this.memberDao.findByUsersAndMeetingId(requester_id, meetingId);
     if (!member) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
 
-    let content = user.username + '님이 모임에서 탈퇴하였습니다.';
-    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+    await this.memberDao.deleteByUsersAndMeetingId(requester_id, meetingId);
+
     const members = await this.memberDao.findByMeetingId(meetingId);
+    const userIdList: number[] = members.map((member) => member.users_id);
+
+    let content = user.username + '님이 모임에서 탈퇴하였습니다.';
+    await this.notificationComponent.addNotifications(content, userIdList);
 
     if (member.authority === AuthorityEnum.OWNER) {
       const owner: Member = this.getNewOwner(members);
       await this.memberDao.updateAuthority(owner, AuthorityEnum.OWNER);
 
       content = (await owner.getUser()).username + ' 님이 모임장이 되었습니다.';
-      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+      await this.notificationComponent.addNotifications(content, userIdList);
     }
-    await this.memberDao.deleteByUsersAndMeetingId(requester_id, meetingId);
-
-    content = user.username + '님이 모임에서 탈퇴하였습니다.';
-    await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
   }
 
   private getNewOwner(members: Member[]): Member {
@@ -116,7 +116,7 @@ export class MemberServiceImpl implements MemberService {
       meetingId,
       usersId: requester_id,
       authority: AuthorityEnum.WAITING,
-      applicationMessage: req.applicationMessage,
+      applicationMessage: req.joinMessage,
     });
   }
 
@@ -176,7 +176,8 @@ export class MemberServiceImpl implements MemberService {
       await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
 
       const content = user.username + '님의 가입이 수락되었습니다.';
-      await this.notificationComponent.addNotificationToMeetingMembers(content, meetingId);
+      const userIdList: number[] = (await this.memberDao.findByMeetingId(meetingId)).map((member: Member) => member.users_id);
+      await this.notificationComponent.addNotifications(content, userIdList);
     } else {
       const content = user.username + '님의 가입이 거절되었습니다.';
       await this.memberDao.deleteByUsersAndMeetingId(req.memberId, meetingId);

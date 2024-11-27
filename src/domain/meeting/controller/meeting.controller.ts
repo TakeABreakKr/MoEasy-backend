@@ -60,6 +60,7 @@ export class MeetingController {
   @UseInterceptors(FileInterceptor('thumbnail'))
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: MeetingThumbnailUpdateRequest,
