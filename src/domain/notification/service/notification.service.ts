@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { NotificationService } from '@domain/notification/service/notification.service.interface';
 import { NotificationCheckRequest } from '../dto/request/notification.check.request';
@@ -9,7 +9,7 @@ import { NotificationDao } from '@domain/notification/dao/notification.dao.inter
 
 @Injectable()
 export class NotificationServiceImpl implements NotificationService {
-  constructor(private notificationDao: NotificationDao) {}
+  constructor(@Inject('NotificationDao') private notificationDao: NotificationDao) {}
 
   public async getNotifications(userId: number): Promise<NotificationResponse> {
     const notificationList: Notification[] = await this.notificationDao.getListByUserId(userId);

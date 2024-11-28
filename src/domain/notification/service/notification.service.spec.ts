@@ -4,7 +4,6 @@ import { NotificationService } from '@domain/notification/service/notification.s
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationServiceImpl } from './notification.service';
 import { NotificationResponse } from '@domain/notification/dto/response/notification.response';
-import { NotificationController } from '@domain/notification/controller/notification.controller';
 
 class MockNotificationDao implements NotificationDao {
   async getListByUserId(): Promise<Notification[]> {
@@ -19,16 +18,19 @@ class MockNotificationDao implements NotificationDao {
 
 describe('NotificationService', () => {
   let notificationService: NotificationService;
+  const userId: number = 1;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [NotificationServiceImpl, { provide: 'NotificationDao', useClass: MockNotificationDao }],
+      providers: [
+        { provide: 'NotificationService', useClass: NotificationServiceImpl },
+        { provide: 'NotificationDao', useClass: MockNotificationDao },
+      ],
     }).compile();
-    notificationService = module.get<NotificationService>(NotificationServiceImpl);
+    notificationService = module.get<NotificationService>('NotificationService');
   });
 
-  const userId: number = 1;
-  it('getNotificattionsTest', async () => {
+  it('getNotificationsTest', async () => {
     const result = await notificationService.getNotifications(userId);
     const response: NotificationResponse = {
       notificationList: [],

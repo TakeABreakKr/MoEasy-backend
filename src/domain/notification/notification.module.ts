@@ -10,7 +10,7 @@ import { NotificationComponent } from '@domain/notification/component/notificati
   imports: [TypeOrmModule.forFeature([Notification])],
   exports: [NotificationComponent],
   providers: [
-    NotificationDaoImpl,
+    { provide: 'NotificationDao', useClass: NotificationDaoImpl },
     NotificationComponent,
     { provide: 'NotificationService', useClass: NotificationServiceImpl },
   ],
