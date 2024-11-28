@@ -5,5 +5,5 @@ export class AuthCallbackRequest {
   code: string;
 
   @ApiProperty()
-  state: string;
+  state?: string;
 }
