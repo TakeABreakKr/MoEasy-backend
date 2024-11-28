@@ -3,9 +3,9 @@ import { Notification } from '@domain/notification/entity/notification.entity';
 import { NotificationService } from '@domain/notification/service/notification.service.interface';
 import { NotificationCheckRequest } from '../dto/request/notification.check.request';
 import { NotificationResponse } from '../dto/response/notification.response';
-import { NotificationDao } from '@domain/notification/dao/notification.dao';
 import { NotificationDto } from '@domain/notification/dto/response/notification.dto';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { NotificationDao } from '@domain/notification/dao/notification.dao.interface';
 
 @Injectable()
 export class NotificationServiceImpl implements NotificationService {

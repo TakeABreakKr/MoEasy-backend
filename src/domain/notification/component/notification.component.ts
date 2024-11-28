@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Notification } from '@domain/notification/entity/notification.entity';
-import { NotificationDao } from '@domain/notification/dao/notification.dao';
+import { NotificationDaoImpl } from '@domain/notification/dao/notification.dao';
 
 @Injectable()
 export class NotificationComponent {
-  constructor(private notificationDao: NotificationDao) {}
+  constructor(private notificationDao: NotificationDaoImpl) {}
 
   public async addNotification(content: string, userId: number) {
     const notification = Notification.create(content, userId);

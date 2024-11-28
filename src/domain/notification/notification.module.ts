@@ -3,14 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { NotificationServiceImpl } from '@domain/notification/service/notification.service';
 import { NotificationController } from '@domain/notification/controller/notification.controller';
-import { NotificationDao } from '@domain/notification/dao/notification.dao';
+import { NotificationDaoImpl } from '@domain/notification/dao/notification.dao';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Notification])],
   exports: [NotificationComponent],
   providers: [
-    NotificationDao,
+    NotificationDaoImpl,
     NotificationComponent,
     { provide: 'NotificationService', useClass: NotificationServiceImpl },
   ],

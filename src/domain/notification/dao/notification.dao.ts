@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Notification } from '@domain/notification/entity/notification.entity';
+import { NotificationDao } from './notification.dao.interface';
 
 @Injectable()
-export class NotificationDao {
+export class NotificationDaoImpl implements NotificationDao {
   constructor(@InjectRepository(Notification) private notificationRepository: Repository<Notification>) {}
 
   async getListByUserId(userId: number): Promise<Notification[]> {
@@ -22,6 +23,6 @@ export class NotificationDao {
   }
 
   async getByIdList(notificationIdList: number[]) {
-    return this.notificationRepository.findByIds(notificationIdList);
+    return this.notificationRepository.findBy({ notification_id: In(notificationIdList) });
   }
 }
