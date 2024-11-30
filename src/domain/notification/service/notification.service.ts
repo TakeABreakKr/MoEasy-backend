@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { NotificationService } from '@domain/notification/service/notification.service.interface';
 import { NotificationCheckRequest } from '../dto/request/notification.check.request';
@@ -25,6 +25,10 @@ export class NotificationServiceImpl implements NotificationService {
   }
 
   public async checkNotifications(req: NotificationCheckRequest, userId: number): Promise<void> {
+    if (!req) {
+      throw new BadRequestException(ErrorMessageType.INVALID_NOTIFICATION_CHECK_REQUEST);
+    }
+
     const notificationIdList: number[] = req.notificationIdList;
     const notificationList: Notification[] = await this.notificationDao.getByIdList(notificationIdList);
 
