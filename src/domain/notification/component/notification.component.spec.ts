@@ -26,6 +26,7 @@ describe('NotificationComponent', () => {
           provide: 'NotificationDao',
           useClass: MockNotificationDao,
         },
+        { provide: 'NotificationComponent', useClass: NotificationComponent },
       ],
     }).compile();
     notificationComponent = module.get<NotificationComponent>('NotificationComponent');
@@ -35,13 +36,15 @@ describe('NotificationComponent', () => {
     const content: string = 'test';
     const userId: number = 1;
 
-    expect(notificationComponent.addNotification(content, userId)).toBe(void 0);
+    const result = notificationComponent.addNotification(content, userId);
+    expect(result).toBe(void 0);
   });
 
   it('addNotifications', async () => {
     const content: string = "it's test!";
     const userIdList: number[] = [1];
 
-    expect(notificationComponent.addNotifications(content, userIdList)).toBe(void 0);
+    const result = notificationComponent.addNotifications(content, userIdList);
+    expect(result).toBe(void 0);
   });
 });
