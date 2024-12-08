@@ -8,16 +8,16 @@ import { NotificationServiceImpl } from './notification.service';
 import { Notification } from '../entity/notification.entity';
 
 class MockNotificationDao implements NotificationDao {
-  private static notification: Notification;
+  private notification: Notification;
 
   constructor() {
-    MockNotificationDao.notification = Notification.create('content', 1);
-    MockNotificationDao.notification.notification_id = 1;
+    this.notification = Notification.create('content', 1);
+    this.notification.notification_id = 1;
   }
 
   async getListByUserId(userId: number): Promise<Notification[]> {
     if (userId === 1) {
-      return [MockNotificationDao.notification];
+      return [this.notification];
     }
     return [];
   }
@@ -27,19 +27,20 @@ class MockNotificationDao implements NotificationDao {
 
   async getByIdList(notificationIdList: number[]): Promise<Notification[]> {
     if (notificationIdList.includes(1)) {
-      return [MockNotificationDao.notification];
+      return [this.notification];
     }
 
     return [];
   }
 
   getCheckedYn(): boolean {
-    return MockNotificationDao.notification.checkedYn;
+    return this.notification.checkedYn;
   }
 }
 
 describe('NotificationService', () => {
   let notificationService: NotificationService;
+  let notificationDao: MockNotificationDao;
   const usableUserId: number = 1;
   const unusableUserId: number = 2;
 
@@ -51,6 +52,7 @@ describe('NotificationService', () => {
       ],
     }).compile();
     notificationService = module.get<NotificationService>('NotificationService');
+    notificationDao = module.get<MockNotificationDao>('NotificationDao');
   });
 
   it('getNotificationsTest', async () => {
@@ -81,8 +83,7 @@ describe('NotificationService', () => {
     const result = await notificationService.checkNotifications(req, usableUserId);
     expect(result).toBe(void 0);
 
-    const dao = new MockNotificationDao();
-    expect(dao.getCheckedYn()).toBe(true);
+    expect(notificationDao.getCheckedYn()).toBe(true);
   });
 
   it('checkNotificationsTest : fail case - null req', async () => {

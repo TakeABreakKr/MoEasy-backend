@@ -4,14 +4,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Notification } from '@domain/notification/entity/notification.entity';
 
 class MockNotificationDao implements NotificationDao {
-  async getListByUserId(userId: number): Promise<Notification[]> {
+  async getListByUserId(): Promise<Notification[]> {
     return [];
   }
 
   async save(): Promise<void> {}
   async saveAll(): Promise<void> {}
 
-  async getByIdList(notificationIdList: number[]): Promise<Notification[]> {
+  async getByIdList(): Promise<Notification[]> {
     return [];
   }
 }
