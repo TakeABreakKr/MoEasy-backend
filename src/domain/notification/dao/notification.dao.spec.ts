@@ -1,29 +1,44 @@
 import { NotificationDao } from '@domain/notification/dao/notification.dao.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationDaoImpl } from '@domain/notification/dao/notification.dao';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, In, Repository } from 'typeorm';
 import { Notification } from '@domain/notification/entity/notification.entity';
-import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 class MockNotificationRepository extends Repository<Notification> {
-  option: FindOptionsWhere<Notification> = {
-    users_id: undefined,
-  };
+  public static userIdList: number[] = [1, 2];
+  public static notifications: Notification[] = [
+    Notification.create('아무말', MockNotificationRepository.userIdList[0]),
+    Notification.create('알림', MockNotificationRepository.userIdList[1]),
+    Notification.create('세번째', MockNotificationRepository.userIdList[1]),
+  ];
 
-  async save(): Promise<any[]> {
-    return;
+  async save(notification: Notification | Notification[]): Promise<any> {
+    return notification;
   }
 
   async findBy(where: FindOptionsWhere<Notification> | FindOptionsWhere<Notification>[]): Promise<Notification[]> {
-    const notification = Notification.create('아무말', 1);
-    const notification2 = Notification.create('알림', 2);
-    const condition: FindOptionsWhere<Notification> = { users_id: 1 };
-    const condition2: FindOptionsWhere<Notification>[] = [condition, { users_id: 2 }];
-    if (where.users_id == condition.users_id) return [notification];
-    if (where == condition2) return [notification, notification2];
-    console.log(where);
-    return [];
+    if (where instanceof Array) {
+      return [
+        ...where
+          .map(this.getMockNotificationsByUserId)
+          .reduce((acc, cur) => new Set([...acc, ...cur]), new Set<Notification>()),
+      ];
+    } else {
+      return this.getMockNotificationsByUserId(where);
+    }
+  }
+
+  private getMockNotificationsByUserId(option: FindOptionsWhere<Notification>): Notification[] {
+    if (option.users_id === MockNotificationRepository.userIdList[0]) {
+      return [MockNotificationRepository.notifications[0]];
+    }
+    if (option.users_id === MockNotificationRepository.userIdList[1]) {
+      return MockNotificationRepository.notifications.slice(1);
+    }
+    if (option.users_id === In(MockNotificationRepository.userIdList)) {
+      return MockNotificationRepository.notifications;
+    }
   }
 }
 
@@ -44,8 +59,8 @@ describe('NotificationDao', () => {
   it('getListByUserId', async () => {
     const userId: number = 1;
     const result = await notificationDao.getListByUserId(userId);
-    const notification = Notification.create('아무말', 1);
-    expect(result).toStrictEqual(notification);
+    const expected = [MockNotificationRepository.notifications[0]];
+    expect(result).toStrictEqual(expected);
   });
 
   it('getListByUserId - case : not found', async () => {});
