@@ -12,7 +12,7 @@ import { MemberController } from './controller/member.controller';
 import { MemberServiceImpl } from './service/member.service';
 import { UsersModule } from '@domain/user/users.module';
 import { NotificationModule } from '@domain/notification/notification.module';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
+import { AuthorityComponentImpl } from '@domain/meeting/component/authority.component';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Meeting, Member, Keyword]), UsersModule, NotificationModule],
@@ -22,7 +22,7 @@ import { AuthorityComponent } from '@domain/meeting/component/authority.componen
     KeywordDao,
     { provide: 'MeetingService', useClass: MeetingServiceImpl },
     { provide: 'MemberService', useClass: MemberServiceImpl },
-    AuthorityComponent,
+    { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl},
   ],
   controllers: [MeetingController, MemberController],
   exports: [MemberDao],

@@ -24,7 +24,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { SortUtils } from '@utils/sort.utils';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
 
 type lineSeperatorFunctionType = (content: string) => string;
 

@@ -3,9 +3,10 @@ import { Member } from '@domain/meeting/entity/member.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { MemberDao } from '@domain/meeting/dao/member.dao';
+import { AuthorityComponent } from './authority.component.interface';
 
 @Injectable()
-export class AuthorityComponent {
+export class AuthorityComponentImpl implements AuthorityComponent {
   constructor(private memberDao: MemberDao) {}
 
   public async validateAuthority(

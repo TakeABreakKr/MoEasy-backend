@@ -12,7 +12,7 @@ import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
 import { SortUtils } from '@utils/sort.utils';
 import { NotificationComponent } from '@domain/notification/component/notification.component';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 import { Participant } from '@domain/schedule/entity/participant.entity';
 import { ParticipantDao } from '@domain/schedule/dao/participant.dao';
