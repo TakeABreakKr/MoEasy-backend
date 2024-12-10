@@ -6,7 +6,7 @@ import { ScheduleListResponse } from '../dto/response/schedule.list.response';
 import { ScheduleDao } from '@domain/schedule/dao/schedule.dao';
 import { Schedule } from '@domain/schedule/entity/schedule.entity';
 import { MeetingUtils } from '@utils/meeting.utils';
-import { MemberDao } from '@domain/meeting/dao/member.dao';
+import { MemberDao } from '@domain/meeting/dao/member.dao.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
@@ -22,7 +22,7 @@ import { ScheduleWithdrawRequest } from '@domain/schedule/dto/request/schedule.w
 import { ScheduleDeleteRequest } from '@domain/schedule/dto/request/schedule.delete.request';
 import { Transactional } from 'typeorm-transactional';
 import { ScheduleListMeetingListDto } from '@domain/schedule/dto/response/schedule.list.meeting.list.dto';
-import { MeetingDao } from '@domain/meeting/dao/meeting.dao';
+import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {

@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Meeting } from './entity/meeting.entity';
 import { Member } from './entity/member.entity';
 import { MeetingController } from './controller/meeting.controller';
-import { MeetingDao } from './dao/meeting.dao';
-import { MemberDao } from './dao/member.dao';
+import { MeetingDaoImpl } from './dao/meeting.dao';
+import { MemberDaoImpl } from './dao/member.dao';
 import { MeetingServiceImpl } from './service/meeting.service';
-import { KeywordDao } from './dao/keyword.dao';
+import { KeywordDaoImpl } from './dao/keyword.dao';
 import { Keyword } from './entity/keyword.entity';
 import { MemberController } from './controller/member.controller';
 import { MemberServiceImpl } from './service/member.service';
@@ -17,14 +17,14 @@ import { AuthorityComponentImpl } from '@domain/meeting/component/authority.comp
 @Module({
   imports: [TypeOrmModule.forFeature([Meeting, Member, Keyword]), UsersModule, NotificationModule],
   providers: [
-    MeetingDao,
-    MemberDao,
-    KeywordDao,
+    { provide: 'MeetingDao', useClass: MeetingDaoImpl },
+    { provide: 'MemberDao', useClass: MemberDaoImpl },
+    { provide: 'KeywordDao', useClass: KeywordDaoImpl },
     { provide: 'MeetingService', useClass: MeetingServiceImpl },
     { provide: 'MemberService', useClass: MemberServiceImpl },
     { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl},
   ],
   controllers: [MeetingController, MemberController],
-  exports: [MemberDao],
+  exports: [MemberDaoImpl],
 })
 export class MeetingModule {}
