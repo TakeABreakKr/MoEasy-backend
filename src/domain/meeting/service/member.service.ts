@@ -176,7 +176,9 @@ export class MemberServiceImpl implements MemberService {
       await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
 
       const content = user.username + '님의 가입이 수락되었습니다.';
-      const userIdList: number[] = (await this.memberDao.findByMeetingId(meetingId)).map((member: Member) => member.users_id);
+      const userIdList: number[] = (await this.memberDao.findByMeetingId(meetingId)).map(
+        (member: Member) => member.users_id,
+      );
       await this.notificationComponent.addNotifications(content, userIdList);
     } else {
       const content = user.username + '님의 가입이 거절되었습니다.';

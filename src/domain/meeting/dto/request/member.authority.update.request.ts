@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
-import { AuthorityEnumType } from '@enums/authority.enum';
 
 export class MemberAuthorityUpdateRequest {
   @ApiProperty()

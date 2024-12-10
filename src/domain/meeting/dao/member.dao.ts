@@ -32,8 +32,8 @@ export class MemberDaoImpl implements MemberDao {
     return this.memberRepository.findBy({ users_id: users_id, authority: In(authority) });
   }
 
-  async findByUserId(users_id: number): Promise<Member[]>{
-    return this.memberRepository.findBy({users_id: users_id});
+  async findByUserId(users_id: number): Promise<Member[]> {
+    return this.memberRepository.findBy({ users_id: users_id });
   }
 
   async create({ authority = AuthorityEnum.WAITING, ...props }: CreateMemberType): Promise<Member> {

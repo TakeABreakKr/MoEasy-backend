@@ -18,7 +18,7 @@ import { Meeting } from '@domain/meeting/entity/meeting.entity';
     ScheduleDao,
     ParticipantDao,
     { provide: 'ScheduleService', useClass: ScheduleServiceImpl },
-    { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl},
+    { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl },
   ],
 })
 export class ScheduleModule {}

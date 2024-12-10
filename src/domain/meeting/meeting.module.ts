@@ -22,7 +22,7 @@ import { AuthorityComponentImpl } from '@domain/meeting/component/authority.comp
     { provide: 'KeywordDao', useClass: KeywordDaoImpl },
     { provide: 'MeetingService', useClass: MeetingServiceImpl },
     { provide: 'MemberService', useClass: MemberServiceImpl },
-    { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl},
+    { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl },
   ],
   controllers: [MeetingController, MemberController],
   exports: [MemberDaoImpl],
