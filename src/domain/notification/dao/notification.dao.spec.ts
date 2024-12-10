@@ -24,9 +24,8 @@ class MockNotificationRepository extends Repository<Notification> {
           .map(this.getMockNotificationsByUserId)
           .reduce((acc, cur) => new Set([...acc, ...cur]), new Set<Notification>()),
       ];
-    } else {
-      return this.getMockNotificationsByUserId(where);
     }
+    return this.getMockNotificationsByUserId(where);
   }
 
   private getMockNotificationsByUserId(option: FindOptionsWhere<Notification>): Notification[] {
