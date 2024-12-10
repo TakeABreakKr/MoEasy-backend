@@ -38,6 +38,7 @@ class MockNotificationRepository extends Repository<Notification> {
     if (option.users_id === In(MockNotificationRepository.userIdList)) {
       return MockNotificationRepository.notifications;
     }
+    return [];
   }
 }
 
