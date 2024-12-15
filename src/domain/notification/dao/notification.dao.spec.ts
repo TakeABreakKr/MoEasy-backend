@@ -1,7 +1,7 @@
 import { NotificationDao } from '@domain/notification/dao/notification.dao.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationDaoImpl } from '@domain/notification/dao/notification.dao';
-import { FindOptionsWhere, In, Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
@@ -40,10 +40,7 @@ class MockNotificationRepository extends Repository<Notification> {
     if (option.users_id === MockNotificationRepository.userIdList[1]) {
       return MockNotificationRepository.notifications.slice(1);
     }
-    if (option.notification_id == In(MockNotificationRepository.notificationIds)) {
-      return MockNotificationRepository.notifications;
-    }
-    return [];
+    return MockNotificationRepository.notifications;
   }
 }
 
