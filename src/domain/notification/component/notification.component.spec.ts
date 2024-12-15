@@ -11,7 +11,7 @@ class MockNotificationDao implements NotificationDao {
   async save(): Promise<void> {}
   async saveAll(): Promise<void> {}
 
-  async getByIdList(): Promise<Notification[]> {
+  async getListByNotificationIds(): Promise<Notification[]> {
     return [];
   }
 }

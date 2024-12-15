@@ -22,7 +22,7 @@ export class NotificationDaoImpl implements NotificationDao {
     await this.notificationRepository.save(notificationList);
   }
 
-  async getByIdList(notificationIdList: number[]) {
+  async getListByNotificationIds(notificationIdList: number[]) {
     return this.notificationRepository.findBy({ notification_id: In(notificationIdList) });
   }
 }

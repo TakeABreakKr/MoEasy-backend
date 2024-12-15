@@ -12,6 +12,11 @@ class MockNotificationRepository extends Repository<Notification> {
     Notification.create('알림', MockNotificationRepository.userIdList[1]),
     Notification.create('세번째', MockNotificationRepository.userIdList[1]),
   ];
+  public static notificationIds: number[] = [
+    MockNotificationRepository.notifications[0].notification_id,
+    MockNotificationRepository.notifications[1].notification_id,
+    MockNotificationRepository.notifications[2].notification_id,
+  ];
 
   async save(notification: Notification | Notification[]): Promise<any> {
     return notification;
@@ -35,7 +40,7 @@ class MockNotificationRepository extends Repository<Notification> {
     if (option.users_id === MockNotificationRepository.userIdList[1]) {
       return MockNotificationRepository.notifications.slice(1);
     }
-    if (option.users_id === In(MockNotificationRepository.userIdList)) {
+    if (option.notification_id == In(MockNotificationRepository.notificationIds)) {
       return MockNotificationRepository.notifications;
     }
     return [];
@@ -56,20 +61,38 @@ describe('NotificationDao', () => {
     notificationDao = module.get<NotificationDao>('NotificationDao');
   });
 
-  it('getListByUserId', async () => {
+  it('getListByUserId - case : one', async () => {
     const userId: number = 1;
     const result = await notificationDao.getListByUserId(userId);
     const expected = [MockNotificationRepository.notifications[0]];
     expect(result).toStrictEqual(expected);
   });
 
-  it('getListByUserId - case : not found', async () => {});
+  it('getListByUserId - case : not found', async () => {
+    const userId: number = 12345;
+    const result = await notificationDao.getListByUserId(userId);
+    expect(result).toStrictEqual([]);
+  });
 
-  it('save', async () => {});
+  it('save', async () => {
+    const result = await notificationDao.save(MockNotificationRepository.notifications[0]);
+    expect(result).toBe(void 0);
+  });
 
-  it('saveAll', async () => {});
+  it('saveAll', async () => {
+    const result = await notificationDao.saveAll(MockNotificationRepository.notifications);
+    expect(result).toBe(void 0);
+  });
 
-  it('getByIdList', async () => {});
+  it('getByIdList', async () => {
+    const result = await notificationDao.getListByNotificationIds(MockNotificationRepository.notificationIds);
+    const expected: Notification[] = MockNotificationRepository.notifications;
+    expect(result).toStrictEqual(expected);
+  });
 
-  it('getByIdList - fail case : not found', async () => {});
+  it('getByIdList - case : not found', async () => {
+    const idList: number[] = [12345, 67890];
+    const result = await notificationDao.getListByNotificationIds(idList);
+    expect(result).toStrictEqual([]);
+  });
 });

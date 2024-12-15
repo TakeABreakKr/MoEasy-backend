@@ -30,7 +30,7 @@ export class NotificationServiceImpl implements NotificationService {
     }
 
     const notificationIdList: number[] = req.notificationIdList;
-    const notificationList: Notification[] = await this.notificationDao.getByIdList(notificationIdList);
+    const notificationList: Notification[] = await this.notificationDao.getListByNotificationIds(notificationIdList);
 
     this.validateCheckNotifications(notificationList, userId);
     notificationList.forEach((notification) => {
