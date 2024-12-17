@@ -4,16 +4,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entity/users.entity';
 import { DiscordProfileDto } from '../dto/discord.profile.dto';
+import { UsersDao } from './users.dao.interface';
 
 @Injectable()
-export class UsersDao {
+export class UsersDaoImpl implements UsersDao {
   constructor(@InjectRepository(Users) private usersRepository: Repository<Users>) {}
 
   public async findById(id: number): Promise<Users | null> {
     return this.usersRepository.findOneBy({ users_id: id });
   }
 
-  public async findByIds(usersIds: number[]) {
+  public async findByIds(usersIds: number[]): Promise<Users[]> {
     return this.usersRepository.findBy({ users_id: In(usersIds) });
   }
 
