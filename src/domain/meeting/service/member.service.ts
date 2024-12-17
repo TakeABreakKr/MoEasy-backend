@@ -1,9 +1,9 @@
 import type { Users } from '@domain/user/entity/users.entity';
 
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
-import { UsersDao } from '@domain/user/dao/users.dao';
+import { UsersDao } from '@domain/user/dao/users.dao.interface';
 import { MemberDao } from '../dao/member.dao.interface';
 import { MeetingDao } from '../dao/meeting.dao.interface';
 import { MeetingUtils } from '@utils/meeting.utils';
@@ -26,11 +26,11 @@ import { MemberWaitingListMeetingDto } from '@domain/meeting/dto/response/member
 @Injectable()
 export class MemberServiceImpl implements MemberService {
   constructor(
-    private usersDao: UsersDao,
-    private memberDao: MemberDao,
-    private meetingDao: MeetingDao,
-    private notificationComponent: NotificationComponent,
-    private authorityComponent: AuthorityComponent,
+    @Inject('UsersDao') private usersDao: UsersDao,
+    @Inject('MemberDao') private memberDao: MemberDao,
+    @Inject('MeetingDao') private meetingDao: MeetingDao,
+    @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
+    @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
   ) {}
 
   public async search(keyword: string): Promise<MemberSearchResponse> {

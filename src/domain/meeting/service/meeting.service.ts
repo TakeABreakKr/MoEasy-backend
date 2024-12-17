@@ -13,7 +13,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingUtils } from '@utils/meeting.utils';
-import { UsersDao } from '@domain/user/dao/users.dao';
+import { UsersDao } from '@domain/user/dao/users.dao.interface';
 import { KeywordDao } from '../dao/keyword.dao.interface';
 import { MeetingDao } from '../dao/meeting.dao.interface';
 import { MemberDao } from '../dao/member.dao.interface';
@@ -32,12 +32,12 @@ type lineSeperatorFunctionType = (content: string) => string;
 export class MeetingServiceImpl implements MeetingService {
   constructor(
     @Inject('FileService') private fileService: FileService,
-    private meetingDao: MeetingDao,
-    private memberDao: MemberDao,
-    private keywordDao: KeywordDao,
-    private usersDao: UsersDao,
-    private authorityComponent: AuthorityComponent,
-    private notificationComponent: NotificationComponent,
+    @Inject('MeetingDao') private meetingDao: MeetingDao,
+    @Inject('MemberDao') private memberDao: MemberDao,
+    @Inject('KeywordDao') private keywordDao: KeywordDao,
+    @Inject('UsersDao') private usersDao: UsersDao,
+    @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
+    @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
   ) {}
 
   @Transactional()
