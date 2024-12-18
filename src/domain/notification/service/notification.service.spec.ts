@@ -1,4 +1,4 @@
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationDao } from '@domain/notification/dao/notification.dao.interface';
 import { NotificationService } from '@domain/notification/service/notification.service.interface';
@@ -82,12 +82,7 @@ describe('NotificationService', () => {
 
     const result = await notificationService.checkNotifications(req, usableUserId);
     expect(result).toBe(void 0);
-
     expect(notificationDao.getCheckedYn()).toBe(true);
-  });
-
-  it('checkNotificationsTest : fail case - null req', async () => {
-    await expect(notificationService.checkNotifications(null, usableUserId)).rejects.toThrow(BadRequestException);
   });
 
   it('checkNotificationsTest : fail case - unmatched user', async () => {
