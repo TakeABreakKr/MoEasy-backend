@@ -8,8 +8,8 @@ import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.i
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { DiscordComponent } from '../component/discord.component';
-import { UsersDao } from '../dao/users.dao';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UsersDao } from '../dao/users.dao.interface';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthUser } from '@decorator/token.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
 
@@ -25,7 +25,7 @@ export class AuthService {
     private configService: ConfigService,
     private jwtService: JwtService,
     private discordComponent: DiscordComponent,
-    private usersDao: UsersDao,
+    @Inject('UsersDao') private usersDao: UsersDao,
   ) {
     this.ACCESS_TOKEN_SECRET_KEY = this.configService.get('auth.ACCESS_TOKEN_SECRET_KEY');
     this.REFRESH_TOKEN_SECRET_KEY = this.configService.get('auth.REFRESH_TOKEN_SECRET_KEY');

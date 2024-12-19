@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ScheduleService } from '@domain/schedule/service/schedule.service.interface';
 import { ScheduleCreateRequest } from '../dto/request/schedule.create.request';
 import { ScheduleUpdateRequest } from '../dto/request/schedule.update.request';
@@ -28,11 +28,11 @@ import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
 export class ScheduleServiceImpl implements ScheduleService {
   constructor(
     private scheduleDao: ScheduleDao,
-    private memberDao: MemberDao,
-    private meetingDao: MeetingDao,
+    @Inject('MemberDao') private memberDao: MemberDao,
+    @Inject('MeetingDao') private meetingDao: MeetingDao,
     private participantDao: ParticipantDao,
-    private authorityComponent: AuthorityComponent,
-    private notificationComponent: NotificationComponent,
+    @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
+    @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
   ) {}
 
   @Transactional()
