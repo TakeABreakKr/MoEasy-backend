@@ -25,6 +25,6 @@ import { AuthorityComponentImpl } from '@domain/meeting/component/authority.comp
     { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl },
   ],
   controllers: [MeetingController, MemberController],
-  exports: [MemberDaoImpl],
+  exports: ['MemberDao', 'MeetingDao'],
 })
 export class MeetingModule {}
