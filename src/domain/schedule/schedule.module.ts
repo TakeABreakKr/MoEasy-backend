@@ -10,8 +10,6 @@ import { MeetingModule } from '@domain/meeting/meeting.module';
 import { NotificationModule } from '@domain/notification/notification.module';
 import { AuthorityComponentImpl } from '@domain/meeting/component/authority.component';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
-import { MemberDaoImpl } from '../meeting/dao/member.dao';
-import { MeetingDaoImpl } from '../meeting/dao/meeting.dao';
 import { Member } from '../meeting/entity/member.entity';
 
 @Module({
@@ -22,8 +20,6 @@ import { Member } from '../meeting/entity/member.entity';
     ParticipantDao,
     { provide: 'ScheduleService', useClass: ScheduleServiceImpl },
     { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl },
-    { provide: 'MemberDao', useClass: MemberDaoImpl },
-    { provide: 'MeetingDao', useClass: MeetingDaoImpl },
   ],
 })
 export class ScheduleModule {}
