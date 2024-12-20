@@ -39,7 +39,6 @@ export class MemberDao {
     const member: Member = this.memberRepository.create({
       ...props,
       authority: authority,
-      updatedAt: new Date(),
     });
     await this.memberRepository.save(member);
     return member;
