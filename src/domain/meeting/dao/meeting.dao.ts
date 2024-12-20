@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Meeting } from '../entity/meeting.entity';
 import { MeetingDao } from './meeting.dao.interface';
+import { CreateMeetingDto } from '../dto/create.meeting.dto';
 
 @Injectable()
 export class MeetingDaoImpl implements MeetingDao {
@@ -16,13 +17,7 @@ export class MeetingDaoImpl implements MeetingDao {
     return this.meetingRepository.findBy({ meeting_id: In(ids) });
   }
 
-  async create(props: {
-    name: string;
-    explanation: string;
-    limit: number;
-    thumbnail: string;
-    canJoin: boolean;
-  }): Promise<Meeting> {
+  async create(props: CreateMeetingDto): Promise<Meeting> {
     const meeting = this.meetingRepository.create({ ...props });
     await this.meetingRepository.save(meeting);
     return meeting;
