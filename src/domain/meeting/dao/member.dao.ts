@@ -4,13 +4,7 @@ import { In, Repository } from 'typeorm';
 import { Member } from '../entity/member.entity';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MemberDao } from './member.dao.interface';
-
-type CreateMemberType = {
-  meetingId: number;
-  usersId: number;
-  authority?: AuthorityEnumType;
-  applicationMessage?: string;
-};
+import { CreateMemberDto } from '../dto/create.member.dto';
 
 @Injectable()
 export class MemberDaoImpl implements MemberDao {
@@ -36,7 +30,7 @@ export class MemberDaoImpl implements MemberDao {
     return this.memberRepository.findBy({ users_id: users_id });
   }
 
-  async create({ authority = AuthorityEnum.WAITING, ...props }: CreateMemberType): Promise<Member> {
+  async create({ authority = AuthorityEnum.WAITING, ...props }: CreateMemberDto): Promise<Member> {
     const member: Member = this.memberRepository.create({
       ...props,
       authority: authority,
