@@ -28,10 +28,13 @@ export class DiscordComponent {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      data: {
+      data: new URLSearchParams({
+        client_id: this.configService.get('discord.client_id'),
+        client_secret: this.configService.get('discord.client_secret'),
         code,
+        redirect_uri: this.configService.get('host') + '/auth/callback',
         grant_type: 'authorization_code',
-      },
+      }),
     });
     return {
       accessToken: data.token_type + ' ' + data.access_token,
