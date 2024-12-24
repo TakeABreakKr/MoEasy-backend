@@ -18,7 +18,7 @@ export class MeetingDaoImpl implements MeetingDao {
   }
 
   async create(props: CreateMeetingDto): Promise<Meeting> {
-    const meeting = this.meetingRepository.create({ ...props });
+    const meeting = Meeting.create(props);
     await this.meetingRepository.save(meeting);
     return meeting;
   }

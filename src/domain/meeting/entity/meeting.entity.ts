@@ -3,6 +3,7 @@ import { Schedule } from '@domain/schedule/entity/schedule.entity';
 import { Member } from './member.entity';
 import { Keyword } from './keyword.entity';
 import { BaseEntity } from '../../common/base.entity';
+import { CreateMeetingDto } from '../dto/create.meeting.dto';
 
 @Entity()
 export class Meeting extends BaseEntity {
@@ -51,6 +52,18 @@ export class Meeting extends BaseEntity {
 
   async getMembers(): Promise<Member[]> {
     return this.members;
+  }
+
+  static create({ name, explanation, limit, thumbnail, canJoin }: CreateMeetingDto): Meeting {
+    const meeting = new Meeting();
+
+    meeting.name = name;
+    meeting.explanation = explanation;
+    meeting.limit = limit;
+    meeting.thumbnail = thumbnail;
+    meeting.canJoin = canJoin;
+
+    return meeting;
   }
 
   updateBasicInfo({
