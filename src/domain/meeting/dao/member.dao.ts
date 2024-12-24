@@ -31,10 +31,11 @@ export class MemberDaoImpl implements MemberDao {
   }
 
   async create({ authority = AuthorityEnum.WAITING, ...props }: CreateMemberDto): Promise<Member> {
-    const member: Member = this.memberRepository.create({
-      ...props,
+    const member: Member = Member.create({
+      meeting_id: props.meetingId,
+      users_id: props.usersId,
       authority: authority,
-      updatedAt: new Date(),
+      applicationMessage: props.applicationMessage,
     });
     await this.memberRepository.save(member);
     return member;
