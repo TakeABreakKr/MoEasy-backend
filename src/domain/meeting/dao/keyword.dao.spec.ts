@@ -1,33 +1,30 @@
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { Keyword } from '../entity/keyword.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeywordDaoImpl } from './keyword.dao';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { KeywordDao } from './keyword.dao.interface';
 
-type CountOptions = {
-  where: {
-    meeting: {
-      meeting_id: number;
-    };
-  };
-};
-
 class MockKeywordRepository extends Repository<Keyword> {
-  async count(option: CountOptions): Promise<number> {
-    if (option.where.meeting.meeting_id === 1) {
-      return 3;
-    }
-    return 0;
+  public mockKeywords: Keyword[] = [Keyword.create('테스트 키워드', 100), Keyword.create('테스트 키워드', 200)];
+
+  async count(options: FindManyOptions<Keyword>): Promise<number> {
+    const meeting = options.where['meeting'];
+    const meetingId = meeting['meeting_id'];
+
+    return this.mockKeywords.filter((keyword) => keyword.meeting_id === meetingId).length;
   }
 
   async save(keywords: Keyword[]): Promise<Keyword[]> {
-    return keywords;
+    const toSave = Array.isArray(keywords) ? keywords : [keywords];
+    this.mockKeywords.push(...toSave);
+    return toSave;
   }
 }
 
 describe('KeywordDao', () => {
   let keywordDao: KeywordDao;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -40,15 +37,22 @@ describe('KeywordDao', () => {
   });
 
   it('countByMeetingIdTest', async () => {
-    const meetingId = 1;
+    const result = await keywordDao.countByMeetingId(100);
+    expect(result).toBe(1);
 
-    const result = await keywordDao.countByMeetingId(meetingId);
-
-    expect(result).toBe(3);
+    const result2 = await keywordDao.countByMeetingId(200);
+    expect(result2).toBe(1);
   });
 
   it('saveAllTest', async () => {
-    const keywords = [Keyword.create('test1', 1), Keyword.create('test2', 1)];
-    await keywordDao.saveAll(keywords);
+    const keywordsData = [Keyword.create('새 키워드 1', 100), Keyword.create('새 키워드 2', 200)];
+
+    await keywordDao.saveAll(keywordsData);
+
+    const count100 = await keywordDao.countByMeetingId(100);
+    expect(count100).toBe(2);
+
+    const count200 = await keywordDao.countByMeetingId(200);
+    expect(count200).toBe(2);
   });
 });

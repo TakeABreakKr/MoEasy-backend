@@ -1,4 +1,4 @@
-import { DeepPartial, DeleteResult, FindOperator, FindOptionsWhere, Repository } from 'typeorm';
+import { DeleteResult, FindOperator, FindOptionsWhere, Repository } from 'typeorm';
 import { Meeting } from '../entity/meeting.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MeetingDaoImpl } from './meeting.dao';
@@ -6,67 +6,76 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { MeetingDao } from './meeting.dao.interface';
 
 class MockMeetingRepository extends Repository<Meeting> {
-  private meetings: Partial<Meeting>[] = [
-    {
-      meeting_id: 50,
-      name: '모임 이름1',
-      explanation: '모임 설명1',
-      limit: 5,
-      thumbnail: 'testThumbnail1.jpg',
-      canJoin: true,
-    },
-    {
-      meeting_id: 200,
-      name: '모임 이름2',
-      explanation: '모임 설명2',
-      limit: 7,
-      thumbnail: 'testThumbnail2.jpg',
-      canJoin: true,
-    },
+  private mockMeetings: Meeting[] = [
+    (() => {
+      const meeting = Meeting.create({
+        name: '모임 이름1',
+        explanation: '모임 설명1',
+        limit: 5,
+        thumbnail: 'testThumbnail1.jpg',
+        canJoin: true,
+      });
+      meeting.meeting_id = 50;
+      return meeting;
+    })(),
+
+    (() => {
+      const meeting = Meeting.create({
+        name: '모임 이름2',
+        explanation: '모임 설명2',
+        limit: 7,
+        thumbnail: 'testThumbnail2.jpg',
+        canJoin: true,
+      });
+      meeting.meeting_id = 200;
+      return meeting;
+    })(),
   ];
 
-  async save(meeting: any): Promise<any> {
-    return meeting;
-  }
-
-  create(): Meeting;
-  create(entityLike: DeepPartial<Meeting>): Meeting;
-  create(entityLike: DeepPartial<Meeting>[]): Meeting[];
-  create(entityLike?: any): Meeting | Meeting[] {
-    if (!entityLike) return new Meeting();
-    const meeting = new Meeting();
-
-    return Object.assign(meeting, entityLike);
+  async save(entities: Meeting | Meeting[]): Promise<Meeting[]> {
+    const toSave = Array.isArray(entities) ? entities : [entities];
+    for (const entity of toSave) {
+      const index = this.mockMeetings.findIndex((m) => m.meeting_id === entity.meeting_id);
+      if (index !== -1) {
+        this.mockMeetings[index] = entity;
+      } else {
+        this.mockMeetings.push(entity);
+      }
+    }
+    return toSave;
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    const initialLength = this.meetings.length;
-    this.meetings = this.meetings.filter((m) => m.meeting_id !== id);
+    const initialLength = this.mockMeetings.length;
+
+    this.mockMeetings = this.mockMeetings.filter((m) => {
+      return m.meeting_id !== id;
+    });
 
     return {
       raw: {},
-      affected: this.meetings.length < initialLength ? 1 : 0,
+      affected: initialLength > this.mockMeetings.length ? 1 : 0,
     };
   }
 
   async find(): Promise<Meeting[]> {
-    return this.meetings as Meeting[];
+    return this.mockMeetings;
   }
 
   async findBy(where: FindOptionsWhere<Meeting>): Promise<Meeting[]> {
-    if (where.meeting_id instanceof FindOperator) {
-      const ids = where.meeting_id.value as unknown as number[];
-
-      return this.meetings.filter((m) => ids.includes(m.meeting_id)) as Meeting[];
+    if (where.meeting_id instanceof FindOperator && Array.isArray(where.meeting_id.value)) {
+      const ids = where.meeting_id.value;
+      return this.mockMeetings.filter((m) => ids.includes(m.meeting_id));
     }
-
     return [];
   }
 
-  async findOneBy(where: { meeting_id: number }): Promise<Meeting | null> {
-    const meeting = this.meetings.find((m) => m.meeting_id === where.meeting_id);
+  async findOneBy(where: FindOptionsWhere<Meeting>): Promise<Meeting | null> {
+    const meeting = this.mockMeetings.find((m) => {
+      return m.meeting_id === where.meeting_id;
+    });
 
-    return (meeting as Meeting) || null;
+    return meeting || null;
   }
 }
 
@@ -88,8 +97,11 @@ describe('MeetingDao', () => {
 
     const result = await meetingDao.findByMeetingId(meetingId);
 
-    expect(result?.meeting_id).toBe(meetingId);
-    expect(result?.name).toBe('모임 이름1');
+    expect(result.meeting_id).toBe(meetingId);
+    expect(result.name).toBe('모임 이름1');
+    expect(result.limit).toBe(5);
+    expect(result.thumbnail).toBe('testThumbnail1.jpg');
+    expect(result.canJoin).toBe(true);
   });
 
   it('findByMeetingIdsTest', async () => {
@@ -100,8 +112,13 @@ describe('MeetingDao', () => {
     expect(results.length).toBe(2);
     expect(results[0].meeting_id).toBe(50);
     expect(results[0].limit).toBe(5);
+    expect(results[0].thumbnail).toBe('testThumbnail1.jpg');
+    expect(results[0].canJoin).toBe(true);
+
     expect(results[1].meeting_id).toBe(200);
     expect(results[1].limit).toBe(7);
+    expect(results[1].thumbnail).toBe('testThumbnail2.jpg');
+    expect(results[1].canJoin).toBe(true);
     expect(results.find((meeting) => meeting.meeting_id === 500)).toBeUndefined();
   });
 
@@ -123,20 +140,22 @@ describe('MeetingDao', () => {
   });
 
   it('updateTest', async () => {
-    const meeting = new Meeting();
-    meeting.meeting_id = 1;
-    meeting.name = '테스트 모임';
-    meeting.explanation = '모임 설명';
-    meeting.limit = 5;
-    meeting.thumbnail = 'updateThumbnail.jpg';
-    meeting.canJoin = true;
-
-    meeting.name = '업데이트한 모임이름';
+    const meeting = Meeting.create({
+      name: '업데이트한 모임이름',
+      explanation: '업데이트한 모임설명',
+      limit: 9,
+      thumbnail: 'updateTestThumbnail.jpg',
+      canJoin: false,
+    });
+    meeting.meeting_id = 50;
 
     await meetingDao.update(meeting);
 
-    expect(meeting.name).toBe('업데이트한 모임이름');
-    expect(meeting.limit).toBe(5);
+    const updatedMeeting = await meetingDao.findByMeetingId(50);
+    expect(updatedMeeting.name).toBe('업데이트한 모임이름');
+    expect(updatedMeeting.limit).toBe(9);
+    expect(updatedMeeting.thumbnail).toBe('updateTestThumbnail.jpg');
+    expect(updatedMeeting.canJoin).toBe(false);
   });
 
   it('findAllTest', async () => {
@@ -145,8 +164,12 @@ describe('MeetingDao', () => {
     expect(results.length).toBe(2);
     expect(results[0].name).toBe('모임 이름1');
     expect(results[0].explanation).toBe('모임 설명1');
+    expect(results[0].limit).toBe(5);
+    expect(results[0].thumbnail).toBe('testThumbnail1.jpg');
     expect(results[1].name).toBe('모임 이름2');
     expect(results[1].explanation).toBe('모임 설명2');
+    expect(results[1].limit).toBe(7);
+    expect(results[1].thumbnail).toBe('testThumbnail2.jpg');
   });
 
   it('deleteTest', async () => {
@@ -155,7 +178,7 @@ describe('MeetingDao', () => {
     const beforeDelete = await meetingDao.findByMeetingId(idToDelete);
 
     expect(beforeDelete).toBeDefined();
-    expect(beforeDelete?.meeting_id).toBe(idToDelete);
+    expect(beforeDelete.meeting_id).toBe(idToDelete);
 
     await meetingDao.delete(idToDelete);
 
