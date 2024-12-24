@@ -42,6 +42,10 @@ export class MeetingServiceImpl implements MeetingService {
 
   @Transactional()
   public async createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string> {
+    if (req.keywords.length > 10) {
+      throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
+    }
+
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(req.thumbnail);
     const meeting: Meeting = await this.meetingDao.create({
       name: req.name,
@@ -50,12 +54,6 @@ export class MeetingServiceImpl implements MeetingService {
       thumbnail: thumbnailPath,
       canJoin: req.canJoin,
     });
-
-    const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
-
-    if (keywordsCount > 10) {
-      throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
-    }
 
     const keywords: Keyword[] = req.keywords.map((keyword) => {
       if (keyword.length > 10) {
