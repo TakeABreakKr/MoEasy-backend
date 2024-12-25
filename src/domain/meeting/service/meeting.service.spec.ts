@@ -81,14 +81,12 @@ class MockMemberDao implements MemberDao {
       meeting_id: 80,
       users_id: 200,
       authority: AuthorityEnum.MANAGER,
-      updatedAt: null,
       applicationMessage: '꼭 가입하고 싶습니다.',
     }),
     Member.create({
       meeting_id: 200,
       users_id: 200,
       authority: AuthorityEnum.MANAGER,
-      updatedAt: null,
       applicationMessage: '이 스터디에 꼭 들어가고 싶어요.',
     }),
   ];

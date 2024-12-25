@@ -8,7 +8,6 @@ type CreateMemberDto = {
   meeting_id: number;
   users_id: number;
   authority?: AuthorityEnumType;
-  updatedAt?: Date;
   applicationMessage?: string;
 };
 
@@ -46,11 +45,10 @@ export class Member extends BaseEntity {
   })
   applicationMessage: string;
 
-  static create({ meeting_id, users_id, authority, updatedAt, applicationMessage }: CreateMemberDto): Member {
+  static create({ meeting_id, users_id, authority, applicationMessage }: CreateMemberDto): Member {
     const member = new Member();
     member.meeting_id = meeting_id;
     member.users_id = users_id;
-    member.updatedAt = updatedAt;
     if (authority) {
       member.authority = authority;
     }
