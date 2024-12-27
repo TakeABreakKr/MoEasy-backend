@@ -11,7 +11,7 @@ import { Member } from '../entity/member.entity';
 import { AuthorityEnum, MANAGING_AUTHORITIES } from '@enums/authority.enum';
 import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { NotificationComponent } from '@domain/notification/component/notification.component';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
 import { MemberAuthorityUpdateRequest } from '@domain/meeting/dto/request/member.authority.update.request';
 import { MemberJoinRequest } from '@domain/meeting/dto/request/member.join.request';

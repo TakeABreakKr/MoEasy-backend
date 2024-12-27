@@ -7,35 +7,28 @@ import { MeetingDao } from './meeting.dao.interface';
 
 class MockMeetingRepository extends Repository<Meeting> {
   private mockMeetings: Meeting[] = [
-    (() => {
-      const meeting = Meeting.create({
-        name: '모임 이름1',
-        explanation: '모임 설명1',
-        limit: 5,
-        thumbnail: 'testThumbnail1.jpg',
-        canJoin: true,
-      });
-      meeting.meeting_id = 50;
-      return meeting;
-    })(),
-
-    (() => {
-      const meeting = Meeting.create({
-        name: '모임 이름2',
-        explanation: '모임 설명2',
-        limit: 7,
-        thumbnail: 'testThumbnail2.jpg',
-        canJoin: true,
-      });
-      meeting.meeting_id = 200;
-      return meeting;
-    })(),
+    Meeting.createForTest({
+      meeting_id: 50,
+      name: '모임 이름1',
+      explanation: '모임 설명1',
+      limit: 5,
+      thumbnail: 'testThumbnail1.jpg',
+      canJoin: true,
+    }),
+    Meeting.createForTest({
+      meeting_id: 200,
+      name: '모임 이름2',
+      explanation: '모임 설명2',
+      limit: 7,
+      thumbnail: 'testThumbnail2.jpg',
+      canJoin: true,
+    }),
   ];
 
   async save(entities: Meeting | Meeting[]): Promise<Meeting[]> {
     const toSave = Array.isArray(entities) ? entities : [entities];
     for (const entity of toSave) {
-      const index = this.mockMeetings.findIndex((m) => m.meeting_id === entity.meeting_id);
+      const index = this.mockMeetings.findIndex((meeting) => meeting.meeting_id === entity.meeting_id);
       if (index !== -1) {
         this.mockMeetings[index] = entity;
       } else {
@@ -48,8 +41,8 @@ class MockMeetingRepository extends Repository<Meeting> {
   async delete(id: number): Promise<DeleteResult> {
     const initialLength = this.mockMeetings.length;
 
-    this.mockMeetings = this.mockMeetings.filter((m) => {
-      return m.meeting_id !== id;
+    this.mockMeetings = this.mockMeetings.filter((meeting) => {
+      return meeting.meeting_id !== id;
     });
 
     return {
@@ -65,7 +58,7 @@ class MockMeetingRepository extends Repository<Meeting> {
   async findBy(where: FindOptionsWhere<Meeting>): Promise<Meeting[]> {
     if (where.meeting_id instanceof FindOperator && Array.isArray(where.meeting_id.value)) {
       const ids = where.meeting_id.value;
-      return this.mockMeetings.filter((m) => ids.includes(m.meeting_id));
+      return this.mockMeetings.filter((meeting) => ids.includes(meeting.meeting_id));
     }
     return [];
   }

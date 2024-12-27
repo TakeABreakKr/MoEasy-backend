@@ -23,7 +23,7 @@ import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { SortUtils } from '@utils/sort.utils';
-import { NotificationComponent } from '@domain/notification/component/notification.component';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
 
 type lineSeperatorFunctionType = (content: string) => string;
@@ -67,8 +67,8 @@ export class MeetingServiceImpl implements MeetingService {
       const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.MEMBER;
       return Member.create({
         authority,
-        meeting_id: meeting.meeting_id,
-        users_id: member,
+        meetingId: meeting.meeting_id,
+        usersId: member,
       });
     });
     await this.memberDao.saveAll(members);

@@ -66,6 +66,14 @@ export class Meeting extends BaseEntity {
     return meeting;
   }
 
+  // only use for test
+  static createForTest({ meeting_id, ...props }: CreateMeetingDto & { meeting_id: number }) {
+    const meeting = Meeting.create(props);
+    meeting.meeting_id = meeting_id;
+
+    return meeting;
+  }
+
   updateBasicInfo({
     name,
     explanation,

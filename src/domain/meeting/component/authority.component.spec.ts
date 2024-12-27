@@ -6,43 +6,51 @@ import { AuthorityComponent } from './authority.component.interface';
 import { AuthorityComponentImpl } from './authority.component';
 import { BadRequestException } from '@nestjs/common';
 import { ErrorMessageType } from '@root/enums/error.message.enum';
-import { CreateMemberDto } from '../dto/create.member.dto';
+import { CreateMemberDto } from '@domain/meeting/dto/create.member.dto';
 
 class MockMemberDao implements MemberDao {
-  private mockMember: Member[] = [];
+  private mockMember: Member[];
 
-  async create({ authority = AuthorityEnum.WAITING, ...props }: CreateMemberDto): Promise<Member> {
-    const member = {
-      users_id: props.usersId,
-      meeting_id: props.meetingId,
-      authority,
-      applicationMessage: null,
-      createdAt: null,
-      updatedAt: null,
-      user: null,
-      meeting: null,
-      getUser: null,
-      getMeeting: null,
-      updateAuthority() {},
-    };
+  constructor() {
+    this.mockMember = [
+      Member.create({
+        meetingId: 1,
+        usersId: 1,
+        authority: AuthorityEnum.OWNER,
+      }),
+      Member.create({
+        meetingId: 3,
+        usersId: 3,
+        authority: AuthorityEnum.MEMBER,
+      }),
+    ];
+  }
 
-    this.mockMember.push(member);
-    return member;
+  async create(dto: CreateMemberDto): Promise<Member> {
+    return Member.create(dto);
   }
 
   async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
-    return this.mockMember.find((member) => member.users_id === usersId && member.meeting_id === meetingId) || null;
+    const member: Member = this.mockMember.find(
+      (member: Member) => member.users_id === usersId && member.meeting_id === meetingId,
+    );
+    return member ? member : null;
   }
 
   async saveAll(): Promise<void> {}
+
   async updateAuthority(): Promise<void> {}
+
   async deleteByUsersAndMeetingId(): Promise<void> {}
+
   async findByUserId(): Promise<Member[]> {
     return [];
   }
+
   async findByUsersAndAuthorities(): Promise<Member[]> {
     return [];
   }
+
   async findByMeetingId(): Promise<Member[]> {
     return [];
   }
@@ -50,7 +58,6 @@ class MockMemberDao implements MemberDao {
 
 describe('AuthorityComponent', () => {
   let authorityComponent: AuthorityComponent;
-  let memberDao: MemberDao;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -66,16 +73,9 @@ describe('AuthorityComponent', () => {
       ],
     }).compile();
     authorityComponent = module.get<AuthorityComponent>('AuthorityComponent');
-    memberDao = module.get<MemberDao>('MemberDao');
   });
 
   it('validateAuthorityTest - SUCCESS ', async () => {
-    await memberDao.create({
-      meetingId: 1,
-      usersId: 1,
-      authority: AuthorityEnum.OWNER,
-    });
-
     await expect(authorityComponent.validateAuthority(1, 1, [AuthorityEnum.OWNER])).resolves.not.toThrow();
   });
 
@@ -86,12 +86,6 @@ describe('AuthorityComponent', () => {
   });
 
   it('validateAuthorityTest - UNAUTHORIZED_ACCESS ', async () => {
-    await memberDao.create({
-      meetingId: 3,
-      usersId: 3,
-      authority: AuthorityEnum.MEMBER,
-    });
-
     await expect(authorityComponent.validateAuthority(3, 3)).rejects.toThrow(
       new BadRequestException(ErrorMessageType.UNAUTHORIZED_ACCESS),
     );

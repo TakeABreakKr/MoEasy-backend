@@ -9,13 +9,13 @@ import { AuthorityEnum } from '@root/enums/authority.enum';
 class MockMemberRepository extends Repository<Member> {
   private mockMembers: Member[] = [
     Member.create({
-      meeting_id: 10,
-      users_id: 10,
+      meetingId: 10,
+      usersId: 10,
       authority: AuthorityEnum.OWNER,
     }),
     Member.create({
-      meeting_id: 5,
-      users_id: 5,
+      meetingId: 5,
+      usersId: 5,
       authority: AuthorityEnum.MEMBER,
       applicationMessage: '저는 이 프로젝트 모임에 꼭 가입하고 싶습니다.',
     }),
@@ -28,24 +28,28 @@ class MockMemberRepository extends Repository<Member> {
   }
 
   async findOneBy(where: FindOptionsWhere<Member>): Promise<Member | null> {
-    const member = this.mockMembers.find((m) => m.users_id === where.users_id && m.meeting_id === where.meeting_id);
+    const member = this.mockMembers.find(
+      (member) => member.users_id === where.users_id && member.meeting_id === where.meeting_id,
+    );
 
     return member || null;
   }
 
   async findBy(where: FindOptionsWhere<Member>): Promise<Member[]> {
     if (where.meeting_id) {
-      return this.mockMembers.filter((m) => m.meeting_id === where.meeting_id);
+      return this.mockMembers.filter((member) => member.meeting_id === where.meeting_id);
     }
 
     if (where.users_id && where.authority instanceof FindOperator) {
       const authorities = where.authority.value;
 
-      return this.mockMembers.filter((m) => m.users_id === where.users_id && authorities.includes(m.authority));
+      return this.mockMembers.filter(
+        (member) => member.users_id === where.users_id && authorities.includes(member.authority),
+      );
     }
 
     if (where.users_id) {
-      return this.mockMembers.filter((m) => m.users_id === where.users_id);
+      return this.mockMembers.filter((member) => member.users_id === where.users_id);
     }
 
     return [];
@@ -54,7 +58,7 @@ class MockMemberRepository extends Repository<Member> {
   async delete(criteria: { users_id: number; meeting_id: number }): Promise<DeleteResult> {
     const initialLength = this.mockMembers.length;
     this.mockMembers = this.mockMembers.filter(
-      (m) => !(m.users_id === criteria.users_id && m.meeting_id === criteria.meeting_id),
+      (member) => !(member.users_id === criteria.users_id && member.meeting_id === criteria.meeting_id),
     );
 
     return { raw: {}, affected: initialLength - this.mockMembers.length };
@@ -77,14 +81,14 @@ describe('MemberDao', () => {
   it('saveAllTest', async () => {
     const newMembers = [
       Member.create({
-        users_id: 100,
-        meeting_id: 100,
+        usersId: 100,
+        meetingId: 100,
         authority: AuthorityEnum.MEMBER,
         applicationMessage: '참가 요청1',
       }),
       Member.create({
-        users_id: 200,
-        meeting_id: 200,
+        usersId: 200,
+        meetingId: 200,
         authority: AuthorityEnum.MEMBER,
         applicationMessage: '참가 요청2',
       }),
@@ -170,11 +174,11 @@ describe('MemberDao', () => {
     const meetingId = 5;
 
     const beforeDelete = await memberDao.findByUserId(usersId);
-    expect(beforeDelete.find((m) => m.meeting_id === meetingId)).toBeDefined();
+    expect(beforeDelete.find((member) => member.meeting_id === meetingId)).toBeDefined();
 
     await memberDao.deleteByUsersAndMeetingId(usersId, meetingId);
 
     const afterDelete = await memberDao.findByUserId(usersId);
-    expect(afterDelete.find((m) => m.meeting_id === meetingId)).toBeUndefined();
+    expect(afterDelete.find((member) => member.meeting_id === meetingId)).toBeUndefined();
   });
 });

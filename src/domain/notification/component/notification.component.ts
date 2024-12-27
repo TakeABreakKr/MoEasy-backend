@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { NotificationDao } from '@domain/notification/dao/notification.dao';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 
 @Injectable()
 export class NotificationComponent {

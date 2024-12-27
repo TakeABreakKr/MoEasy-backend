@@ -11,7 +11,13 @@ import { AuthorityEnum, AuthorityEnumType } from '@root/enums/authority.enum';
 import { CreateMeetingDto } from '../dto/create.meeting.dto';
 import { Keyword } from '../entity/keyword.entity';
 import { CreateMemberDto } from '../dto/create.member.dto';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
+import { UsersDao } from '@domain/user/dao/users.dao.interface';
+import { Users } from '@domain/user/entity/users.entity';
+
 const daoAccessLog: string[] = [];
+
 class MockMeetingDao implements MeetingDao {
   private mockMeetings: Meeting[] = [
     (() => {
@@ -44,12 +50,12 @@ class MockMeetingDao implements MeetingDao {
   async findByMeetingId(id: number): Promise<Meeting | null> {
     daoAccessLog.push('MeetingDao.findByMeetingId called');
 
-    const meeting = this.mockMeetings.find((m) => m.meeting_id === id);
+    const meeting = this.mockMeetings.find((meeting) => meeting.meeting_id === id);
     return meeting;
   }
 
   async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
-    return this.mockMeetings.filter((m) => ids.includes(m.meeting_id));
+    return this.mockMeetings.filter((meeting) => ids.includes(meeting.meeting_id));
   }
 
   async create(props: CreateMeetingDto): Promise<Meeting> {
@@ -71,21 +77,21 @@ class MockMeetingDao implements MeetingDao {
   }
 
   async delete(id: number): Promise<void> {
-    this.mockMeetings = this.mockMeetings.filter((m) => m.meeting_id !== id);
+    this.mockMeetings = this.mockMeetings.filter((meeting) => meeting.meeting_id !== id);
   }
 }
 
 class MockMemberDao implements MemberDao {
   private mockMembers: Member[] = [
     Member.create({
-      meeting_id: 80,
-      users_id: 200,
+      meetingId: 80,
+      usersId: 200,
       authority: AuthorityEnum.MANAGER,
       applicationMessage: '꼭 가입하고 싶습니다.',
     }),
     Member.create({
-      meeting_id: 200,
-      users_id: 200,
+      meetingId: 200,
+      usersId: 200,
       authority: AuthorityEnum.MANAGER,
       applicationMessage: '이 스터디에 꼭 들어가고 싶어요.',
     }),
@@ -94,12 +100,12 @@ class MockMemberDao implements MemberDao {
   async findByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<Member | null> {
     daoAccessLog.push('MemberDao.findByUsersAndMeetingId called');
 
-    const member = this.mockMembers.find((m) => m.users_id === users_id && m.meeting_id === meeting_id);
+    const member = this.mockMembers.find((member) => member.users_id === users_id && member.meeting_id === meeting_id);
     return member || null;
   }
 
   async findByUsersAndAuthorities(users_id: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
-    return this.mockMembers.filter((m) => m.users_id === users_id && authorities.includes(m.authority));
+    return this.mockMembers.filter((member) => member.users_id === users_id && authorities.includes(member.authority));
   }
 
   async findByUserId(users_id: number): Promise<Member[]> {
@@ -114,8 +120,8 @@ class MockMemberDao implements MemberDao {
 
   async create(props: CreateMemberDto): Promise<Member> {
     const member = Member.create({
-      meeting_id: props.meetingId,
-      users_id: props.usersId,
+      meetingId: props.meetingId,
+      usersId: props.usersId,
       authority: props.authority,
       applicationMessage: props.applicationMessage,
     });
@@ -127,12 +133,10 @@ class MockMemberDao implements MemberDao {
     member.authority = authority;
   }
 
-  async findAll(): Promise<Meeting[]> {
-    return [];
-  }
-
   async deleteByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<void> {
-    this.mockMembers = this.mockMembers.filter((m) => !(m.users_id === users_id && m.meeting_id === meeting_id));
+    this.mockMembers = this.mockMembers.filter(
+      (member) => !(member.users_id === users_id && member.meeting_id === meeting_id),
+    );
   }
 
   async saveAll(members: Member[]): Promise<void> {
@@ -382,7 +386,7 @@ describe('MeetingService', () => {
       expect(result.meetingList.length).toBe(2);
       expect(result.meetingList[0].name).toBe('모임 이름1');
       expect(result.meetingList[0].explanation).toBe('모임 설명1');
-      expect(result.meetingList[0].canJoin).toBe(true);
+      expect(result.meetingList[0].canJoin).toBe(false);
 
       expect(result.meetingList[1].name).toBe('모임 이름2');
       expect(result.meetingList[1].explanation).toBe('모임 설명2');

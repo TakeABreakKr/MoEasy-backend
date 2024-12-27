@@ -3,13 +3,7 @@ import { Users } from '@domain/user/entity/users.entity';
 import { Meeting } from './meeting.entity';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { BaseEntity } from '@domain/common/base.entity';
-
-type CreateMemberDto = {
-  meeting_id: number;
-  users_id: number;
-  authority?: AuthorityEnumType;
-  applicationMessage?: string;
-};
+import { CreateMemberDto } from '../dto/create.member.dto';
 
 @Entity()
 export class Member extends BaseEntity {
@@ -45,10 +39,10 @@ export class Member extends BaseEntity {
   })
   applicationMessage: string;
 
-  static create({ meeting_id, users_id, authority, applicationMessage }: CreateMemberDto): Member {
+  static create({ meetingId, usersId, authority, applicationMessage }: CreateMemberDto): Member {
     const member = new Member();
-    member.meeting_id = meeting_id;
-    member.users_id = users_id;
+    member.meeting_id = meetingId;
+    member.users_id = usersId;
     if (authority) {
       member.authority = authority;
     }
