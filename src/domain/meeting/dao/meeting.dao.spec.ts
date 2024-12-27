@@ -64,8 +64,8 @@ class MockMeetingRepository extends Repository<Meeting> {
   }
 
   async findOneBy(where: FindOptionsWhere<Meeting>): Promise<Meeting | null> {
-    const meeting = this.mockMeetings.find((m) => {
-      return m.meeting_id === where.meeting_id;
+    const meeting = this.mockMeetings.find((meeting) => {
+      return meeting.meeting_id === where.meeting_id;
     });
 
     return meeting || null;

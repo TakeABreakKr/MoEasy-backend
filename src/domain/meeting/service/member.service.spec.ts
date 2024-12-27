@@ -157,7 +157,9 @@ class MockMemberDao implements MemberDao {
   async deleteByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<void> {
     daoAccessLog.push('MemberDao.deleteByUsersAndMeetingId called');
 
-    this.mockMembers = this.mockMembers.filter((m) => !(m.users_id === users_id && m.meeting_id === meeting_id));
+    this.mockMembers = this.mockMembers.filter(
+      (member) => !(member.users_id === users_id && member.meeting_id === meeting_id),
+    );
   }
 
   async saveAll(members: Member[]): Promise<void> {
@@ -168,6 +170,48 @@ class MockMemberDao implements MemberDao {
     });
   }
 }
+
+class MockUsersDao implements UsersDao {
+  findById(user_id: number): Promise<Users | null> {
+    daoAccessLog.push('UsersDao.findById called');
+
+    const userMap = {
+      80: { users_id: 80, username: '테스트 유저1', explanation: '테스트 유저 설명1' },
+      60: { users_id: 60, username: '테스트 유저2', explanation: '테스트 유저 설명2' },
+      200: { users_id: 200, username: '테스트 유저3', explanation: '테스트 유저 설명3' },
+    };
+
+    return userMap[user_id] || null;
+  }
+
+  async findByIds(): Promise<Users[]> {
+    return [];
+  }
+
+  async createUsers(): Promise<Users> {
+    return null;
+  }
+
+  async findByDiscordId(): Promise<Users | null> {
+    return null;
+  }
+}
+
+class MockAuthorityComponent implements AuthorityComponent {
+  async validateAuthority() {
+    daoAccessLog.push('AuthorityComponent.validateAuthority called');
+  }
+}
+
+class MockNotificationComponent implements NotificationComponent {
+  async addNotifications() {}
+
+  async addNotification() {
+    daoAccessLog.push('addNotifications called');
+  }
+}
+
+jest.mock('typeorm-transactional', () => ({ Transactional: () => () => {} }));
 
 describe('MemberService', () => {
   let memberService: MemberService;
@@ -181,41 +225,17 @@ describe('MemberService', () => {
         { provide: 'MemberService', useClass: MemberServiceImpl },
         {
           provide: 'UsersDao',
-          useValue: {
-            findById(user_id: number): Promise<Users | null> {
-              daoAccessLog.push('UsersDao.findById called');
-
-              const userMap = {
-                80: { users_id: 80, username: '테스트 유저1', explanation: '테스트 유저 설명1' },
-                60: { users_id: 60, username: '테스트 유저2', explanation: '테스트 유저 설명2' },
-                200: { users_id: 200, username: '테스트 유저3', explanation: '테스트 유저 설명3' },
-              };
-
-              return userMap[user_id] || null;
-            },
-            async findByIds(): Promise<Users[]> {
-              return [];
-            },
-          },
+          useClass: MockUsersDao,
         },
         { provide: 'MemberDao', useClass: MockMemberDao },
         { provide: 'MeetingDao', useClass: MockMeetingDao },
         {
           provide: 'AuthorityComponent',
-          useValue: {
-            validateAuthority: async () => {
-              daoAccessLog.push('AuthorityComponent.validateAuthority called');
-            },
-          },
+          useClass: MockAuthorityComponent,
         },
         {
           provide: 'NotificationComponent',
-          useValue: {
-            addNotifications: async () => {},
-            addNotification: async () => {
-              daoAccessLog.push('addNotifications called');
-            },
-          },
+          useClass: MockNotificationComponent,
         },
       ],
     }).compile();

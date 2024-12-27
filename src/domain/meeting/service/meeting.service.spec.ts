@@ -20,31 +20,22 @@ const daoAccessLog: string[] = [];
 
 class MockMeetingDao implements MeetingDao {
   private mockMeetings: Meeting[] = [
-    (() => {
-      const meeting = Meeting.create({
-        name: '모임 이름1',
-        explanation: '모임 설명1',
-        limit: 10,
-        thumbnail: 'testThumbnail1.jpg',
-        canJoin: true,
-      });
-
-      meeting.meeting_id = 80;
-      return meeting;
-    })(),
-
-    (() => {
-      const meeting = Meeting.create({
-        name: '모임 이름2',
-        explanation: '모임 설명2',
-        limit: 10,
-        thumbnail: 'testThumbnail2.jpg',
-        canJoin: true,
-      });
-
-      meeting.meeting_id = 200;
-      return meeting;
-    })(),
+    Meeting.createForTest({
+      meeting_id: 80,
+      name: '모임 이름1',
+      explanation: '모임 설명1',
+      limit: 10,
+      thumbnail: 'testThumbnail1.jpg',
+      canJoin: false,
+    }),
+    Meeting.createForTest({
+      meeting_id: 200,
+      name: '모임 이름2',
+      explanation: '모임 설명2',
+      limit: 10,
+      thumbnail: 'testThumbnail2.jpg',
+      canJoin: true,
+    }),
   ];
 
   async findByMeetingId(id: number): Promise<Meeting | null> {
@@ -109,7 +100,7 @@ class MockMemberDao implements MemberDao {
   }
 
   async findByUserId(users_id: number): Promise<Member[]> {
-    return this.mockMembers.filter((m) => m.users_id === users_id);
+    return this.mockMembers.filter((member) => member.users_id === users_id);
   }
 
   async findByMeetingId(meeting_id: number): Promise<Member[]> {
@@ -162,6 +153,67 @@ class MockKeywordDao implements KeywordDao {
   }
 }
 
+class MockAuthorityComponent implements AuthorityComponent {
+  async validateAuthority() {
+    daoAccessLog.push('AuthorityComponent.validateAuthority called');
+  }
+}
+
+class MockNotificationComponent implements NotificationComponent {
+  async addNotifications() {
+    daoAccessLog.push('addNotifications called');
+  }
+
+  async addNotification() {}
+}
+
+class MockUsersDao implements UsersDao {
+  async findById(user_id: number): Promise<Users | null> {
+    daoAccessLog.push('UsersDao.findById called');
+
+    const userMap = {
+      200: { users_id: 200, username: '사용자1', explanation: '테스트 유저 설명1' },
+      512: { users_id: 512, username: '사용자2', explanation: '테스트 유저 설명2' },
+    };
+
+    return userMap[user_id] || null;
+  }
+
+  async findByIds(): Promise<Users[]> {
+    daoAccessLog.push('UsersDao.findByIds called');
+    return [
+      Users.createForTest({
+        users_id: 200,
+        discord_id: '',
+        username: '사용자1',
+        avatar: '',
+        email: '',
+        explanation: '테스트 유저 설명1',
+        settings: { allowNotificationYn: true },
+      }),
+      Users.createForTest({
+        users_id: 512,
+        discord_id: '',
+        username: '사용자2',
+        avatar: '',
+        email: '',
+        explanation: '테스트 유저 설명2',
+        settings: { allowNotificationYn: true },
+      }),
+    ];
+  }
+
+  async createUsers(): Promise<Users> {
+    return null;
+  }
+
+  async findByDiscordId(): Promise<Users | null> {
+    return null;
+  }
+}
+
+jest.mock('typeorm-transactional', () => ({ Transactional: () => () => {} }));
+
 describe('MeetingService', () => {
   let meetingService: MeetingService;
   let meetingDao: MeetingDao;
@@ -183,31 +235,15 @@ describe('MeetingService', () => {
         { provide: 'KeywordDao', useClass: MockKeywordDao },
         {
           provide: 'UsersDao',
-          useValue: {
-            findByIds: () => {
-              daoAccessLog.push('UsersDao.findByIds called');
-              return [
-                { users_id: 200, username: '사용자1' },
-                { users_id: 512, username: '사용자2' },
-              ];
-            },
-          },
+          useClass: MockUsersDao,
         },
         {
           provide: 'AuthorityComponent',
-          useValue: {
-            validateAuthority: async () => {
-              daoAccessLog.push('AuthorityComponent.validateAuthority called');
-            },
-          },
+          useClass: MockAuthorityComponent,
         },
         {
           provide: 'NotificationComponent',
-          useValue: {
-            addNotifications: async () => {
-              daoAccessLog.push('addNotifications called');
-            },
-          },
+          useClass: MockNotificationComponent,
         },
       ],
     }).compile();

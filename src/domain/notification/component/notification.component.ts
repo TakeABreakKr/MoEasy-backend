@@ -4,7 +4,7 @@ import { NotificationDao } from '@domain/notification/dao/notification.dao';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 
 @Injectable()
-export class NotificationComponent {
+export class NotificationComponentImpl implements NotificationComponent {
   constructor(private notificationDao: NotificationDao) {}
 
   public async addNotification(content: string, userId: number) {
