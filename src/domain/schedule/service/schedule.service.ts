@@ -11,7 +11,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
 import { SortUtils } from '@utils/sort.utils';
-import { NotificationComponent } from '@domain/notification/component/notification.component';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 import { Participant } from '@domain/schedule/entity/participant.entity';
