@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ScheduleService } from '@domain/schedule/service/schedule.service.interface';
 import { ScheduleCreateRequest } from '../dto/request/schedule.create.request';
 import { ScheduleUpdateRequest } from '../dto/request/schedule.update.request';
@@ -6,13 +6,13 @@ import { ScheduleListResponse } from '../dto/response/schedule.list.response';
 import { ScheduleDao } from '@domain/schedule/dao/schedule.dao';
 import { Schedule } from '@domain/schedule/entity/schedule.entity';
 import { MeetingUtils } from '@utils/meeting.utils';
-import { MemberDao } from '@domain/meeting/dao/member.dao';
+import { MemberDao } from '@domain/meeting/dao/member.dao.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ScheduleListDto } from '@domain/schedule/dto/response/schedule.list.dto';
 import { SortUtils } from '@utils/sort.utils';
-import { NotificationComponent } from '@domain/notification/component/notification.component';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
 import { ScheduleStatusEnum, ScheduleStatusEnumType } from '@enums/schedule.status.enum';
 import { Participant } from '@domain/schedule/entity/participant.entity';
 import { ParticipantDao } from '@domain/schedule/dao/participant.dao';
@@ -22,17 +22,17 @@ import { ScheduleWithdrawRequest } from '@domain/schedule/dto/request/schedule.w
 import { ScheduleDeleteRequest } from '@domain/schedule/dto/request/schedule.delete.request';
 import { Transactional } from 'typeorm-transactional';
 import { ScheduleListMeetingListDto } from '@domain/schedule/dto/response/schedule.list.meeting.list.dto';
-import { MeetingDao } from '@domain/meeting/dao/meeting.dao';
+import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
 
 @Injectable()
 export class ScheduleServiceImpl implements ScheduleService {
   constructor(
     private scheduleDao: ScheduleDao,
-    private memberDao: MemberDao,
-    private meetingDao: MeetingDao,
+    @Inject('MemberDao') private memberDao: MemberDao,
+    @Inject('MeetingDao') private meetingDao: MeetingDao,
     private participantDao: ParticipantDao,
-    private authorityComponent: AuthorityComponent,
-    private notificationComponent: NotificationComponent,
+    @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
+    @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
   ) {}
 
   @Transactional()

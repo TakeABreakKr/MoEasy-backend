@@ -1,18 +1,18 @@
 import type { Users } from '@domain/user/entity/users.entity';
 
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { MemberSearchResponse } from '../dto/response/member.search.response';
-import { UsersDao } from '@domain/user/dao/users.dao';
-import { MemberDao } from '../dao/member.dao';
-import { MeetingDao } from '../dao/meeting.dao';
+import { UsersDao } from '@domain/user/dao/users.dao.interface';
+import { MemberDao } from '../dao/member.dao.interface';
+import { MeetingDao } from '../dao/meeting.dao.interface';
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '../entity/member.entity';
 import { AuthorityEnum, MANAGING_AUTHORITIES } from '@enums/authority.enum';
 import { MemberService } from './member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { NotificationComponent } from '@domain/notification/component/notification.component';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
 import { MemberAuthorityUpdateRequest } from '@domain/meeting/dto/request/member.authority.update.request';
 import { MemberJoinRequest } from '@domain/meeting/dto/request/member.join.request';
 import { MemberJoinManageRequest } from '@domain/meeting/dto/request/member.join.manage.request';
@@ -26,11 +26,11 @@ import { MemberWaitingListMeetingDto } from '@domain/meeting/dto/response/member
 @Injectable()
 export class MemberServiceImpl implements MemberService {
   constructor(
-    private usersDao: UsersDao,
-    private memberDao: MemberDao,
-    private meetingDao: MeetingDao,
-    private notificationComponent: NotificationComponent,
-    private authorityComponent: AuthorityComponent,
+    @Inject('UsersDao') private usersDao: UsersDao,
+    @Inject('MemberDao') private memberDao: MemberDao,
+    @Inject('MeetingDao') private meetingDao: MeetingDao,
+    @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
+    @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
   ) {}
 
   public async search(keyword: string): Promise<MemberSearchResponse> {
@@ -176,7 +176,9 @@ export class MemberServiceImpl implements MemberService {
       await this.memberDao.updateAuthority(member, AuthorityEnum.MEMBER);
 
       const content = user.username + '님의 가입이 수락되었습니다.';
-      const userIdList: number[] = (await this.memberDao.findByMeetingId(meetingId)).map((member: Member) => member.users_id);
+      const userIdList: number[] = (await this.memberDao.findByMeetingId(meetingId)).map(
+        (member: Member) => member.users_id,
+      );
       await this.notificationComponent.addNotifications(content, userIdList);
     } else {
       const content = user.username + '님의 가입이 거절되었습니다.';

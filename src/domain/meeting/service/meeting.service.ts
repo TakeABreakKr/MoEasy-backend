@@ -13,18 +13,18 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingUtils } from '@utils/meeting.utils';
-import { UsersDao } from '@domain/user/dao/users.dao';
-import { KeywordDao } from '../dao/keyword.dao';
-import { MeetingDao } from '../dao/meeting.dao';
-import { MemberDao } from '../dao/member.dao';
+import { UsersDao } from '@domain/user/dao/users.dao.interface';
+import { KeywordDao } from '../dao/keyword.dao.interface';
+import { MeetingDao } from '../dao/meeting.dao.interface';
+import { MemberDao } from '../dao/member.dao.interface';
 import { Member } from '../entity/member.entity';
 import { Keyword } from '../entity/keyword.entity';
 import { MeetingService } from './meeting.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { SortUtils } from '@utils/sort.utils';
-import { NotificationComponent } from '@domain/notification/component/notification.component';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
+import { AuthorityComponent } from '@domain/meeting/component/authority.component.interface';
 
 type lineSeperatorFunctionType = (content: string) => string;
 
@@ -32,16 +32,20 @@ type lineSeperatorFunctionType = (content: string) => string;
 export class MeetingServiceImpl implements MeetingService {
   constructor(
     @Inject('FileService') private fileService: FileService,
-    private meetingDao: MeetingDao,
-    private memberDao: MemberDao,
-    private keywordDao: KeywordDao,
-    private usersDao: UsersDao,
-    private authorityComponent: AuthorityComponent,
-    private notificationComponent: NotificationComponent,
+    @Inject('MeetingDao') private meetingDao: MeetingDao,
+    @Inject('MemberDao') private memberDao: MemberDao,
+    @Inject('KeywordDao') private keywordDao: KeywordDao,
+    @Inject('UsersDao') private usersDao: UsersDao,
+    @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
+    @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
   ) {}
 
   @Transactional()
   public async createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string> {
+    if (req.keywords.length > 10) {
+      throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
+    }
+
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(req.thumbnail);
     const meeting: Meeting = await this.meetingDao.create({
       name: req.name,
@@ -50,12 +54,6 @@ export class MeetingServiceImpl implements MeetingService {
       thumbnail: thumbnailPath,
       canJoin: req.canJoin,
     });
-
-    const keywordsCount = await this.keywordDao.countByMeetingId(meeting.meeting_id);
-
-    if (keywordsCount > 10) {
-      throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
-    }
 
     const keywords: Keyword[] = req.keywords.map((keyword) => {
       if (keyword.length > 10) {
@@ -69,8 +67,8 @@ export class MeetingServiceImpl implements MeetingService {
       const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.MEMBER;
       return Member.create({
         authority,
-        meeting_id: meeting.meeting_id,
-        users_id: member,
+        meetingId: meeting.meeting_id,
+        usersId: member,
       });
     });
     await this.memberDao.saveAll(members);
