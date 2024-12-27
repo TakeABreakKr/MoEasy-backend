@@ -1,10 +1,9 @@
 import { In, Repository } from 'typeorm';
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entity/users.entity';
-import { DiscordProfileDto } from '../dto/discord.profile.dto';
-import { UsersDao } from './users.dao.interface';
+import { DiscordProfileDto } from '@domain/auth/dto/discord.profile.dto';
+import { UsersDao } from '@domain/user/dao/users.dao.interface';
 
 @Injectable()
 export class UsersDaoImpl implements UsersDao {

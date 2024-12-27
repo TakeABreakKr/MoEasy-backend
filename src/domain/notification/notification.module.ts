@@ -1,19 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from '@domain/notification/entity/notification.entity';
-import { NotificationServiceImpl } from '@domain/notification/service/notification.service';
-import { NotificationController } from '@domain/notification/controller/notification.controller';
 import { NotificationDao } from '@domain/notification/dao/notification.dao';
 import { NotificationComponentImpl } from '@domain/notification/component/notification.component';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Notification])],
+  providers: [NotificationDao, { provide: 'NotificationComponent', useClass: NotificationComponentImpl }],
   exports: ['NotificationComponent'],
-  providers: [
-    NotificationDao,
-    { provide: 'NotificationComponent', useClass: NotificationComponentImpl },
-    { provide: 'NotificationService', useClass: NotificationServiceImpl },
-  ],
-  controllers: [NotificationController],
 })
 export class NotificationModule {}

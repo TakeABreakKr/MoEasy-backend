@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Participant } from '../entity/participant.entity';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class ParticipantDao {
     return this.participantRepository.findBy({ schedule_id: schedule_id });
   }
 
-  async findAllByUserId(user_id: number) : Promise<Participant[]>{
+  async findAllByUserId(user_id: number): Promise<Participant[]> {
     return this.participantRepository.findBy({ users_id: user_id });
   }
 

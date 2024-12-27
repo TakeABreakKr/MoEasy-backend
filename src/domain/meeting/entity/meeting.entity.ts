@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Schedule } from '@domain/schedule/entity/schedule.entity';
-import { Member } from './member.entity';
+import { Member } from '@domain/member/entity/member.entity';
+import { BaseEntity } from '@domain//common/base.entity';
 import { Keyword } from './keyword.entity';
-import { BaseEntity } from '../../common/base.entity';
 import { CreateMeetingDto } from '../dto/create.meeting.dto';
 
 @Entity()
