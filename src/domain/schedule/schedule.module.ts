@@ -4,21 +4,17 @@ import { Schedule } from './entity/schedule.entity';
 import { ScheduleDao } from './dao/schedule.dao';
 import { Participant } from './entity/participant.entity';
 import { ParticipantDao } from './dao/participant.dao';
-import { ScheduleController } from '@domain/schedule/controller/schedule.controller';
-import { ScheduleServiceImpl } from '@domain/schedule/service/schedule.service';
-import { MeetingModule } from '@domain/meeting/meeting.module';
-import { NotificationModule } from '@domain/notification/notification.module';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
-import { Meeting } from '@domain/meeting/entity/meeting.entity';
+import { ScheduleComponentImpl } from '@domain/schedule/component/schedule.component';
+import { ParticipantComponentImpl } from '@domain/schedule/component/participant.component';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Schedule, Participant, Meeting]), MeetingModule, NotificationModule],
-  controllers: [ScheduleController],
+  imports: [TypeOrmModule.forFeature([Schedule, Participant])],
   providers: [
     ScheduleDao,
     ParticipantDao,
-    { provide: 'ScheduleService', useClass: ScheduleServiceImpl },
-    AuthorityComponent,
+    { provide: 'ScheduleComponent', useClass: ScheduleComponentImpl },
+    { provide: 'ParticipantComponent', useClass: ParticipantComponentImpl },
   ],
+  exports: ['ScheduleComponent', 'ParticipantComponent'],
 })
 export class ScheduleModule {}

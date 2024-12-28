@@ -27,7 +27,7 @@ export class ScheduleDao {
     await this.scheduleRepository.save(schedule);
   }
 
-  async findByMeetingId(meeting_id: number) {
+  async findByMeetingId(meeting_id: number): Promise<Schedule[]> {
     return this.scheduleRepository.findBy({ meeting_id });
   }
 

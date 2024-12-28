@@ -1,5 +1,5 @@
 import { ReminderEnumType } from '@enums/reminder.enum';
-import { AddressDto } from '@domain/schedule/dto/request/schedule.address.dto';
+import { AddressDto } from '@service/schedule/dto/request/schedule.address.dto';
 
 export interface ScheduleCreateVO {
   meetingId: string;
