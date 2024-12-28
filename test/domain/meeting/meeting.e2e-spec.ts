@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { Server } from 'net';
 import { getServer } from '../../default.test';
-import { MeetingResponse } from '@domain/meeting/dto/response/meeting.response';
+import { MeetingResponse } from '@service/meeting/dto/response/meeting.response';
 
 describe('meeting', () => {
   const getServerMethod: () => Promise<Server> = getServer();

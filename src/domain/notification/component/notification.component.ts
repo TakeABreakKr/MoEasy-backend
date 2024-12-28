@@ -16,4 +16,16 @@ export class NotificationComponentImpl implements NotificationComponent {
     const notifications: Notification[] = userIdList.map((userId) => Notification.create(content, userId));
     await this.notificationDao.saveAll(notifications);
   }
+
+  public async getByIdList(notificationIdList: number[]): Promise<Notification[]> {
+    return this.notificationDao.getByIdList(notificationIdList);
+  }
+
+  public async getListByUserId(userId: number): Promise<Notification[]> {
+    return this.notificationDao.getListByUserId(userId);
+  }
+
+  public async saveAll(notificationList: Notification[]) {
+    await this.notificationDao.saveAll(notificationList);
+  }
 }

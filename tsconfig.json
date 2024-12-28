@@ -18,6 +18,7 @@
       "@config/*": ["./src/config/*"],
       "@decorator/*": ["./src/decorator/*"],
       "@domain/*": ["./src/domain/*"],
+      "@service/*": ["./src/service/*"],
       "@enums/*": ["./src/enums/*"],
       "@file/*": ["./src/file/*"],
       "@utils/*": ["./src/utils/*"],

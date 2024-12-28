@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './entity/users.entity';
-import { AuthService } from './service/auth.service';
-import { AuthController } from './controller/auth.controller';
-import { DiscordComponent } from './component/discord.component';
 import { UsersDaoImpl } from './dao/users.dao';
+import { UsersComponentImpl } from '@domain/user/component/users.component';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([Users]), HttpModule],
-  controllers: [AuthController],
-  providers: [{ provide: 'UsersDao', useClass: UsersDaoImpl }, DiscordComponent, AuthService],
-  exports: ['UsersDao'],
+  imports: [TypeOrmModule.forFeature([Users])],
+  providers: [
+    { provide: 'UsersDao', useClass: UsersDaoImpl },
+    { provide: 'UsersComponent', useClass: UsersComponentImpl },
+  ],
+  exports: ['UsersComponent'],
 })
 export class UsersModule {}
