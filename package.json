@@ -86,6 +86,7 @@
       "^@config/(.*)$": "<rootDir>/config/$1",
       "^@decorator/(.*)$": "<rootDir>/decorator/$1",
       "^@domain/(.*)$": "<rootDir>/domain/$1",
+      "^@service/(.*)$": "<rootDir>/service/$1",
       "^@enums/(.*)$": "<rootDir>/enums/$1",
       "^@file/(.*)$": "<rootDir>/file/$1",
       "^@utils/(.*)$": "<rootDir>/utils/$1"
