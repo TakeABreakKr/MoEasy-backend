@@ -167,13 +167,13 @@ class MockNotificationComponent implements NotificationComponent {
 
   async addNotification() {}
 
-  async getByIdList(): Promise<Notification[]>{
+  async getByIdList(): Promise<Notification[]> {
     return [];
   }
-  async getListByUserId(): Promise<Notification[]>{
+  async getListByUserId(): Promise<Notification[]> {
     return [];
   }
-  async saveAll(){}
+  async saveAll() {}
 }
 
 class MockUsersComponent implements UsersComponent {
