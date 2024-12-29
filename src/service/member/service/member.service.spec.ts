@@ -12,6 +12,7 @@ import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
+import { Notification } from '@root/domain/notification/entity/notification.entity';
 
 const daoAccessLog: string[] = [];
 
@@ -206,6 +207,13 @@ class MockAuthorityComponent implements AuthorityComponent {
 }
 
 class MockNotificationComponent implements NotificationComponent {
+  async getByIdList(): Promise<Notification[]> {
+    return [];
+  }
+  async getListByUserId(): Promise<Notification[]> {
+    return [];
+  }
+  async saveAll() {}
   async addNotifications() {}
 
   async addNotification() {
