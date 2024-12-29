@@ -1,58 +1,64 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotificationDao } from '@domain/notification/dao/notification.dao.interface';
-import { NotificationService } from '@domain/notification/service/notification.service.interface';
-import { NotificationCheckRequest } from '@domain/notification/dto/request/notification.check.request';
-import { NotificationResponse } from '@domain/notification/dto/response/notification.response';
+import { NotificationService } from './notification.service.interface';
+import { NotificationCheckRequest } from '../dto/request/notification.check.request';
+import { NotificationResponse } from '../dto/response/notification.response';
 import { NotificationServiceImpl } from './notification.service';
-import { Notification } from '../entity/notification.entity';
+import { Notification } from '@domain/notification/entity/notification.entity';
+import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 
-class MockNotificationDao implements NotificationDao {
-  private notification: Notification;
+const daoAccessLog: string[] = [];
 
-  constructor() {
-    this.notification = Notification.create('content', 1);
-    this.notification.notification_id = 1;
+class MockNotificationComponent implements NotificationComponent {
+  public static notification: Notification[] = [
+    Notification.createForTest(10, 'content', 1),
+    Notification.createForTest(11, 'test content', 2),
+  ];
+
+  public static getCheckYn(index: number): boolean {
+    return this.notification[index].checkedYn;
   }
+
+  async addNotification(): Promise<void> {}
+  async addNotifications(): Promise<void> {}
 
   async getListByUserId(userId: number): Promise<Notification[]> {
+    daoAccessLog.push('NotificationComponent.getListByUserId called');
     if (userId === 1) {
-      return [this.notification];
+      return [MockNotificationComponent.notification[0]];
     }
     return [];
   }
-
-  async save(): Promise<void> {}
-  async saveAll(): Promise<void> {}
+  async save(): Promise<void> {
+    daoAccessLog.push('NotificationComponent.save called');
+  }
+  async saveAll(): Promise<void> {
+    daoAccessLog.push('NotificationComponent.saveAll called');
+  }
 
   async getListByNotificationIds(notificationIdList: number[]): Promise<Notification[]> {
-    if (notificationIdList.includes(1)) {
-      return [this.notification];
-    }
+    daoAccessLog.push('NotificationComponent.getListByNotificationIds called');
 
-    return [];
-  }
-
-  getCheckedYn(): boolean {
-    return this.notification.checkedYn;
+    return MockNotificationComponent.notification.filter((notification) =>
+      notificationIdList.includes(notification.notification_id),
+    );
   }
 }
 
 describe('NotificationService', () => {
   let notificationService: NotificationService;
-  let notificationDao: MockNotificationDao;
   const usableUserId: number = 1;
-  const unusableUserId: number = 2;
+  const unusableUserId: number = 5;
 
   beforeEach(async () => {
+    daoAccessLog.length = 0;
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: 'NotificationService', useClass: NotificationServiceImpl },
-        { provide: 'NotificationDao', useClass: MockNotificationDao },
+        { provide: 'NotificationComponent', useClass: MockNotificationComponent },
       ],
     }).compile();
     notificationService = module.get<NotificationService>('NotificationService');
-    notificationDao = module.get<MockNotificationDao>('NotificationDao');
   });
 
   it('getNotificationsTest', async () => {
@@ -60,12 +66,13 @@ describe('NotificationService', () => {
     const notificationResponse: NotificationResponse = {
       notificationList: [
         {
-          id: 1,
+          id: 10,
           content: 'content',
         },
       ],
     };
     expect(result).toStrictEqual(notificationResponse);
+    expect(daoAccessLog).toEqual(['NotificationComponent.getListByUserId called']);
   });
 
   it('getNotificationsTest : fail case - invalid userid', async () => {
@@ -73,23 +80,30 @@ describe('NotificationService', () => {
     expect(result).toStrictEqual({
       notificationList: [],
     });
+    expect(daoAccessLog).toEqual(['NotificationComponent.getListByUserId called']);
   });
 
   it('checkNotificationsTest', async () => {
     const req: NotificationCheckRequest = {
-      notificationIdList: [1],
+      notificationIdList: [10],
     };
 
     const result = await notificationService.checkNotifications(req, usableUserId);
     expect(result).toBe(void 0);
-    expect(notificationDao.getCheckedYn()).toBe(true);
+    expect(MockNotificationComponent.getCheckYn(0)).toBe(true);
+    expect(MockNotificationComponent.getCheckYn(1)).toBe(false);
+    expect(daoAccessLog).toEqual([
+      'NotificationComponent.getListByNotificationIds called',
+      'NotificationComponent.saveAll called',
+    ]);
   });
 
   it('checkNotificationsTest : fail case - unmatched user', async () => {
     const req: NotificationCheckRequest = {
-      notificationIdList: [1],
+      notificationIdList: [11],
     };
 
     await expect(notificationService.checkNotifications(req, unusableUserId)).rejects.toThrow(UnauthorizedException);
+    expect(daoAccessLog).toEqual(['NotificationComponent.getListByNotificationIds called']);
   });
 });

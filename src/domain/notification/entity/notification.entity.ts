@@ -34,6 +34,7 @@ export class Notification extends BaseEntity {
   static createForTest(notification_id: number, content: string, userId: number) {
     const notification = this.create(content, userId);
     notification.notification_id = notification_id;
+    notification.checkedYn = false;
     return notification;
   }
 

@@ -26,7 +26,8 @@ export class NotificationServiceImpl implements NotificationService {
 
   public async checkNotifications(req: NotificationCheckRequest, userId: number): Promise<void> {
     const notificationIdList: number[] = req.notificationIdList;
-    const notificationList: Notification[] = await this.notificationComponent.getListByNotificationIds(notificationIdList);
+    const notificationList: Notification[] =
+      await this.notificationComponent.getListByNotificationIds(notificationIdList);
 
     this.validateCheckNotifications(notificationList, userId);
     notificationList.forEach((notification) => {

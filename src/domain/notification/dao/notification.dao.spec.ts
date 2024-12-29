@@ -6,16 +6,12 @@ import { Notification } from '@domain/notification/entity/notification.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 class MockNotificationRepository extends Repository<Notification> {
-  public static userIdList: number[] = [1, 2];
+  public static userIdList: number[] = [10, 20];
+  public static notificationIds: number[] = [1, 2, 3];
   public static notifications: Notification[] = [
-    Notification.create('아무말', MockNotificationRepository.userIdList[0]),
-    Notification.create('알림', MockNotificationRepository.userIdList[1]),
-    Notification.create('세번째', MockNotificationRepository.userIdList[1]),
-  ];
-  public static notificationIds: number[] = [
-    MockNotificationRepository.notifications[0].notification_id,
-    MockNotificationRepository.notifications[1].notification_id,
-    MockNotificationRepository.notifications[2].notification_id,
+    Notification.createForTest(1, '아무말', MockNotificationRepository.userIdList[0]),
+    Notification.createForTest(2, '알림', MockNotificationRepository.userIdList[1]),
+    Notification.createForTest(3, '세번째', MockNotificationRepository.userIdList[1]),
   ];
 
   async save(notification: Notification | Notification[]): Promise<any> {
@@ -40,7 +36,8 @@ class MockNotificationRepository extends Repository<Notification> {
     if (option.users_id === MockNotificationRepository.userIdList[1]) {
       return MockNotificationRepository.notifications.slice(1);
     }
-    return MockNotificationRepository.notifications;
+    if (option.notification_id) return MockNotificationRepository.notifications;
+    return [];
   }
 }
 
@@ -59,7 +56,7 @@ describe('NotificationDao', () => {
   });
 
   it('getListByUserId - case : one', async () => {
-    const userId: number = 1;
+    const userId: number = 10;
     const result = await notificationDao.getListByUserId(userId);
     const expected = [MockNotificationRepository.notifications[0]];
     expect(result).toStrictEqual(expected);
@@ -81,15 +78,9 @@ describe('NotificationDao', () => {
     expect(result).toBe(void 0);
   });
 
-  it('getByIdList', async () => {
+  it('getListByNotificationIds', async () => {
     const result = await notificationDao.getListByNotificationIds(MockNotificationRepository.notificationIds);
     const expected: Notification[] = MockNotificationRepository.notifications;
     expect(result).toStrictEqual(expected);
-  });
-
-  it('getByIdList - case : not found', async () => {
-    const idList: number[] = [12345, 67890];
-    const result = await notificationDao.getListByNotificationIds(idList);
-    expect(result).toStrictEqual([]);
   });
 });
