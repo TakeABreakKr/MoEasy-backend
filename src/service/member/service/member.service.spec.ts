@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MemberService } from './member.service.interface';
 import { MemberServiceImpl } from './member.service';
-import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
-import { MemberDao } from '@domain/member/dao/member.dao.interface';
 import { Member } from '@domain/member/entity/member.entity';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { Users } from '@domain/user/entity/users.entity';
@@ -12,10 +10,13 @@ import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
+import { MeetingComponent } from '@root/domain/meeting/component/meeting.component.interface';
+import { MemberComponent } from '@root/domain/member/component/member.component.interface';
+import { Notification } from '@root/domain/notification/entity/notification.entity';
 
 const daoAccessLog: string[] = [];
 
-class MockMeetingDao implements MeetingDao {
+class MockMeetingComponent implements MeetingComponent {
   private mockMeetings: Meeting[] = [
     Meeting.createForTest({
       meeting_id: 80,
@@ -58,7 +59,7 @@ class MockMeetingDao implements MeetingDao {
   async delete(): Promise<void> {}
 }
 
-class MockMemberDao implements MemberDao {
+class MockMemberComponent implements MemberComponent {
   private mockMembers: Member[] = [
     Member.create({
       meetingId: 80,
@@ -137,13 +138,8 @@ class MockMemberDao implements MemberDao {
     return members;
   }
 
-  async create(props: CreateMemberDto): Promise<Member> {
-    const member = Member.create({
-      meetingId: props.meetingId,
-      usersId: props.usersId,
-      authority: props.authority,
-      applicationMessage: props.applicationMessage,
-    });
+  async create(createMemberDto: CreateMemberDto): Promise<Member> {
+    const member = Member.create(createMemberDto);
     this.mockMembers.push(member);
     return member;
   }
@@ -206,6 +202,14 @@ class MockAuthorityComponent implements AuthorityComponent {
 }
 
 class MockNotificationComponent implements NotificationComponent {
+  async getByIdList(): Promise<Notification[]> {
+    return [];
+  }
+  async getListByUserId(): Promise<Notification[]> {
+    return [];
+  }
+  async saveAll(): Promise<void> {}
+
   async addNotifications() {}
 
   async addNotification() {
@@ -217,7 +221,7 @@ jest.mock('typeorm-transactional', () => ({ Transactional: () => () => {} }));
 
 describe('MemberService', () => {
   let memberService: MemberService;
-  let memberDao: MemberDao;
+  let memberComponent: MemberComponent;
 
   beforeEach(async () => {
     daoAccessLog.length = 0;
@@ -229,8 +233,8 @@ describe('MemberService', () => {
           provide: 'UsersComponent',
           useClass: MockUsersComponent,
         },
-        { provide: 'MemberDao', useClass: MockMemberDao },
-        { provide: 'MeetingDao', useClass: MockMeetingDao },
+        { provide: 'MemberComponent', useClass: MockMemberComponent },
+        { provide: 'MeetingComponent', useClass: MockMeetingComponent },
         {
           provide: 'AuthorityComponent',
           useClass: MockAuthorityComponent,
@@ -243,7 +247,7 @@ describe('MemberService', () => {
     }).compile();
 
     memberService = module.get<MemberService>('MemberService');
-    memberDao = module.get<MemberDao>('MemberDao');
+    memberComponent = module.get<MemberComponent>('MemberComponent');
   });
 
   describe('getMemberTest', () => {
@@ -267,7 +271,7 @@ describe('MemberService', () => {
   describe('withdrawTest', () => {
     it('withdrawTest - SUCCESS', async () => {
       await memberService.withdraw(200, '50');
-      const withdrawMember = await memberDao.findByUsersAndMeetingId(200, 200);
+      const withdrawMember = await memberComponent.findByUsersAndMeetingId(200, 200);
 
       expect(withdrawMember).toBeNull();
 
@@ -282,11 +286,11 @@ describe('MemberService', () => {
 
     it('withdrawTest - SUCCESS(OWNER_WITHDRAW)', async () => {
       await memberService.withdraw(60, '50');
-      const withdrawOwner = await memberDao.findByUsersAndMeetingId(60, 80);
+      const withdrawOwner = await memberComponent.findByUsersAndMeetingId(60, 80);
 
       expect(withdrawOwner).toBeNull();
 
-      const members = await memberDao.findByMeetingId(80);
+      const members = await memberComponent.findByMeetingId(80);
       const newOwner = members.find((member) => member.authority === AuthorityEnum.OWNER);
 
       expect(newOwner.users_id).toBe(80);
@@ -322,7 +326,7 @@ describe('MemberService', () => {
       };
 
       await memberService.updateAuthority(80, req);
-      const updatedMember = await memberDao.findByUsersAndMeetingId(200, 80);
+      const updatedMember = await memberComponent.findByUsersAndMeetingId(200, 80);
 
       expect(updatedMember.authority).toBe(AuthorityEnum.MANAGER);
       expect(updatedMember.users_id).toBe(200);
@@ -345,7 +349,7 @@ describe('MemberService', () => {
       };
 
       await memberService.deleteMember(80, req);
-      const deleteMember = await memberDao.findByUsersAndMeetingId(200, 80);
+      const deleteMember = await memberComponent.findByUsersAndMeetingId(200, 80);
 
       expect(deleteMember).toBeNull();
 
@@ -375,7 +379,7 @@ describe('MemberService', () => {
       };
 
       await memberService.join(20, req);
-      const joinMember = await memberDao.findByUsersAndMeetingId(20, 80);
+      const joinMember = await memberComponent.findByUsersAndMeetingId(20, 80);
 
       expect(joinMember.authority).toBe(AuthorityEnum.WAITING);
       expect(joinMember.applicationMessage).toBe('모임에 꼭 들어가고 싶습니다.');
@@ -425,7 +429,7 @@ describe('MemberService', () => {
       };
 
       await memberService.manageMemberJoin(80, req);
-      const updatedMember = await memberDao.findByUsersAndMeetingId(15, 80);
+      const updatedMember = await memberComponent.findByUsersAndMeetingId(15, 80);
 
       expect(updatedMember.authority).toBe(AuthorityEnum.MEMBER);
       expect(updatedMember.users_id).toBe(15);
@@ -450,7 +454,7 @@ describe('MemberService', () => {
       };
 
       await memberService.manageMemberJoin(20, req);
-      const deletedMember = await memberDao.findByUsersAndMeetingId(15, 80);
+      const deletedMember = await memberComponent.findByUsersAndMeetingId(15, 80);
 
       expect(deletedMember).toBeNull();
 
