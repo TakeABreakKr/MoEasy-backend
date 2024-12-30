@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ParticipantComponent } from '@domain/schedule/component/participant.component.interface';
 import { Participant } from '../entity/participant.entity';
-import { ParticipantDao } from '@domain/schedule/dao/participant.dao';
+import { ParticipantDao } from '@domain/schedule/dao/participant.dao.interface';
 
 @Injectable()
 export class ParticipantComponentImpl implements ParticipantComponent {
-  constructor(private participantDao: ParticipantDao) {}
+  constructor(@Inject('ParticipantDao') private participantDao: ParticipantDao) {}
 
   public async saveAll(participants: Participant[]): Promise<void> {
     return this.participantDao.saveAll(participants);
@@ -15,11 +15,11 @@ export class ParticipantComponentImpl implements ParticipantComponent {
     return this.participantDao.findByUserIdAndScheduleId(userId, scheduleId);
   }
 
-  public async findByScheduleId(scheduleId: number): Promise<Participant[]> {
+  public async findByScheduleId(scheduleId: number): Promise<Participant[] | null> {
     return this.participantDao.findByScheduleId(scheduleId);
   }
 
-  public async findAllByUserId(userId: number): Promise<Participant[]> {
+  public async findAllByUserId(userId: number): Promise<Participant[] | null> {
     return this.participantDao.findAllByUserId(userId);
   }
 

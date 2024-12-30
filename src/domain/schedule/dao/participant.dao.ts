@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Participant } from '../entity/participant.entity';
+import { ParticipantDao } from './participant.dao.interface';
 
 @Injectable()
-export class ParticipantDao {
+export class ParticipantDaoImpl implements ParticipantDao {
   constructor(
     @InjectRepository(Participant)
     private participantRepository: Repository<Participant>,
