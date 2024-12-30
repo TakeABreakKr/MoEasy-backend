@@ -7,9 +7,14 @@ import { NotificationServiceImpl } from './notification.service';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 
-const daoAccessLog: string[] = [];
+const componentAccessLog: string[] = [];
 
 class MockNotificationComponent implements NotificationComponent {
+  public static getListByUserIdLog: string = 'NotificationComponent.getListByUserId called';
+  public static saveLog: string = 'NotificationComponent.save called';
+  public static saveAllLog: string = 'NotificationComponent.saveAll called';
+  public static getListByNotificationIdsLog: string = 'NotificationComponent.getListByNotificationIds called';
+
   public static notification: Notification[] = [
     Notification.createForTest(10, 'content', 1),
     Notification.createForTest(11, 'test content', 2),
@@ -23,21 +28,21 @@ class MockNotificationComponent implements NotificationComponent {
   async addNotifications(): Promise<void> {}
 
   async getListByUserId(userId: number): Promise<Notification[]> {
-    daoAccessLog.push('NotificationComponent.getListByUserId called');
+    componentAccessLog.push(MockNotificationComponent.getListByUserIdLog);
     if (userId === 1) {
       return [MockNotificationComponent.notification[0]];
     }
     return [];
   }
   async save(): Promise<void> {
-    daoAccessLog.push('NotificationComponent.save called');
+    componentAccessLog.push(MockNotificationComponent.saveLog);
   }
   async saveAll(): Promise<void> {
-    daoAccessLog.push('NotificationComponent.saveAll called');
+    componentAccessLog.push(MockNotificationComponent.saveAllLog);
   }
 
   async getListByNotificationIds(notificationIdList: number[]): Promise<Notification[]> {
-    daoAccessLog.push('NotificationComponent.getListByNotificationIds called');
+    componentAccessLog.push(MockNotificationComponent.getListByNotificationIdsLog);
 
     return MockNotificationComponent.notification.filter((notification) =>
       notificationIdList.includes(notification.notification_id),
@@ -51,7 +56,7 @@ describe('NotificationService', () => {
   const unusableUserId: number = 5;
 
   beforeEach(async () => {
-    daoAccessLog.length = 0;
+    componentAccessLog.length = 0;
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: 'NotificationService', useClass: NotificationServiceImpl },
@@ -72,7 +77,7 @@ describe('NotificationService', () => {
       ],
     };
     expect(result).toStrictEqual(notificationResponse);
-    expect(daoAccessLog).toEqual(['NotificationComponent.getListByUserId called']);
+    expect(componentAccessLog).toEqual([MockNotificationComponent.getListByUserIdLog]);
   });
 
   it('getNotificationsTest : fail case - invalid userid', async () => {
@@ -80,7 +85,7 @@ describe('NotificationService', () => {
     expect(result).toStrictEqual({
       notificationList: [],
     });
-    expect(daoAccessLog).toEqual(['NotificationComponent.getListByUserId called']);
+    expect(componentAccessLog).toEqual([MockNotificationComponent.getListByUserIdLog]);
   });
 
   it('checkNotificationsTest', async () => {
@@ -92,9 +97,9 @@ describe('NotificationService', () => {
     expect(result).toBe(void 0);
     expect(MockNotificationComponent.getCheckYn(0)).toBe(true);
     expect(MockNotificationComponent.getCheckYn(1)).toBe(false);
-    expect(daoAccessLog).toEqual([
-      'NotificationComponent.getListByNotificationIds called',
-      'NotificationComponent.saveAll called',
+    expect(componentAccessLog).toEqual([
+      MockNotificationComponent.getListByNotificationIdsLog,
+      MockNotificationComponent.saveAllLog,
     ]);
   });
 
@@ -104,6 +109,6 @@ describe('NotificationService', () => {
     };
 
     await expect(notificationService.checkNotifications(req, unusableUserId)).rejects.toThrow(UnauthorizedException);
-    expect(daoAccessLog).toEqual(['NotificationComponent.getListByNotificationIds called']);
+    expect(componentAccessLog).toEqual([MockNotificationComponent.getListByNotificationIdsLog]);
   });
 });

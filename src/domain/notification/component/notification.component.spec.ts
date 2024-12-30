@@ -7,6 +7,11 @@ import { NotificationDao } from '@domain/notification/dao/notification.dao.inter
 const daoAccessLog: string[] = [];
 
 class MockNotificationDao implements NotificationDao {
+  public static getListByUserIdLog: string = 'NotificationDao.getListByUserId called';
+  public static saveLog: string = 'NotificationDao.save called';
+  public static saveAllLog: string = 'NotificationDao.saveAll called';
+  public static getListByNotificationIdsLog: string = 'NotificationDao.getListByNotificationIdsLog called';
+
   private notifications: Notification[] = [
     Notification.createForTest(10, '안녕하세요?', 100),
     Notification.createForTest(11, '안녕못해요?', 100),
@@ -15,7 +20,7 @@ class MockNotificationDao implements NotificationDao {
   ];
 
   async getListByUserId(userId: number): Promise<Notification[]> {
-    daoAccessLog.push('NotificationDao.getListByUserId called');
+    daoAccessLog.push(MockNotificationDao.getListByUserIdLog);
     return this.notifications.filter((notification: Notification) => {
       if (notification.users_id === userId) return notification;
     });
@@ -23,26 +28,21 @@ class MockNotificationDao implements NotificationDao {
 
   async save(notification: Notification): Promise<void> {
     this.notifications.push(notification);
-    daoAccessLog.push('NotificationDao.save called');
+    daoAccessLog.push(MockNotificationDao.saveLog);
   }
   async saveAll(notifications: Notification[]): Promise<void> {
     this.notifications = notifications;
-    daoAccessLog.push('NotificationDao.saveAll called');
+    daoAccessLog.push(MockNotificationDao.saveAllLog);
   }
 
   async getListByNotificationIds(notificationIdList: number[]): Promise<Notification[]> {
-    daoAccessLog.push('NotificationDao.getListByNotificationIds called');
+    daoAccessLog.push(MockNotificationDao.getListByNotificationIdsLog);
     return this.notifications.filter((notification: Notification) =>
       notificationIdList.includes(notification.notification_id),
     );
   }
 
-  public getNotifications() {
-    daoAccessLog.push('NotificationDao.getNotifications called');
-    return this.notifications;
-  }
-
-  //for test
+  //only for test
   async getListByUserIds(userId: number[]): Promise<Notification[]> {
     return this.notifications.filter((notification: Notification) => userId.includes(notification.users_id));
   }
@@ -75,7 +75,7 @@ describe('NotificationComponent', () => {
     const notifications = await notificationDao.getListByUserId(userId);
     expect(notifications.shift()).toStrictEqual(Notification.create(content, userId));
     expect(result).toBe(void 0);
-    expect(daoAccessLog).toEqual(['NotificationDao.save called', 'NotificationDao.getListByUserId called']);
+    expect(daoAccessLog).toEqual([MockNotificationDao.saveLog, MockNotificationDao.getListByUserIdLog]);
   });
 
   it('addNotifications', async () => {
@@ -87,7 +87,7 @@ describe('NotificationComponent', () => {
       Notification.create(content, userIdList[2]),
     ];
     const result = await notificationComponent.addNotifications(content, userIdList);
-    expect(daoAccessLog).toEqual(['NotificationDao.saveAll called']);
+    expect(daoAccessLog).toEqual([MockNotificationDao.saveAllLog]);
     const notifications = await notificationDao.getListByUserIds(userIdList);
     expect(notifications).toStrictEqual(response);
     expect(result).toBe(void 0);
@@ -103,7 +103,7 @@ describe('NotificationComponent', () => {
     const result = await notificationComponent.getListByNotificationIds(notificationIds);
     expect(result.length).toBe(2);
     expect(result).toStrictEqual(response);
-    expect(daoAccessLog).toEqual(['NotificationDao.getListByNotificationIds called']);
+    expect(daoAccessLog).toEqual([MockNotificationDao.getListByNotificationIdsLog]);
   });
 
   it('getListByUserId', async () => {
@@ -116,7 +116,7 @@ describe('NotificationComponent', () => {
     const result = await notificationDao.getListByUserId(userId);
     expect(result.length).toBe(2);
     expect(result).toStrictEqual(response);
-    expect(daoAccessLog).toEqual(['NotificationDao.getListByUserId called']);
+    expect(daoAccessLog).toEqual([MockNotificationDao.getListByUserIdLog]);
   });
 
   it('saveAll', async () => {
@@ -126,7 +126,7 @@ describe('NotificationComponent', () => {
     ];
 
     await notificationDao.saveAll(notifications);
-    expect(daoAccessLog).toEqual(['NotificationDao.saveAll called']);
+    expect(daoAccessLog).toEqual([MockNotificationDao.saveAllLog]);
     const notification1 = await notificationDao.getListByUserId(123);
     const notification2 = await notificationDao.getListByUserId(456);
     expect(notification1.pop()).toStrictEqual(notifications[0]);
