@@ -85,6 +85,21 @@ export class Schedule extends BaseEntity {
     return schedule;
   }
 
+  //only for test
+  public static createForTest(schedule_id: number, scheduleVO: ScheduleCreateVO): Schedule {
+    const schedule = new Schedule();
+    schedule.schedule_id = schedule_id;
+    schedule.name = scheduleVO.name;
+    schedule.explanation = scheduleVO.explanation;
+    schedule.startDate = scheduleVO.startDate;
+    schedule.endDate = scheduleVO.endDate;
+    schedule.reminder = ScheduleUtils.reminderListToMask(scheduleVO.reminder);
+    schedule.announcement = scheduleVO.announcement;
+    schedule.onlineYn = scheduleVO.onlineYn;
+    schedule.meeting_id = MeetingUtils.transformMeetingIdToInteger(scheduleVO.meetingId);
+    return schedule;
+  }
+
   update(scheduleUpdateVO: ScheduleUpdateVO) {
     this.name = scheduleUpdateVO.name;
     this.explanation = scheduleUpdateVO.explanation;

@@ -1,4 +1,4 @@
-import { ScheduleDao } from '@domain/schedule/dao/schedule.dao';
+import { ScheduleDaoImpl } from '@domain/schedule/dao/schedule.dao';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Schedule } from '@domain/schedule/entity/schedule.entity';
@@ -11,13 +11,13 @@ class MockScheduleRepository {
 }
 
 describe('ScheduleDaoTest', async () => {
-  let scheduleDao: ScheduleDao;
+  let scheduleDao: ScheduleDaoImpl;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [ScheduleDao, { provide: getRepositoryToken(Schedule), useClass: MockScheduleRepository }],
+      providers: [ScheduleDaoImpl, { provide: getRepositoryToken(Schedule), useClass: MockScheduleRepository }],
     }).compile();
-    scheduleDao = module.get<ScheduleDao>(ScheduleDao);
+    scheduleDao = module.get<ScheduleDaoImpl>(ScheduleDaoImpl);
   });
 
   it('findByScheduleId', async () => {});

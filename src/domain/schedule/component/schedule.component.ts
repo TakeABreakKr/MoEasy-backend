@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ScheduleCreateVO } from '@domain/schedule/vo/schedule.create.vo';
 import { Schedule } from '@domain/schedule/entity/schedule.entity';
 import { ScheduleComponent } from '@domain/schedule/component/schedule.component.interface';
-import { ScheduleDao } from '@domain/schedule/dao/schedule.dao';
+import { ScheduleDaoImpl } from '@domain/schedule/dao/schedule.dao';
 
 @Injectable()
 export class ScheduleComponentImpl implements ScheduleComponent {
-  constructor(private scheduleDao: ScheduleDao) {}
+  constructor(@Inject('ScheduleDao') private scheduleDao: ScheduleDaoImpl) {}
 
   public async create(scheduleCreateVO: ScheduleCreateVO): Promise<Schedule> {
     return this.scheduleDao.create(scheduleCreateVO);

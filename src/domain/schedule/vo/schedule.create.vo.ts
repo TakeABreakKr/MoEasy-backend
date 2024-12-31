@@ -10,6 +10,6 @@ export interface ScheduleCreateVO {
   reminder: ReminderEnumType[];
   announcement: string;
   onlineYn: boolean;
-  address: AddressDto;
-  detailAddress: string;
+  address?: AddressDto;
+  detailAddress?: string;
 }

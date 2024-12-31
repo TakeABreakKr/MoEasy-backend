@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ParticipantDao } from '@domain/schedule/dao/participant.dao';
-import { MeetingDao } from '@domain/meeting/dao/meeting.dao';
-import { MemberDao } from '@domain/meeting/dao/member.dao';
-import { ScheduleDao } from '@domain/schedule/dao/schedule.dao';
-import { AuthorityComponent } from '@domain/meeting/component/authority.component';
-import { NotificationComponent } from '@domain/notification/component/notification.component';
-import { ScheduleService } from '@domain/schedule/service/schedule.service.interface';
-import { ScheduleServiceImpl } from '@domain/schedule/service/schedule.service';
+import { NotificationComponentImpl } from '@domain/notification/component/notification.component';
+import { ScheduleService } from '../service/schedule.service.interface';
+import { ScheduleServiceImpl } from '../service/schedule.service';
+import { ScheduleComponentImpl } from '@domain/schedule/component/schedule.component';
+import { MemberComponentImpl } from '@domain/member/component/member.component';
+import { MeetingComponentImpl } from '@domain/meeting/component/meeting.component';
+import { ParticipantComponentImpl } from '@domain/schedule/component/participant.component';
+import { AuthorityComponentImpl } from '@domain/member/component/authority.component';
 
 describe('ScheduleServiceTest', async () => {
   let scheduleService: ScheduleService;
@@ -15,14 +15,21 @@ describe('ScheduleServiceTest', async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: 'ScheduleService', useClass: ScheduleServiceImpl },
-        { provide: 'ScheduleDao', useClass: ScheduleDao },
-        { provide: 'MemberDao', useClass: MemberDao },
-        { provide: 'MeetingDao', useClass: MeetingDao },
-        { provide: 'ParticipantDao', useClass: ParticipantDao },
-        AuthorityComponent,
-        NotificationComponent,
+        { provide: 'ScheduleComponent', useClass: ScheduleComponentImpl },
+        { provide: 'MemberComponent', useClass: MemberComponentImpl },
+        { provide: 'MeetingComponent', useClass: MeetingComponentImpl },
+        { provide: 'ParticipantComponent', useClass: ParticipantComponentImpl },
+        { provide: 'NotificationComponent', useClass: NotificationComponentImpl },
+        { provide: 'AuthorityComponent', useClass: AuthorityComponentImpl },
       ],
     }).compile();
     scheduleService = module.get<ScheduleService>('ScheduleService');
   });
+
+  it('createScheduleTest', () => {});
+  it('updateScheduleTest', () => {});
+  it('getScheduleTest', () => {});
+  it('getScheduleListTest', () => {});
+  it('withdrawTest', () => {});
+  it('deleteTest', () => {});
 });

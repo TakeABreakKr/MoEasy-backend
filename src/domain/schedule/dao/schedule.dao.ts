@@ -4,9 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Schedule } from '../entity/schedule.entity';
 import { ScheduleCreateVO } from '@domain/schedule/vo/schedule.create.vo';
+import { ScheduleComponent } from './schedule.dao.interface';
 
 @Injectable()
-export class ScheduleDao {
+export class ScheduleDaoImpl implements ScheduleComponent {
   constructor(@InjectRepository(Schedule) private scheduleRepository: Repository<Schedule>) {}
 
   async findByScheduleId(schedule_id: number): Promise<Schedule | null> {

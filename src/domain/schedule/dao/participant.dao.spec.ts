@@ -13,7 +13,7 @@ class MockParticipantRepository extends Repository<Participant> {
 }
 
 describe('participantDaoTest', () => {
-	let participantDao: ParticipantDao;
+  let participantDao: ParticipantDao;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
