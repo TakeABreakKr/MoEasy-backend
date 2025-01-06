@@ -116,14 +116,14 @@ describe('MeetingDao', () => {
   });
 
   it('createTest', async () => {
-    const props = {
+    const createMeetingDto = {
       name: '테스트 모임',
       explanation: '모임 설명',
       limit: 5,
       thumbnail: 'createThumbnai.jpg',
       canJoin: true,
     };
-    const result = await meetingDao.create(props);
+    const result = await meetingDao.create(createMeetingDto);
 
     expect(result.name).toBe('테스트 모임');
     expect(result.explanation).toBe('모임 설명');
@@ -133,18 +133,19 @@ describe('MeetingDao', () => {
   });
 
   it('updateTest', async () => {
-    const meeting = Meeting.create({
+    const meeting = Meeting.createForTest({
+      meeting_id: 50,
       name: '업데이트한 모임이름',
       explanation: '업데이트한 모임설명',
       limit: 9,
       thumbnail: 'updateTestThumbnail.jpg',
       canJoin: false,
     });
-    meeting.meeting_id = 50;
 
     await meetingDao.update(meeting);
 
     const updatedMeeting = await meetingDao.findByMeetingId(50);
+
     expect(updatedMeeting.name).toBe('업데이트한 모임이름');
     expect(updatedMeeting.limit).toBe(9);
     expect(updatedMeeting.thumbnail).toBe('updateTestThumbnail.jpg');
@@ -159,6 +160,7 @@ describe('MeetingDao', () => {
     expect(results[0].explanation).toBe('모임 설명1');
     expect(results[0].limit).toBe(5);
     expect(results[0].thumbnail).toBe('testThumbnail1.jpg');
+
     expect(results[1].name).toBe('모임 이름2');
     expect(results[1].explanation).toBe('모임 설명2');
     expect(results[1].limit).toBe(7);

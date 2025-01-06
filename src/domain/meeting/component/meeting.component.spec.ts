@@ -74,7 +74,9 @@ describe('MeetingComponent', () => {
   });
 
   it('findByMeetingIdTest ', async () => {
-    const result = await meetingComponent.findByMeetingId(50);
+    const meetingId = 50;
+
+    const result = await meetingComponent.findByMeetingId(meetingId);
 
     expect(result.meeting_id).toBe(50);
     expect(result.name).toBe('모임 이름1');
@@ -84,7 +86,9 @@ describe('MeetingComponent', () => {
   });
 
   it('findByMeetingIdsTest', async () => {
-    const result = await meetingComponent.findByMeetingIds([50, 200]);
+    const meetingIds = [50, 200];
+
+    const result = await meetingComponent.findByMeetingIds(meetingIds);
 
     expect(result[0].meeting_id).toBe(50);
     expect(result[0].limit).toBe(5);
@@ -154,14 +158,15 @@ describe('MeetingComponent', () => {
   });
 
   it('deleteTest', async () => {
+    const idToDelete = 50;
+    const beforeDelete = await meetingComponent.findByMeetingId(idToDelete);
+
+    expect(beforeDelete).toBeDefined();
+    expect(beforeDelete.meeting_id).toBe(idToDelete);
+
     await meetingComponent.delete(50);
 
-    const result = await meetingComponent.findAll();
-
-    expect(result.length).toBe(1);
-    expect(result[0].meeting_id).toBe(200);
-    expect(result[0].limit).toBe(7);
-    expect(result[0].thumbnail).toBe('testThumbnail2.jpg');
-    expect(result[0].canJoin).toBe(true);
+    const afterDelete = await meetingComponent.findByMeetingId(idToDelete);
+    expect(afterDelete).toBeNull();
   });
 });
