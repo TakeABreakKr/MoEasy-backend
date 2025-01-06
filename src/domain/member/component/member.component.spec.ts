@@ -123,26 +123,34 @@ describe('KeywordComponent', () => {
   });
 
   it('findByUsersAndMeetingIdTest', async () => {
-    const result = await memberComponent.findByUsersAndMeetingId(400, 400);
+    const meetingId = 400;
+    const usersId = 400;
 
-    expect(result.users_id).toBe(400);
-    expect(result.meeting_id).toBe(400);
+    const result = await memberComponent.findByUsersAndMeetingId(meetingId, usersId);
+
+    expect(result.users_id).toBe(usersId);
+    expect(result.meeting_id).toBe(meetingId);
     expect(result.authority).toBe(AuthorityEnum.MEMBER);
   });
 
   it('findByUserIdTest', async () => {
-    const result = await memberComponent.findByUserId(300);
+    const meetingId = 300;
+    const usersId = 300;
 
-    expect(result[0].users_id).toBe(300);
-    expect(result[0].meeting_id).toBe(300);
+    const result = await memberComponent.findByUserId(meetingId);
+
+    expect(result[0].users_id).toBe(usersId);
+    expect(result[0].meeting_id).toBe(meetingId);
     expect(result[0].authority).toBe(AuthorityEnum.OWNER);
   });
 
   it('findByUsersAndAuthoritiesTest', async () => {
-    const result = await memberComponent.findByUsersAndAuthorities(500, [AuthorityEnum.WAITING]);
+    const meetingId = 500;
 
-    expect(result[0].users_id).toBe(500);
-    expect(result[0].meeting_id).toBe(500);
+    const result = await memberComponent.findByUsersAndAuthorities(meetingId, [AuthorityEnum.WAITING]);
+
+    expect(result[0].users_id).toBe(meetingId);
+    expect(result[0].meeting_id).toBe(meetingId);
     expect(result[0].authority).toBe(AuthorityEnum.WAITING);
     expect(result[0].applicationMessage).toBe('저는 이 프로젝트 모임에 꼭 가입하고 싶습니다.');
   });
@@ -162,13 +170,16 @@ describe('KeywordComponent', () => {
   });
 
   it('updateAuthorityTest', async () => {
-    const member = await memberComponent.findByUsersAndMeetingId(400, 400);
+    const meetingId = 400;
+    const usersId = 400;
+
+    const member = await memberComponent.findByUsersAndMeetingId(usersId, meetingId);
 
     await memberComponent.updateAuthority(member, AuthorityEnum.MANAGER);
-    const result = await memberComponent.findByUsersAndMeetingId(400, 400);
+    const result = await memberComponent.findByUsersAndMeetingId(usersId, meetingId);
 
-    expect(result.users_id).toBe(400);
-    expect(result.meeting_id).toBe(400);
+    expect(result.users_id).toBe(usersId);
+    expect(result.meeting_id).toBe(meetingId);
     expect(result.authority).toBe(AuthorityEnum.MANAGER);
   });
 
