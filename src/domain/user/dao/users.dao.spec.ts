@@ -75,9 +75,11 @@ describe('UsersDao', () => {
   });
 
   it('findByIdTest', async () => {
-    const result = await usersDao.findById(30);
+    const usersId = 30;
 
-    expect(result.users_id).toBe(30);
+    const result = await usersDao.findById(usersId);
+
+    expect(result.users_id).toBe(usersId);
     expect(result.discord_id).toBe('discordIdOne');
     expect(result.username).toBe('kimmoiji');
     expect(result.avatar).toBe('avatar1');
@@ -85,7 +87,9 @@ describe('UsersDao', () => {
   });
 
   it('findByIdsTest', async () => {
-    const result = await usersDao.findByIds([30, 50]);
+    const usersIds = [30, 50];
+
+    const result = await usersDao.findByIds(usersIds);
 
     expect(result[0].users_id).toBe(30);
     expect(result[0].discord_id).toBe('discordIdOne');
@@ -111,15 +115,15 @@ describe('UsersDao', () => {
   });
 
   it('createTest', async () => {
-    const props: DiscordProfileDto = {
-      id: '60',
+    const profile: DiscordProfileDto = {
+      id: 'discordIdThree',
       username: 'Parkmoiji',
       avatar: 'avatar',
       email: 'Parkmoiji@example.com',
     };
-    const result = await usersDao.createUsers(props);
+    const result = await usersDao.createUsers(profile);
 
-    expect(result.discord_id).toBe('60');
+    expect(result.discord_id).toBe('discordIdThree');
     expect(result.username).toBe('Parkmoiji');
     expect(result.avatar).toBe('avatar');
     expect(result.email).toBe('Parkmoiji@example.com');

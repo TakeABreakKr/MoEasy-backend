@@ -107,7 +107,9 @@ describe('UsersComponent', () => {
   });
 
   it('findByIdTest', async () => {
-    const user = await usersComponent.findById(30);
+    const usersId = 30;
+
+    const user = await usersComponent.findById(usersId);
 
     expect(user.users_id).toBe(30);
     expect(user.discord_id).toBe('discordIdOne');
@@ -117,7 +119,9 @@ describe('UsersComponent', () => {
   });
 
   it('findByIdsTest', async () => {
-    const users = await usersComponent.findByIds([30, 50]);
+    const usersIds = [30, 50];
+
+    const users = await usersComponent.findByIds(usersIds);
 
     expect(users[0].users_id).toBe(30);
     expect(users[0].discord_id).toBe('discordIdOne');
