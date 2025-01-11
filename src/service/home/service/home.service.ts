@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HomeService } from '@service/home/service/home.service.interface';
 import { HomeResponse } from '@service/home/dto/response/home.response';
 import { AuthUser } from '@decorator/token.decorator';
+import { HomeCachedResponse } from '@service/home/dto/response/home.cached.response';
 
 @Injectable()
 export class HomeServiceImpl implements HomeService {
@@ -20,6 +21,10 @@ export class HomeServiceImpl implements HomeService {
   }
 
   private async getLoggedInHome(id: number): Promise<HomeResponse> {
+    return null;
+  }
+
+  public async getCachedHome(user: AuthUser): Promise<HomeCachedResponse> {
     return null;
   }
 }
