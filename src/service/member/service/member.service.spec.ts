@@ -250,7 +250,7 @@ class MockAuthorityComponent implements AuthorityComponent {
 class MockNotificationComponent implements NotificationComponent {
   public static addNotificationsLog = 'addNotifications called';
 
-  async getByIdList(): Promise<Notification[]> {
+  async getListByNotificationIds(): Promise<Notification[]> {
     return [];
   }
   async getListByUserId(): Promise<Notification[]> {
