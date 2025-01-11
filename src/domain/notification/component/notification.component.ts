@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Notification } from '@domain/notification/entity/notification.entity';
-import { NotificationDao } from '@domain/notification/dao/notification.dao';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
+import { NotificationDao } from '@domain/notification/dao/notification.dao.interface';
 
 @Injectable()
 export class NotificationComponentImpl implements NotificationComponent {
-  constructor(private notificationDao: NotificationDao) {}
+  constructor(@Inject('NotificationDao') private notificationDao: NotificationDao) {}
 
   public async addNotification(content: string, userId: number) {
     const notification = Notification.create(content, userId);
@@ -17,8 +17,8 @@ export class NotificationComponentImpl implements NotificationComponent {
     await this.notificationDao.saveAll(notifications);
   }
 
-  public async getByIdList(notificationIdList: number[]): Promise<Notification[]> {
-    return this.notificationDao.getByIdList(notificationIdList);
+  public async getListByNotificationIds(notificationIdList: number[]): Promise<Notification[]> {
+    return this.notificationDao.getListByNotificationIds(notificationIdList);
   }
 
   public async getListByUserId(userId: number): Promise<Notification[]> {
