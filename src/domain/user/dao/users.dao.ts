@@ -22,7 +22,7 @@ export class UsersDaoImpl implements UsersDao {
   }
 
   public async createUsers(profile: DiscordProfileDto): Promise<Users> {
-    const user: Users = this.usersRepository.create({
+    const user: Users = Users.create({
       discord_id: profile.id,
       username: profile.username,
       avatar: profile.avatar,
@@ -30,6 +30,7 @@ export class UsersDaoImpl implements UsersDao {
       settings: {
         allowNotificationYn: false,
       },
+      explanation: '',
     });
     await this.usersRepository.save(user);
     return user;
