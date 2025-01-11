@@ -122,30 +122,38 @@ describe('MemberDao', () => {
   });
 
   it('findByMeetingIdTest', async () => {
-    const result = await memberDao.findByMeetingId(10);
+    const meetingId = 10;
+    const usersId = 10;
+    const result = await memberDao.findByMeetingId(meetingId);
 
-    expect(result[0].meeting_id).toBe(10);
-    expect(result[0].users_id).toBe(10);
+    expect(result[0].meeting_id).toBe(meetingId);
+    expect(result[0].users_id).toBe(usersId);
     expect(result[0].authority).toBe(AuthorityEnum.OWNER);
   });
 
   it('findByUsersAndAuthoritiesTest', async () => {
-    const result = await memberDao.findByUsersAndAuthorities(5, [AuthorityEnum.MEMBER]);
+    const meetingId = 5;
+    const usersId = 5;
 
-    expect(result[0].users_id).toBe(5);
-    expect(result[0].meeting_id).toBe(5);
+    const result = await memberDao.findByUsersAndAuthorities(usersId, [AuthorityEnum.MEMBER]);
+
+    expect(result[0].users_id).toBe(usersId);
+    expect(result[0].meeting_id).toBe(meetingId);
     expect(result[0].authority).toBe(AuthorityEnum.MEMBER);
   });
 
   it('findByUserIdTest', async () => {
-    const result = await memberDao.findByUserId(10);
+    const meetingId = 10;
+    const usersId = 10;
 
-    expect(result[0].users_id).toBe(10);
-    expect(result[0].meeting_id).toBe(10);
+    const result = await memberDao.findByUserId(usersId);
+
+    expect(result[0].users_id).toBe(usersId);
+    expect(result[0].meeting_id).toBe(meetingId);
   });
 
   it('createTest', async () => {
-    const props = {
+    const createMemberDto = {
       usersId: 1000,
       meetingId: 1000,
       authority: AuthorityEnum.MEMBER,
@@ -153,7 +161,7 @@ describe('MemberDao', () => {
       applicationMessage: '꼭 뽑아주세요!',
     };
 
-    const result = await memberDao.create(props);
+    const result = await memberDao.create(createMemberDto);
 
     expect(result.users_id).toBe(1000);
     expect(result.meeting_id).toBe(1000);
