@@ -17,7 +17,7 @@ export class HomeController {
   }
 
   @Get('/cache')
-  @ApiOkResponse({ status: 200, type: HomeResponse, description: 'get home data successfully' })
+  @ApiOkResponse({ status: 200, type: HomeCachedResponse, description: 'get home data successfully' })
   async getCachedHome(@Token() user: AuthUser): Promise<HomeCachedResponse> {
     return this.homeService.getCachedHome(user);
   }
