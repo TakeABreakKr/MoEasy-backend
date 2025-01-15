@@ -7,10 +7,10 @@ class MockConfigService extends ConfigService {
   get(key: string) {
     const config = {
       'AWS.region': 'ap-northeast-2',
-      'AWS.S3_ACCESS_KEY': 'test-key',
-      'AWS.S3_SECRET_ACCESS_KEY': 'test-secret',
-      'AWS.S3_BUCKET_NAME': 's3-bucketname',
-      'AWS.bucket': 'aws-test-bucketname',
+      'AWS.S3_ACCESS_KEY': 'aws-s3-access-key',
+      'AWS.S3_SECRET_ACCESS_KEY': 'aws-s3-secret-access-secret',
+      'AWS.S3_BUCKET_NAME': 'aws-s3-bucketname',
+      'AWS.bucket': 'aws-bucketname',
     };
 
     return config[key];
@@ -25,6 +25,7 @@ jest.mock('@aws-sdk/client-s3', () => ({
       },
     })),
   })),
+
   PutObjectCommand: jest.fn(),
   GetObjectCommand: jest.fn(),
 }));
@@ -61,7 +62,7 @@ describe('LocalFileService', () => {
     };
     const path = await s3FileService.uploadThumbnailFile(file);
 
-    expect(path).toBe('https://s3.ap-northeast-2.amazonaws.com/aws-test-bucketname/testFilenameMoeasy.jpg');
+    expect(path).toBe('https://s3.ap-northeast-2.amazonaws.com/aws-bucketname/testFilenameMoeasy.jpg');
   });
 
   it('getFileTest', async () => {

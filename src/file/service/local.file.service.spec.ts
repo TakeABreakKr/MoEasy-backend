@@ -6,6 +6,7 @@ import { StreamableFile } from '@nestjs/common';
 class MockConfigService extends ConfigService {
   get(key: string) {
     const config = { 'file.dir': '/upload/' };
+
     return config[key];
   }
 }
@@ -68,7 +69,7 @@ describe('LocalFileService', () => {
     expect(result).toBeNull();
   });
 
-  it('getFileTest - StreamableFile', async () => {
+  it('getFileTest', async () => {
     const nonExistingPath = '/upload/nonexistent.jpg';
     mockFiles[nonExistingPath] = Buffer.from('test content');
     const result = await localFileService.getFile(nonExistingPath);
