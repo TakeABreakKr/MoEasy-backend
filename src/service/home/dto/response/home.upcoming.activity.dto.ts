@@ -2,13 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class HomeUpcomingActivityDto {
   @ApiProperty()
-  name: string;
+  activityName: string;
 
   @ApiProperty()
   isOnlineYn: boolean;
 
   @ApiProperty()
-  description: string;
+  meetingName: string;
 
   @ApiProperty()
   location: string;
