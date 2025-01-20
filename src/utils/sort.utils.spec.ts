@@ -15,6 +15,7 @@ const testItems: Sortable[] = [
 describe('SortUtilsTest', () => {
   it('SortUtilsTest - NAME', async () => {
     const result = SortUtils.sort(testItems, OrderingOptionEnum.NAME);
+
     expect(result).toEqual([
       { name: '도연', updatedAt: date3 },
       { name: '성용', updatedAt: date2 },
