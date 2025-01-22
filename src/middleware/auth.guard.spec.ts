@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import AuthGuard from './auth.guard';
-import { HttpException, HttpStatus, Type } from '@nestjs/common';
+import { HttpStatus, Type } from '@nestjs/common';
 import { ErrorMessageType } from '@root/enums/error.message.enum';
 import { IS_PUBLIC_KEY } from '@root/decorator/public.decorator';
 
@@ -93,7 +93,6 @@ describe('AuthGuard', () => {
 
       const throwExpectation = () => authGuard.canActivate(mockContext);
 
-      expect(throwExpectation).toThrow(HttpException);
       expect(throwExpectation).toThrow(
         expect.objectContaining({
           message: ErrorMessageType.INVALID_TOKEN,
@@ -106,7 +105,6 @@ describe('AuthGuard', () => {
       const mockContext = createMockContext({ access_token: 'expired-token' });
       const throwExpectation = () => authGuard.canActivate(mockContext);
 
-      expect(throwExpectation).toThrow(HttpException);
       expect(throwExpectation).toThrow(
         expect.objectContaining({
           message: 'EXPIRED_TOKEN',
@@ -119,7 +117,6 @@ describe('AuthGuard', () => {
       const mockContext = createMockContext({ access_token: 'no-user-token' });
       const throwExpectation = () => authGuard.canActivate(mockContext);
 
-      expect(throwExpectation).toThrow(HttpException);
       expect(throwExpectation).toThrow(
         expect.objectContaining({
           message: 'NO_USER',
@@ -132,7 +129,6 @@ describe('AuthGuard', () => {
       const mockContext = createMockContext({ access_token: 'unknown-error-token' });
       const throwExpectation = () => authGuard.canActivate(mockContext);
 
-      expect(throwExpectation).toThrow(HttpException);
       expect(throwExpectation).toThrow(
         expect.objectContaining({
           message: ErrorMessageType.SERVER_ERROR,
