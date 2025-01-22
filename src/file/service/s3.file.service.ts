@@ -34,9 +34,9 @@ export class S3FileService extends FileService {
 
     await this.s3Client.send(uploadCommand);
 
-    const bucketName = this.configService.get('AWS.bucket');
+    const urlBucketName = this.configService.get('AWS.bucket');
     const region = this.configService.get('AWS.region');
-    return `https://s3.${region}.amazonaws.com/${bucketName}/${filename}`;
+    return `https://s3.${region}.amazonaws.com/${urlBucketName}/${filename}`;
   }
 
   async getFile(path: string): Promise<StreamableFile | null> {
