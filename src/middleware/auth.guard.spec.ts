@@ -7,13 +7,12 @@ import { HttpStatus, Type } from '@nestjs/common';
 import { ErrorMessageType } from '@root/enums/error.message.enum';
 import { IS_PUBLIC_KEY } from '@root/decorator/public.decorator';
 
+const TEST_CONFIG = {
+  'auth.ACCESS_TOKEN_SECRET_KEY': 'test-secret-key',
+};
 class MockConfigService extends ConfigService {
   get(key: string) {
-    const config = {
-      'auth.ACCESS_TOKEN_SECRET_KEY': 'test-secret-key',
-    };
-
-    return config[key];
+    return TEST_CONFIG[key];
   }
 }
 
@@ -72,6 +71,7 @@ describe('AuthGuard', () => {
 
     authGuard = module.get<AuthGuard>(AuthGuard);
   });
+
   describe('canActivateTest', () => {
     it('isPublic true', () => {
       const mockContext = createMockContext({ access_token: 'valid-token' });
@@ -107,7 +107,7 @@ describe('AuthGuard', () => {
 
       expect(throwExpectation).toThrow(
         expect.objectContaining({
-          message: 'EXPIRED_TOKEN',
+          message: ErrorMessageType.EXPIRED_TOKEN,
           status: HttpStatus.GONE,
         }),
       );
@@ -119,7 +119,7 @@ describe('AuthGuard', () => {
 
       expect(throwExpectation).toThrow(
         expect.objectContaining({
-          message: 'NO_USER',
+          message: ErrorMessageType.NO_USER,
           status: HttpStatus.UNAUTHORIZED,
         }),
       );

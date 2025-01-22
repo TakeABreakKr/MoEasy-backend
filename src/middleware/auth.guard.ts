@@ -44,10 +44,10 @@ export default class AuthGuard implements CanActivate {
         case 'INVALID_TOKEN':
         case 'TOKEN_IS_ARRAY':
         case 'NO_USER':
-          throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
+          throw new HttpException(ErrorMessageType.NO_USER, HttpStatus.UNAUTHORIZED);
 
         case 'EXPIRED_TOKEN':
-          throw new HttpException(error.message, HttpStatus.GONE);
+          throw new HttpException(ErrorMessageType.EXPIRED_TOKEN, HttpStatus.GONE);
 
         default:
           throw new HttpException(ErrorMessageType.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
