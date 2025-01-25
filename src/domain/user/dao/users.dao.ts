@@ -25,8 +25,9 @@ export class UsersDao {
     const user: Users = this.usersRepository.create({
       discord_id: profile.id,
       username: profile.username,
-      avatar: profile.avatar,
+      avatar: profile.avatar || '',
       email: profile.email,
+      explanation: '',
       settings: {
         allowNotificationYn: false,
       },

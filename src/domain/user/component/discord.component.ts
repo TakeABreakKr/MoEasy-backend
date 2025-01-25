@@ -1,9 +1,6 @@
 import type { TokenDto } from '../dto/token.dto';
 import type { DiscordAccessTokenResponse } from '../dto/response/discord.access.token.response';
-import type {
-  DiscordAuthorizedInfoResponse,
-  DiscordUserByTokenDto,
-} from '../dto/response/discord.authorized.info.response';
+import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.info.response';
 
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
@@ -43,15 +40,15 @@ export class DiscordComponent {
   }
 
   public async getUser(token: TokenDto): Promise<DiscordUserByTokenDto> {
-    const { data }: { data: DiscordAuthorizedInfoResponse } = await this.httpService.axiosRef.request({
+    const { data } = await this.httpService.axiosRef.request<DiscordUserByTokenDto>({
       method: 'get',
       baseURL: this.baseURL,
-      url: '/oauth2/@me',
+      url: '/api/v10/users/@me',
       headers: {
-        authorization: `Bearer ${token.accessToken}`,
+        Authorization: token.accessToken,
       },
     });
 
-    return data.user;
+    return data;
   }
 }
