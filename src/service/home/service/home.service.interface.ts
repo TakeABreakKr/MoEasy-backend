@@ -4,5 +4,5 @@ import { HomeCachedResponse } from '@service/home/dto/response/home.cached.respo
 
 export interface HomeService {
   getHome(user: AuthUser): Promise<HomeResponse>;
-  getCachedHome(user: AuthUser): Promise<HomeCachedResponse>;
+  getCachedHome(): Promise<HomeCachedResponse>;
 }

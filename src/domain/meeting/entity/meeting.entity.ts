@@ -1,9 +1,10 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Schedule } from '@domain/schedule/entity/schedule.entity';
 import { Member } from '@domain/member/entity/member.entity';
-import { BaseEntity } from '@domain//common/base.entity';
+import { BaseEntity } from '@domain/common/base.entity';
 import { Keyword } from './keyword.entity';
 import { CreateMeetingDto } from '../dto/create.meeting.dto';
+import { MeetingCategoryEnum, MeetingCategoryEnumType } from '@enums/meeting.category.enum';
 
 @Entity()
 export class Meeting extends BaseEntity {
@@ -15,6 +16,12 @@ export class Meeting extends BaseEntity {
     length: 18,
   })
   name: string;
+
+  @Column({
+    enum: MeetingCategoryEnum,
+    nullable: false,
+  })
+  category: MeetingCategoryEnumType;
 
   @Column({
     nullable: true,

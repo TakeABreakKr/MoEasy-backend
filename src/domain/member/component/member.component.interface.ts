@@ -5,4 +5,6 @@ export interface MemberComponent {
   findByMeetingId(meetingId: number): Promise<Member[]>;
   findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null>;
   findByUserId(usersId: number): Promise<Member[]>;
+  getMemberCount(meeting_id: number): Promise<number>;
+  getMostPopularMeetingIds(): Promise<number[]>;
 }

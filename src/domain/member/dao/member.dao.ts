@@ -6,6 +6,8 @@ import { AuthorityEnumType } from '@enums/authority.enum';
 import { MemberDao } from './member.dao.interface';
 import { CreateMemberDto } from '../dto/create.member.dto';
 
+type PopularMeetingDto = { meeting_id: number; memberCount: number };
+
 @Injectable()
 export class MemberDaoImpl implements MemberDao {
   constructor(@InjectRepository(Member) private memberRepository: Repository<Member>) {}
@@ -43,5 +45,22 @@ export class MemberDaoImpl implements MemberDao {
 
   async deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void> {
     await this.memberRepository.delete({ users_id: usersId, meeting_id: meetingId });
+  }
+
+  async getMemberCountByMeetingId(meeting_id: number): Promise<number> {
+    return this.memberRepository.countBy({ meeting_id });
+  }
+
+  async getMostPopularMeetingIds(popularMeetingCount: number): Promise<number[]> {
+    const popularMeetingDtoList: PopularMeetingDto[] = await this.memberRepository
+      .createQueryBuilder('member')
+      .select('member.meeting_id')
+      .addSelect('COUNT(member.meeting_id)', 'memberCount')
+      .groupBy('member.meeting_id')
+      .orderBy('memberCount', 'DESC')
+      .limit(popularMeetingCount)
+      .getRawMany<PopularMeetingDto>();
+
+    return popularMeetingDtoList.map((popularMeetingDto) => popularMeetingDto.meeting_id);
   }
 }

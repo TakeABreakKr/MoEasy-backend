@@ -11,4 +11,6 @@ export interface MemberDao {
   create({ authority, ...props }: CreateMemberDto): Promise<Member>;
   updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void>;
   deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void>;
+  getMemberCountByMeetingId(meeting_id: number): Promise<number>;
+  getMostPopularMeetingIds(popularMeetingCount: number): Promise<number[]>;
 }

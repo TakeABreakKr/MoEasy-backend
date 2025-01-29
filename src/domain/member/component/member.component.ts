@@ -22,4 +22,13 @@ export class MemberComponentImpl implements MemberComponent {
   async findByUserId(usersId: number): Promise<Member[]> {
     return this.memberDao.findByUserId(usersId);
   }
+
+  async getMostPopularMeetingIds(): Promise<number[]> {
+    const popularMeetingCount = 30;
+    return this.memberDao.getMostPopularMeetingIds(popularMeetingCount);
+  }
+
+  async getMemberCount(meeting_id: number): Promise<number> {
+    return this.memberDao.getMemberCountByMeetingId(meeting_id);
+  }
 }
