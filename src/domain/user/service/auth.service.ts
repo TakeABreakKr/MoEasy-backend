@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { DiscordComponent } from '../component/discord.component';
 import { UsersDao } from '../dao/users.dao';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthUser } from '@decorator/token.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
 
@@ -35,12 +35,21 @@ export class AuthService {
   }
 
   public async callback(code: string, res: Response) {
-    const { accessToken: discordAccessToken, refreshToken: discordRefreshToken }: TokenDto =
-      await this.discordComponent.getTokens(code);
+    if (!code || typeof code !== 'string') {
+      throw new BadRequestException(ErrorMessageType.DISCORD_AUTH_CODE_ERROR);
+    }
+
+    let discordTokens: TokenDto;
+
+    try {
+      discordTokens = await this.discordComponent.getTokens(code);
+    } catch (error) {
+      throw new UnauthorizedException(ErrorMessageType.TOKEN_ISSUANCE_FAILED);
+    }
 
     const discordUser: DiscordUserByTokenDto = await this.discordComponent.getUser({
-      accessToken: discordAccessToken,
-      refreshToken: discordRefreshToken,
+      accessToken: discordTokens.accessToken,
+      refreshToken: discordTokens.refreshToken,
     });
     const profile: DiscordProfileDto = {
       id: discordUser.id,
