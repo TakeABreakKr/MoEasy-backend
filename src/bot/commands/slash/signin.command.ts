@@ -1,16 +1,18 @@
-import { Command, Handler } from '@discord-nestjs/core';
+import { Injectable } from '@nestjs/common';
+import { Context, SlashCommand, SlashCommandContext } from 'necord';
 import configuration from '@config/configuration';
 import { DiscordUtil } from '@utils/discord.util';
 
-@Command({
-  name: 'signin',
-  description: 'Check Discord Account for MoEasy Service Sign in',
-})
+@Injectable()
 export class SigninCommand {
-  @Handler()
-  onPing(): string {
+  @SlashCommand({
+    name: 'signin',
+    description: 'Check Discord Account for MoEasy Service Sign in',
+  })
+  onSignin(@Context() [interaction]: SlashCommandContext) {
     const clientId: string = configuration().discord.client_id;
     const redirectUri: string = configuration().host + '/auth/callback';
-    return DiscordUtil.getSignInUrl(clientId, redirectUri);
+    const content = DiscordUtil.getSignInUrl(clientId, redirectUri);
+    return interaction.reply({ content });
   }
 }
