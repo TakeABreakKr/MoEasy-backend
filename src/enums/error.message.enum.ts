@@ -17,6 +17,9 @@ export const ErrorMessageType = {
 
   WRONG_NOTIFICATION_OWNER: '알림의 소유자가 다릅니다.',
 
+  DISCORD_AUTH_CODE_ERROR: '디스코드 인증 코드 오류가 발생했습니다.',
+  TOKEN_ISSUANCE_FAILED: '토큰 발급에 실패했습니다.',
+
   SERVER_ERROR: '서버 내 예상하지 못한 에러가 발생했습니다.',
 } as const;
 

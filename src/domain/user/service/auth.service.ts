@@ -1,17 +1,17 @@
 import type { Response } from 'express';
 import type { Users } from '../entity/users.entity';
 import type { DiscordProfileDto } from '../dto/discord.profile.dto';
-import type { AuthCallbackRequest } from '../dto/request/auth.callback.request';
 import type { TokenDto } from '../dto/token.dto';
-import type { DiscordUserByTokenDto } from '../../discord/dto/response/discord.authorized.info.response';
 
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserComponent } from '../../discord/component/user.component';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersDao } from '../dao/users.dao';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { DiscordComponent } from '@domain/discord/component/discord.component';
 import { AuthUser } from '@decorator/token.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { DiscordUtil } from '@utils/discord.util';
+import { DiscordUserByTokenDto } from '@domain/discord/dto/response/discord.authorized.info.response';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +24,7 @@ export class AuthService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
-    private userComponent: UserComponent,
+    private discordComponent: DiscordComponent,
     private usersDao: UsersDao,
   ) {
     this.ACCESS_TOKEN_SECRET_KEY = this.configService.get('auth.ACCESS_TOKEN_SECRET_KEY');
@@ -35,13 +35,28 @@ export class AuthService {
     throw new Error('not presented yet!!');
   }
 
-  public async callback(req: AuthCallbackRequest, res: Response) {
-    const { accessToken: discordAccessToken, refreshToken: discordRefreshToken }: TokenDto =
-      await this.userComponent.getTokens(req);
+  public getLoginUrl(): string {
+    const clientId: string = this.configService.get('discord.client_id');
+    const redirectUri: string = this.configService.get('host') + '/auth/callback';
+    return DiscordUtil.getSignInUrl(clientId, redirectUri);
+  }
 
-    const discordUser: DiscordUserByTokenDto = await this.userComponent.getUser({
-      accessToken: discordAccessToken,
-      refreshToken: discordRefreshToken,
+  public async callback(code: string, res: Response) {
+    if (!code || typeof code !== 'string') {
+      throw new BadRequestException(ErrorMessageType.DISCORD_AUTH_CODE_ERROR);
+    }
+
+    let discordTokens: TokenDto;
+
+    try {
+      discordTokens = await this.discordComponent.getTokens(code);
+    } catch (error) {
+      throw new UnauthorizedException(ErrorMessageType.TOKEN_ISSUANCE_FAILED);
+    }
+
+    const discordUser: DiscordUserByTokenDto = await this.discordComponent.getUser({
+      accessToken: discordTokens.accessToken,
+      refreshToken: discordTokens.refreshToken,
     });
     const profile: DiscordProfileDto = {
       id: discordUser.id,
