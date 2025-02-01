@@ -17,6 +17,12 @@ export class AuthController {
   }
 
   @Public()
+  @Get('login/url')
+  getLoginUrl(): string {
+    return this.authService.getLoginUrl();
+  }
+
+  @Public()
   @Get('callback')
   async callback(@Query('code') code: string, @Res() res: Response) {
     await this.authService.callback(code, res);

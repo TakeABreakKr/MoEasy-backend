@@ -2,15 +2,16 @@ import type { Response } from 'express';
 import type { Users } from '../entity/users.entity';
 import type { DiscordProfileDto } from '../dto/discord.profile.dto';
 import type { TokenDto } from '../dto/token.dto';
-import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.info.response';
 
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { DiscordComponent } from '../component/discord.component';
-import { UsersDao } from '../dao/users.dao';
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { UsersDao } from '../dao/users.dao';
+import { DiscordComponent } from '@domain/discord/component/discord.component';
 import { AuthUser } from '@decorator/token.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { DiscordUtil } from '@utils/discord.util';
+import { DiscordUserByTokenDto } from '@domain/discord/dto/response/discord.authorized.info.response';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +33,12 @@ export class AuthService {
 
   public async login() {
     throw new Error('not presented yet!!');
+  }
+
+  public getLoginUrl(): string {
+    const clientId: string = this.configService.get('discord.client_id');
+    const redirectUri: string = this.configService.get('host') + '/auth/callback';
+    return DiscordUtil.getSignInUrl(clientId, redirectUri);
   }
 
   public async callback(code: string, res: Response) {
