@@ -1,16 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { HomeService } from '@service/home/service/home.service.interface';
-import { HomeResponse } from '@service/home/dto/response/home.response';
+import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
+import { MemberComponent } from '@domain/member/component/member.component.interface';
+import { CategoryStatComponent } from '@domain/category/component/category.stat.component.interface';
+import { getMeetingCategoryListInGroup, MeetingCategoryGroupEnum } from '@enums/meeting.category.group.enum';
+import { MeetingCategoryEnumType } from '@enums/meeting.category.enum';
 import { AuthUser } from '@decorator/token.decorator';
+import { HomeResponse } from '@service/home/dto/response/home.response';
 import { HomeCachedResponse } from '@service/home/dto/response/home.cached.response';
 import { HomeCategoryGroupDto } from '@service/home/dto/response/home.category.group.dto';
 import { HomePopularMeetingDto } from '@service/home/dto/response/home.popular.meeting.dto';
 import { HomeMostActivatedRegionDto } from '@service/home/dto/response/home.most.activated.region.dto';
-import { CategoryStatComponent } from '@domain/category/component/category.stat.component.interface';
-import { getMeetingCategoryListInGroup, MeetingCategoryGroupEnum } from '@enums/meeting.category.group.enum';
-import { MeetingCategoryEnumType } from '@enums/meeting.category.enum';
-import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
-import { MemberComponent } from '@domain/member/component/member.component.interface';
 import { MeetingUtils } from '@utils/meeting.utils';
 
 @Injectable()
