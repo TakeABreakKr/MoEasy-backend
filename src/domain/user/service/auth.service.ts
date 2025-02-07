@@ -68,8 +68,8 @@ export class AuthService {
     const { accessToken, refreshToken }: TokenDto = this.createTokens(user);
 
     const host = this.configService.get('frontend.host');
-    res.set('AccessToken', accessToken);
-    res.set('RefreshToken', refreshToken);
+    res.cookie('AccessToken', accessToken);
+    res.cookie('RefreshToken', refreshToken);
     return res.redirect(`${host}`);
   }
 
