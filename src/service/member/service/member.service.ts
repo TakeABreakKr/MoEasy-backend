@@ -19,8 +19,8 @@ import { MemberDeleteRequest } from '@service/member/dto/request/member.delete.r
 import { MemberWaitingListDto } from '@service/member/dto/response/member.waiting.list.dto';
 import { MemberWaitingListResponse } from '@service/member/dto/response/member.waiting.list.response';
 import { MemberWaitingListMeetingDto } from '@service/member/dto/response/member.waiting.list.meeting.dto';
-import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { MemberComponent } from '@root/domain/member/component/member.component.interface';
+import { UsersComponent } from '@domain/user/component/users.component.interface';
 
 @Injectable()
 export class MemberServiceImpl implements MemberService {

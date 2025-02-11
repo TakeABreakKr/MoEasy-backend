@@ -1,5 +1,5 @@
 import { Users } from '@domain/user/entity/users.entity';
-import { DiscordProfileDto } from '@domain/auth/dto/discord.profile.dto';
+import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 
 export interface UsersComponent {
   findByDiscordId(discord_id: string): Promise<Users | null>;
