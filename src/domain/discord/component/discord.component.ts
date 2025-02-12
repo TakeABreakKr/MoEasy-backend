@@ -5,9 +5,10 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { TokenDto } from '@service/auth/dto/token.dto';
+import { DiscordComponent } from './discord.component.interface';
 
 @Injectable()
-export class DiscordComponent {
+export class DiscordComponentImpl implements DiscordComponent {
   private readonly baseURL: string;
 
   constructor(
@@ -18,7 +19,7 @@ export class DiscordComponent {
   }
 
   public async getTokens(code: string): Promise<TokenDto> {
-    const { data }: { data: DiscordAccessTokenResponse } = await this.httpService.axiosRef.request({
+    const { data: responseData }: { data: DiscordAccessTokenResponse } = await this.httpService.axiosRef.request({
       method: 'post',
       baseURL: this.baseURL,
       url: '/api/v10/oauth2/token',
@@ -35,8 +36,8 @@ export class DiscordComponent {
     });
 
     return {
-      accessToken: data.token_type + ' ' + data.access_token,
-      refreshToken: data.token_type + ' ' + data.refresh_token,
+      accessToken: responseData.token_type + ' ' + responseData.access_token,
+      refreshToken: responseData.token_type + ' ' + responseData.refresh_token,
     };
   }
 
