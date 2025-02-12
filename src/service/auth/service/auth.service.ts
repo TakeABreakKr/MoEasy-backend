@@ -4,7 +4,7 @@ import type { Users } from '@domain/user/entity/users.entity';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { DiscordComponent } from '@domain/discord/component/discord.component';
+import { DiscordComponent } from '@domain/discord/component/discord.component.interface';
 import { AuthUser } from '@decorator/token.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { DiscordUtil } from '@utils/discord.util';
@@ -24,7 +24,7 @@ export class AuthService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
-    private discordComponent: DiscordComponent,
+    @Inject('DiscordComponent') private discordComponent: DiscordComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
   ) {
     this.ACCESS_TOKEN_SECRET_KEY = this.configService.get('auth.ACCESS_TOKEN_SECRET_KEY');
