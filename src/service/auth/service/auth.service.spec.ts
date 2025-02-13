@@ -154,9 +154,11 @@ describe('AuthService', () => {
   describe('getLoginUrlTest', () => {
     it('getLoginUrlTest', async () => {
       const result = authService.getLoginUrl();
+      const clientId = TEST_CONFIG['discord.client_id'];
+      const redirectUri = TEST_CONFIG.host + '/auth/callback';
 
       expect(result).toBe(
-        'https://discord.com/oauth2/authorize?client_id=test-client-id&response_type=code&redirect_uri=http://localhost:3000/auth/callback&scope=identify%20email',
+        `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=identify%20email`,
       );
     });
   });
@@ -195,7 +197,7 @@ describe('AuthService', () => {
     });
 
     it('refreshAccessTokenTest - INVALID_TOKEN', () => {
-      expect(() => authService.refreshAccessToken('invalid-token')).toThrow(UnauthorizedException);
+      expect(() => authService.refreshAccessToken('invalid-token')).toThrow(ErrorMessageType.INVALID_TOKEN);
     });
   });
 });
