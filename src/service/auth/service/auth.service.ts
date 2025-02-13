@@ -1,6 +1,4 @@
-import type { Response } from 'express';
 import type { Users } from '@domain/user/entity/users.entity';
-
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
@@ -12,6 +10,7 @@ import { DiscordUserByTokenDto } from '@domain/discord/dto/response/discord.auth
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { TokenDto } from '@service/auth/dto/token.dto';
 import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
+import { AuthCallbackResponse } from '../dto/response/auth.callback.response';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +40,7 @@ export class AuthService {
     return DiscordUtil.getSignInUrl(clientId, redirectUri);
   }
 
-  public async callback(code: string, res: Response) {
+  public async callback(code: string, res: AuthCallbackResponse) {
     if (!code || typeof code !== 'string') {
       throw new BadRequestException(ErrorMessageType.DISCORD_AUTH_CODE_ERROR);
     }
@@ -73,7 +72,7 @@ export class AuthService {
     return res.redirect(`${host}`);
   }
 
-  public refreshAccessToken(refreshToken: string): string {
+  public refreshAccessToken(refreshToken: string) {
     let user: AuthUser;
     try {
       user = this.jwtService.verify(refreshToken, { secret: this.REFRESH_TOKEN_SECRET_KEY });
