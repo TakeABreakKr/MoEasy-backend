@@ -12,6 +12,7 @@ import { HomeCategoryGroupDto } from '@service/home/dto/response/home.category.g
 import { HomePopularMeetingDto } from '@service/home/dto/response/home.popular.meeting.dto';
 import { HomeMostActivatedRegionDto } from '@service/home/dto/response/home.most.activated.region.dto';
 import { MeetingUtils } from '@utils/meeting.utils';
+import { RegionComponent } from '@domain/region/component/region.component.interface';
 
 @Injectable()
 export class HomeServiceImpl implements HomeService {
@@ -19,6 +20,7 @@ export class HomeServiceImpl implements HomeService {
     @Inject('CategoryStatComponent') private categoryStatComponent: CategoryStatComponent,
     @Inject('MeetingComponent') private meetingComponent: MeetingComponent,
     @Inject('MemberComponent') private memberComponent: MemberComponent,
+    @Inject('RegionComponent') private regionComponent: RegionComponent,
   ) {}
 
   public async getHome(user: AuthUser): Promise<HomeResponse> {
@@ -91,6 +93,6 @@ export class HomeServiceImpl implements HomeService {
   }
 
   private async getMostActivatedRegions(): Promise<HomeMostActivatedRegionDto[]> {
-    return null;
+    return this.regionComponent.getMostActivatedRegions();
   }
 }

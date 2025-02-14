@@ -1,10 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
-import { Participant } from './participant.entity';
-import { BaseEntity } from '../../common/base.entity';
+import { BaseEntity } from '@domain/common/base.entity';
 import { Address } from '@domain/schedule/entity/address.embedded';
 import { ScheduleCreateVO } from '@domain/schedule/vo/schedule.create.vo';
 import { ScheduleUpdateVO } from '@domain/schedule/vo/schedule.update.vo';
+import { Participant } from './participant.entity';
 import { ScheduleUtils } from '@utils/schedule.utils';
 import { MeetingUtils } from '@utils/meeting.utils';
 
@@ -69,7 +69,7 @@ export class Schedule extends BaseEntity {
     return this.meeting;
   }
 
-  public static create(scheduleVO: ScheduleCreateVO): Schedule {
+  static create(scheduleVO: ScheduleCreateVO): Schedule {
     const schedule = new Schedule();
     schedule.name = scheduleVO.name;
     schedule.explanation = scheduleVO.explanation;
