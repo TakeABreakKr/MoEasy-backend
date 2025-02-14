@@ -1,4 +1,4 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '@domain/common/base.entity';
 import { MeetingCategoryEnum, MeetingCategoryEnumType } from '@enums/meeting.category.enum';
 
@@ -7,13 +7,13 @@ export class CategoryStat extends BaseEntity {
   @PrimaryGeneratedColumn()
   category_id: number;
 
-  @Index()
   @Column({
-    enum: MeetingCategoryEnum,
+    type: 'enum',
+    enum: Object.keys(MeetingCategoryEnum),
     nullable: false,
     unique: true,
   })
-  category: MeetingCategoryEnumType;
+  category: keyof typeof MeetingCategoryEnum;
 
   @Column({
     nullable: false,
@@ -24,4 +24,8 @@ export class CategoryStat extends BaseEntity {
     nullable: false,
   })
   order: number;
+
+  getCategory(): MeetingCategoryEnumType {
+    return MeetingCategoryEnum[this.category];
+  }
 }

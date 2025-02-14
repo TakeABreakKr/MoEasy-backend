@@ -49,6 +49,7 @@ export class MeetingServiceImpl implements MeetingService {
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(req.thumbnail);
     const meeting: Meeting = await this.meetingComponent.create({
       name: req.name,
+      category: req.category,
       explanation: req.explanation,
       limit: req.limit,
       thumbnail: thumbnailPath,

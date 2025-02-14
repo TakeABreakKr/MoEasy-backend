@@ -16,9 +16,9 @@ import { MeetingUtils } from '@utils/meeting.utils';
 @Injectable()
 export class HomeServiceImpl implements HomeService {
   constructor(
-    @Inject() private categoryComponent: CategoryStatComponent,
-    @Inject() private meetingComponent: MeetingComponent,
-    @Inject() private memberComponent: MemberComponent,
+    @Inject('CategoryStatComponent') private categoryStatComponent: CategoryStatComponent,
+    @Inject('MeetingComponent') private meetingComponent: MeetingComponent,
+    @Inject('MemberComponent') private memberComponent: MemberComponent,
   ) {}
 
   public async getHome(user: AuthUser): Promise<HomeResponse> {
@@ -85,12 +85,12 @@ export class HomeServiceImpl implements HomeService {
     return meetingCategoryListInGroup.map(async (category) => {
       return {
         name: category,
-        order: await this.categoryComponent.getOrder(category),
+        order: await this.categoryStatComponent.getOrder(category),
       };
     });
   }
 
   private async getMostActivatedRegions(): Promise<HomeMostActivatedRegionDto[]> {
-
+    return null;
   }
 }

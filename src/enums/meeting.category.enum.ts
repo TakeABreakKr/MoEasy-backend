@@ -1,3 +1,5 @@
+import { EnumUtil } from '@utils/enum.util';
+
 export const MeetingCategoryEnum = {
   PET: '반려동물',
   PLANT_NATURE: '식물/자연',
@@ -36,3 +38,7 @@ export const MeetingCategoryEnum = {
 } as const;
 
 export type MeetingCategoryEnumType = (typeof MeetingCategoryEnum)[keyof typeof MeetingCategoryEnum];
+
+export function findEnumKeyFromValue(value: MeetingCategoryEnumType): keyof typeof MeetingCategoryEnum {
+  return EnumUtil.findEnumKeyFromValue(MeetingCategoryEnum, value);
+}

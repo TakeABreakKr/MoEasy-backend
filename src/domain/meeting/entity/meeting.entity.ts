@@ -4,7 +4,7 @@ import { Member } from '@domain/member/entity/member.entity';
 import { BaseEntity } from '@domain/common/base.entity';
 import { Keyword } from './keyword.entity';
 import { CreateMeetingDto } from '../dto/create.meeting.dto';
-import { MeetingCategoryEnum, MeetingCategoryEnumType } from '@enums/meeting.category.enum';
+import * as MeetingCategoryEnum from '@enums/meeting.category.enum';
 
 @Entity()
 export class Meeting extends BaseEntity {
@@ -18,10 +18,11 @@ export class Meeting extends BaseEntity {
   name: string;
 
   @Column({
-    enum: MeetingCategoryEnum,
+    type: 'enum',
+    enum: Object.keys(MeetingCategoryEnum.MeetingCategoryEnum),
     nullable: false,
   })
-  category: MeetingCategoryEnumType;
+  category: keyof typeof MeetingCategoryEnum.MeetingCategoryEnum;
 
   @Column({
     nullable: true,
@@ -49,6 +50,10 @@ export class Meeting extends BaseEntity {
   @OneToMany(() => Member, (member) => member.meeting)
   members: Promise<Member[]>;
 
+  getCategory(): MeetingCategoryEnum.MeetingCategoryEnumType {
+    return MeetingCategoryEnum.MeetingCategoryEnum[this.category];
+  }
+
   async getKeywords(): Promise<Keyword[]> {
     return this.keywords;
   }
@@ -61,10 +66,11 @@ export class Meeting extends BaseEntity {
     return this.members;
   }
 
-  static create({ name, explanation, limit, thumbnail, canJoin }: CreateMeetingDto): Meeting {
+  static create({ name, category, explanation, limit, thumbnail, canJoin }: CreateMeetingDto): Meeting {
     const meeting = new Meeting();
 
     meeting.name = name;
+    meeting.category = MeetingCategoryEnum.findEnumKeyFromValue(category);
     meeting.explanation = explanation;
     meeting.limit = limit;
     meeting.thumbnail = thumbnail;
