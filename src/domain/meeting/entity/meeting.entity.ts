@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Schedule } from '@domain/schedule/entity/schedule.entity';
+import { Activity } from '@domain/activity/entity/activity.entity';
 import { Member } from '@domain/member/entity/member.entity';
 import { BaseEntity } from '@domain/common/base.entity';
 import { Keyword } from './keyword.entity';
@@ -44,8 +44,8 @@ export class Meeting extends BaseEntity {
   @OneToMany(() => Keyword, (keyword) => keyword.meeting)
   keywords: Promise<Keyword[]>;
 
-  @OneToMany(() => Schedule, (schedule) => schedule.meeting)
-  schedules: Promise<Schedule[]>;
+  @OneToMany(() => Activity, (activity) => activity.meeting)
+  activities: Promise<Activity[]>;
 
   @OneToMany(() => Member, (member) => member.meeting)
   members: Promise<Member[]>;
@@ -58,8 +58,8 @@ export class Meeting extends BaseEntity {
     return this.keywords;
   }
 
-  async getSchedules(): Promise<Schedule[]> {
-    return this.schedules;
+  async getActivities(): Promise<Activity[]> {
+    return this.activities;
   }
 
   async getMembers(): Promise<Member[]> {
