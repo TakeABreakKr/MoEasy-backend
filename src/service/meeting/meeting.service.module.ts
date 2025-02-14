@@ -5,11 +5,10 @@ import { FileModule } from '@file/file.module';
 import { MeetingModule } from '@domain/meeting/meeting.module';
 import { MemberModule } from '@domain/member/member.module';
 import { UsersModule } from '@domain/user/users.module';
-import { AuthModule } from '@domain/auth/auth.module';
 import { NotificationModule } from '@domain/notification/notification.module';
 
 @Module({
-  imports: [FileModule, MeetingModule, MemberModule, UsersModule, AuthModule, NotificationModule],
+  imports: [FileModule, MeetingModule, MemberModule, UsersModule, NotificationModule],
   providers: [{ provide: 'MeetingService', useClass: MeetingServiceImpl }],
   controllers: [MeetingController],
 })

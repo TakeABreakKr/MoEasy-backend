@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Member } from '@domain/member/entity/member.entity';
-import { Participant } from '@domain/schedule/entity/participant.entity';
+import { Participant } from '@domain/activity/entity/participant.entity';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { BaseEntity } from '@domain/common/base.entity';
 import { UsersCreateDto } from '@domain/user/dto/users.create.dto';

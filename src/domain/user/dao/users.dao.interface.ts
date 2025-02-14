@@ -1,4 +1,4 @@
-import { DiscordProfileDto } from '@domain/auth/dto/discord.profile.dto';
+import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 import { Users } from '../entity/users.entity';
 
 export interface UsersDao {
