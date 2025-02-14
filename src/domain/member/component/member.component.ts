@@ -2,6 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { MemberComponent } from '@domain/member/component/member.component.interface';
 import { Member } from '@domain/member/entity/member.entity';
 import { MemberDao } from '@domain/member/dao/member.dao.interface';
+import { AuthorityEnumType } from '@root/enums/authority.enum';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 
 @Injectable()
 export class MemberComponentImpl implements MemberComponent {
@@ -30,5 +32,21 @@ export class MemberComponentImpl implements MemberComponent {
 
   async getMemberCount(meeting_id: number): Promise<number> {
     return this.memberDao.getMemberCountByMeetingId(meeting_id);
+  }
+
+  async findByUsersAndAuthorities(usersId: number, authority: AuthorityEnumType[]): Promise<Member[]> {
+    return this.memberDao.findByUsersAndAuthorities(usersId, authority);
+  }
+
+  async create(createMemberDto: CreateMemberDto): Promise<Member> {
+    return this.memberDao.create(createMemberDto);
+  }
+
+  async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
+    await this.memberDao.updateAuthority(member, authority);
+  }
+
+  async deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void> {
+    await this.memberDao.deleteByUsersAndMeetingId(usersId, meetingId);
   }
 }

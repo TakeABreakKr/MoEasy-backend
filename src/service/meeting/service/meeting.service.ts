@@ -13,7 +13,6 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingUtils } from '@utils/meeting.utils';
-import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { Member } from '@domain/member/entity/member.entity';
 import { Keyword } from '@domain/meeting/entity/keyword.entity';
 import { MeetingService } from './meeting.service.interface';
@@ -25,6 +24,7 @@ import { AuthorityComponent } from '@domain/member/component/authority.component
 import { MemberComponent } from '@domain/member/component/member.component.interface';
 import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
 import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
+import { UsersComponent } from '@domain/user/component/users.component.interface';
 
 type lineSeperatorFunctionType = (content: string) => string;
 

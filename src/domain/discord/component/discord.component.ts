@@ -1,11 +1,10 @@
-import type { AuthCallbackRequest } from '@root/service/auth/dto/request/auth.callback.request';
-import type { TokenDto } from '../dto/token.dto';
-import type { DiscordAccessToken } from '../dto/discord.access.token';
-import type { DiscordAuthorizedInfoResponse, DiscordUserByTokenDto } from '../dto/discord.authorized.info.response';
+import type { DiscordAccessTokenResponse } from '../dto/response/discord.access.token.response';
+import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.info.response';
 
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
+import { TokenDto } from '@service/auth/dto/token.dto';
 
 @Injectable()
 export class DiscordComponent {
@@ -18,19 +17,23 @@ export class DiscordComponent {
     this.baseURL = this.configService.get('discord.host');
   }
 
-  public async getTokens(req: AuthCallbackRequest): Promise<TokenDto> {
-    const { data }: { data: DiscordAccessToken } = await this.httpService.axiosRef.request({
+  public async getTokens(code: string): Promise<TokenDto> {
+    const { data }: { data: DiscordAccessTokenResponse } = await this.httpService.axiosRef.request({
       method: 'post',
       baseURL: this.baseURL,
       url: '/api/v10/oauth2/token',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      data: {
+      data: new URLSearchParams({
+        client_id: this.configService.get('discord.client_id'),
+        client_secret: this.configService.get('discord.client_secret'),
+        code,
+        redirect_uri: this.configService.get('host') + '/auth/callback',
         grant_type: 'authorization_code',
-        code: req.code,
-      },
+      }),
     });
+
     return {
       accessToken: data.token_type + ' ' + data.access_token,
       refreshToken: data.token_type + ' ' + data.refresh_token,
@@ -38,15 +41,15 @@ export class DiscordComponent {
   }
 
   public async getUser(token: TokenDto): Promise<DiscordUserByTokenDto> {
-    const { data }: { data: DiscordAuthorizedInfoResponse } = await this.httpService.axiosRef.request({
+    const { data } = await this.httpService.axiosRef.request<DiscordUserByTokenDto>({
       method: 'get',
       baseURL: this.baseURL,
-      url: '/oauth2/@me',
+      url: '/api/v10/users/@me',
       headers: {
-        authorization: `Bearer ${token.accessToken}`,
+        Authorization: token.accessToken,
       },
     });
 
-    return data.user;
+    return data;
   }
 }
