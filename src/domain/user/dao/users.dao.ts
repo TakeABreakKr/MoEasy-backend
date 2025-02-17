@@ -2,7 +2,7 @@ import { In, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entity/users.entity';
-import { DiscordProfileDto } from '@domain/auth/dto/discord.profile.dto';
+import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 import { UsersDao } from '@domain/user/dao/users.dao.interface';
 
 @Injectable()
@@ -22,11 +22,12 @@ export class UsersDaoImpl implements UsersDao {
   }
 
   public async createUsers(profile: DiscordProfileDto): Promise<Users> {
-    const user: Users = this.usersRepository.create({
+    const user: Users = Users.create({
       discord_id: profile.id,
       username: profile.username,
-      avatar: profile.avatar,
+      avatar: profile.avatar || '',
       email: profile.email,
+      explanation: '',
       settings: {
         allowNotificationYn: false,
       },

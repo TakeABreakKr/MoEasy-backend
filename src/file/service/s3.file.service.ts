@@ -7,7 +7,7 @@ import { FileService } from './file.service';
 @Injectable()
 export class S3FileService extends FileService {
   private s3Client: S3Client;
-  private readonly bucketName: string;
+  private readonly awsS3BucketName: string;
 
   constructor(private configService: ConfigService) {
     super();
@@ -18,14 +18,14 @@ export class S3FileService extends FileService {
         secretAccessKey: configService.get('AWS.S3_SECRET_ACCESS_KEY'),
       },
     });
-    this.bucketName = configService.get('AWS_S3_BUCKET_NAME');
+    this.awsS3BucketName = configService.get('AWS_S3_BUCKET_NAME');
   }
 
   async uploadThumbnailFile(file: Express.Multer.File): Promise<string> {
     const filename = file.filename;
     const ext = extname(file.originalname);
     const uploadCommand = new PutObjectCommand({
-      Bucket: this.bucketName, // S3 버킷 이름
+      Bucket: this.awsS3BucketName, // S3 버킷 이름
       Key: filename, // 업로드될 파일의 이름
       Body: file.buffer, // 업로드할 파일
       ACL: 'public-read', // 파일 접근 권한
@@ -34,9 +34,9 @@ export class S3FileService extends FileService {
 
     await this.s3Client.send(uploadCommand);
 
-    const bucketName = this.configService.get('AWS.bucket');
+    const urlBucketName = this.configService.get('AWS.bucket');
     const region = this.configService.get('AWS.region');
-    return `https://s3.${region}.amazonaws.com/${bucketName}/${filename}`;
+    return `https://s3.${region}.amazonaws.com/${urlBucketName}/${filename}`;
   }
 
   async getFile(path: string): Promise<StreamableFile | null> {
@@ -45,7 +45,7 @@ export class S3FileService extends FileService {
     }
 
     const downloadCommand = new GetObjectCommand({
-      Bucket: this.bucketName,
+      Bucket: this.awsS3BucketName,
       Key: path,
     });
 

@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UsersDao } from '@domain/user/dao/users.dao.interface';
-import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { Users } from '@domain/user/entity/users.entity';
-import { DiscordProfileDto } from '@domain/auth/dto/discord.profile.dto';
+import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
+import { UsersComponent } from '@domain/user/component/users.component.interface';
 
 @Injectable()
 export class UsersComponentImpl implements UsersComponent {

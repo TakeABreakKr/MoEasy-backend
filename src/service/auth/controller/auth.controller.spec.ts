@@ -1,6 +1,5 @@
 import { AuthController } from './auth.controller';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthCallbackRequest } from '@service/auth/dto/request/auth.callback.request';
 import { AuthService } from '@service/auth/service/auth.service';
 
 class MockAuthService {
@@ -19,32 +18,29 @@ class MockAuthService {
 }
 
 describe('AuthController', () => {
-  let authcontroller: AuthController;
+  let authController: AuthController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [{ provide: AuthService, useClass: MockAuthService }],
     }).compile();
-    authcontroller = module.get<AuthController>(AuthController);
+    authController = module.get<AuthController>(AuthController);
   });
 
   it('loginTest', async () => {
-    const result = await authcontroller.login();
+    const result = await authController.login();
     expect(result).toBe(void 0);
   });
 
   it('callbackTest', async () => {
-    const req: AuthCallbackRequest = {
-      code: 'ABC123DEF',
-      state: 'active',
-    };
+    const code: string = 'ABC123DEF';
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as any;
 
-    await authcontroller.callback(req, res);
+    await authController.callback(code, res);
   });
 
   it('refreshTest', async () => {
@@ -52,7 +48,7 @@ describe('AuthController', () => {
     const jwt: string =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzLCJ1c2VybmFtZSI6ImpvaG5fZG9lIiwiZW1haWwiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY5MjczMjAwMCwiZXhwIjoxNjkyNzM1NjAwfQ.dHhEjsF1XWmQrL3XOEcR-8ZyyKoE9XGQ-Z91Tdcn50E';
 
-    const result = authcontroller.refreshAccessToken(refreshToken);
+    const result = authController.refreshAccessToken(refreshToken);
     expect(result).toBe(jwt);
   });
 });
