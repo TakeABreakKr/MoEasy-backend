@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
-import { ActivityDao } from '@domain/activity/dao/activity.dao';
+import { ActivityDao } from '@domain/activity/dao/activity.dao.interface';
 
 @Injectable()
 export class ActivityComponentImpl implements ActivityComponent {

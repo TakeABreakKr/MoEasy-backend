@@ -1,23 +1,23 @@
-import { Participant } from '@domain/schedule/entity/participant.entity';
-import { ParticipantDao } from '@domain/schedule/dao/participant.dao.interface';
+import { ParticipantDao } from '@root/domain/activity/dao/participant.dao.interface';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ParticipantComponentImpl } from '@domain/schedule/component/participant.component';
-import { ParticipantComponent } from '@domain/schedule/component/participant.component.interface';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { ParticipantComponentImpl } from '@domain/activity/component/participant.component';
+import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
 
 const daoAccessLog: string[] = [];
 
 class MockParticipantDao implements ParticipantDao {
   public static saveAllLog: string = 'NotificationDao.saveAll called';
-  public static findByUserIdAndScheduleIdLog: string = 'NotificationDao.findByUserIdAndScheduleId called';
-  public static findByScheduleIdLog: string = 'NotificationDao.findByScheduleId called';
+  public static findByUserIdAndActivityIdLog: string = 'NotificationDao.findByUserIdAndActivityId called';
+  public static findByActivityIdLog: string = 'NotificationDao.findByActivityId called';
   public static findAllByUserIdLog: string = 'NotificationDao.findAllByUserId called';
   public static deleteLog: string = 'NotificationDao.delete called';
   public static deleteAllLog: string = 'NotificationDao.deleteAll called';
 
   public static participants: Participant[] = [
-    Participant.create({ users_id: 10, schedule_id: 200 }),
-    Participant.create({ users_id: 30, schedule_id: 300 }),
-    Participant.create({ users_id: 20, schedule_id: 300 }),
+    Participant.create({ users_id: 10, activity_id: 200 }),
+    Participant.create({ users_id: 30, activity_id: 300 }),
+    Participant.create({ users_id: 20, activity_id: 300 }),
   ];
 
   public static getLength(): number {
@@ -30,17 +30,17 @@ class MockParticipantDao implements ParticipantDao {
     });
     daoAccessLog.push(MockParticipantDao.saveAllLog);
   }
-  async findByUserIdAndScheduleId(user_id: number, schedule_id: number): Promise<Participant | null> {
-    daoAccessLog.push(MockParticipantDao.findByUserIdAndScheduleIdLog);
+  async findByUserIdAndActivityId(user_id: number, activity_id: number): Promise<Participant | null> {
+    daoAccessLog.push(MockParticipantDao.findByUserIdAndActivityIdLog);
     return MockParticipantDao.participants.find((participant: Participant) => {
-      if (participant.schedule_id === schedule_id && participant.users_id === user_id) return participant;
+      if (participant.activity_id === activity_id && participant.users_id === user_id) return participant;
     });
   }
 
-  async findByScheduleId(schedule_id: number): Promise<Participant[] | null> {
-    daoAccessLog.push(MockParticipantDao.findByScheduleIdLog);
+  async findByActivityId(activity_id: number): Promise<Participant[] | null> {
+    daoAccessLog.push(MockParticipantDao.findByActivityIdLog);
     return MockParticipantDao.participants.filter((participant: Participant) => {
-      if (participant.schedule_id === schedule_id) return participant;
+      if (participant.activity_id === activity_id) return participant;
     });
   }
 
@@ -78,8 +78,8 @@ describe('ParticipantComponent', () => {
 
   it('saveAllTest', async () => {
     const participants: Participant[] = [
-      Participant.create({ users_id: 10, schedule_id: 100 }),
-      Participant.create({ users_id: 20, schedule_id: 100 }),
+      Participant.create({ users_id: 10, activity_id: 100 }),
+      Participant.create({ users_id: 20, activity_id: 100 }),
     ];
     const result = await participantComponent.saveAll(participants);
     expect(result).toBe(void 0);
@@ -87,29 +87,29 @@ describe('ParticipantComponent', () => {
     expect(MockParticipantDao.getLength()).toBe(5);
   });
 
-  it('findByUserIdAndScheduleIdTest', async () => {
-    const response: Participant = Participant.create({ users_id: 10, schedule_id: 200 });
-    const result = await participantComponent.findByUserIdAndScheduleId(10, 200);
+  it('findByUserIdAndActivityIdTest', async () => {
+    const response: Participant = Participant.create({ users_id: 10, activity_id: 200 });
+    const result = await participantComponent.findByUserIdAndActivityId(10, 200);
     expect(result).toStrictEqual(response);
-    expect(daoAccessLog).toEqual([MockParticipantDao.findByUserIdAndScheduleIdLog]);
+    expect(daoAccessLog).toEqual([MockParticipantDao.findByUserIdAndActivityIdLog]);
   });
 
-  it('findByScheduleIdTest', async () => {
-    const result = await participantComponent.findByScheduleId(300);
+  it('findByActivityIdTest', async () => {
+    const result = await participantComponent.findByActivityId(300);
     const response: Participant[] = [
-      Participant.create({ users_id: 30, schedule_id: 300 }),
-      Participant.create({ users_id: 20, schedule_id: 300 }),
+      Participant.create({ users_id: 30, activity_id: 300 }),
+      Participant.create({ users_id: 20, activity_id: 300 }),
     ];
     expect(result.length).toBe(2);
     expect(result).toStrictEqual(response);
-    expect(daoAccessLog).toEqual([MockParticipantDao.findByScheduleIdLog]);
+    expect(daoAccessLog).toEqual([MockParticipantDao.findByActivityIdLog]);
   });
 
   it('findAllByUserIdTest', async () => {
     const result = await participantComponent.findAllByUserId(20);
     const response = [
-      Participant.create({ users_id: 20, schedule_id: 300 }),
-      Participant.create({ users_id: 20, schedule_id: 100 }),
+      Participant.create({ users_id: 20, activity_id: 300 }),
+      Participant.create({ users_id: 20, activity_id: 100 }),
     ];
     expect(result).toStrictEqual(response);
     expect(daoAccessLog).toEqual([MockParticipantDao.findAllByUserIdLog]);

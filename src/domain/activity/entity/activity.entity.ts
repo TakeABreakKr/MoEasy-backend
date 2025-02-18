@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
-import { Participant } from './participant.entity';
-import { BaseEntity } from '../../common/base.entity';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { BaseEntity } from '@domain/common/base.entity';
 import { Address } from '@domain/activity/entity/address.embedded';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { ActivityUpdateVO } from '@domain/activity/vo/activity.update.vo';
@@ -95,5 +95,20 @@ export class Activity extends BaseEntity {
     this.onlineYn = activityUpdateVO.onlineYn;
     this.address = activityUpdateVO.address;
     this.detailAddress = activityUpdateVO.detailAddress;
+  }
+
+  //only for test
+  public static createForTest(activity_id: number, activityVO: ActivityCreateVO): Activity {
+    const activity = new Activity();
+    activity.activity_id = activity_id;
+    activity.name = activityVO.name;
+    activity.explanation = activityVO.explanation;
+    activity.startDate = activityVO.startDate;
+    activity.endDate = activityVO.endDate;
+    activity.reminder = ActivityUtils.reminderListToMask(activityVO.reminder);
+    activity.announcement = activityVO.announcement;
+    activity.onlineYn = activity.onlineYn;
+    activity.meeting_id = MeetingUtils.transformMeetingIdToInteger(activityVO.meetingId);
+    return activity;
   }
 }

@@ -2,11 +2,12 @@ import { In, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Activity } from '../entity/activity.entity';
+import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
+import { ActivityDao } from '@domain/activity/dao/activity.dao.interface';
 
 @Injectable()
-export class ActivityDao {
+export class ActivityDaoImpl implements ActivityDao {
   constructor(@InjectRepository(Activity) private activityRepository: Repository<Activity>) {}
 
   async findByActivityId(activity_id: number): Promise<Activity | null> {

@@ -1,15 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Participant } from '@domain/schedule/entity/participant.entity';
-import { ParticipantDao } from '@domain/schedule/dao/participant.dao';
+
 import { Repository } from 'typeorm';
+
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { ParticipantDaoImpl } from '@domain/activity/dao/participant.dao';
+import { ParticipantDao } from '@domain/activity/dao/participant.dao.interface';
 
 class MockParticipantRepository extends Repository<Participant> {
   public static participants: Participant[] = [];
-  async save() {}
-  async findOneBy() {}
-  async findBy() {}
-  async delete() {}
 }
 
 describe('participantDaoTest', () => {
@@ -20,7 +19,7 @@ describe('participantDaoTest', () => {
       providers: [
         {
           provide: 'ParticipantDao',
-          useClass: ParticipantDao,
+          useClass: ParticipantDaoImpl,
         },
         {
           provide: getRepositoryToken(Participant),
@@ -28,20 +27,20 @@ describe('participantDaoTest', () => {
         },
       ],
     }).compile();
-    participantDao = module.get<ParticipantDao>(ParticipantDao);
+    participantDao = module.get<ParticipantDao>('ParticipantDao');
   });
 
   it('saveAll', async () => {
     const participants: Participant[] = [
-      Participant.create({ schedule_id: 1, users_id: 1 }),
-      Participant.create({ schedule_id: 1, users_id: 2 }),
+      Participant.create({ activity_id: 1, users_id: 1 }),
+      Participant.create({ activity_id: 1, users_id: 2 }),
     ];
     const result = await participantDao.saveAll(participants);
   });
 
-  it('findByUserIdAndScheduleId', async () => {});
+  it('findByUserIdAndActivityleId', async () => {});
 
-  it('findByScheduleId', async () => {});
+  it('findByActivityId', async () => {});
 
   it('findAllByUserId', async () => {});
 

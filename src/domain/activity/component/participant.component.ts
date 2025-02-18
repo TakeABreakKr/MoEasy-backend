@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
-import { Participant } from '../entity/participant.entity';
-import { ParticipantDao } from '@domain/activity/dao/participant.dao';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { ParticipantDao } from '@domain/activity/dao/participant.dao.interface';
 
 @Injectable()
 export class ParticipantComponentImpl implements ParticipantComponent {
