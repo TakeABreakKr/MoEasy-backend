@@ -107,7 +107,9 @@ export class Activity extends BaseEntity {
     activity.endDate = activityVO.endDate;
     activity.reminder = ActivityUtils.reminderListToMask(activityVO.reminder);
     activity.announcement = activityVO.announcement;
-    activity.onlineYn = activity.onlineYn;
+    activity.onlineYn = activityVO.onlineYn;
+    activity.address = activityVO.address;
+    activity.detailAddress = activityVO.detailAddress;
     activity.meeting_id = MeetingUtils.transformMeetingIdToInteger(activityVO.meetingId);
     return activity;
   }

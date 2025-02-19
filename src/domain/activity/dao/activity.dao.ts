@@ -1,5 +1,4 @@
 import { In, Repository } from 'typeorm';
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
@@ -24,7 +23,7 @@ export class ActivityDaoImpl implements ActivityDao {
     return activity;
   }
 
-  async update(activity: Activity) {
+  async update(activity: Activity): Promise<void> {
     await this.activityRepository.save(activity);
   }
 
@@ -32,7 +31,7 @@ export class ActivityDaoImpl implements ActivityDao {
     return this.activityRepository.findBy({ meeting_id });
   }
 
-  async delete(activity_id: number) {
+  async delete(activity_id: number): Promise<void> {
     await this.activityRepository.delete(activity_id);
   }
 }

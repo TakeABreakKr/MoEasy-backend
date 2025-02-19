@@ -12,8 +12,8 @@ export class ParticipantDaoImpl implements ParticipantDao {
     await this.participantRepository.save(participants);
   }
 
-  async findByUserIdAndActivityId(user_id: number, activity_id: number): Promise<Participant | null> {
-    return this.participantRepository.findOneBy({ activity_id: activity_id, users_id: user_id });
+  async findByUserIdAndActivityId(users_id: number, activity_id: number): Promise<Participant | null> {
+    return this.participantRepository.findOneBy({ users_id, activity_id });
   }
 
   async findByActivityId(activity_id: number): Promise<Participant[]> {
