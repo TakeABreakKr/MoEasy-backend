@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
@@ -6,7 +6,7 @@ import { ActivityDao } from '@domain/activity/dao/activity.dao.interface';
 
 @Injectable()
 export class ActivityComponentImpl implements ActivityComponent {
-  constructor(private activityDao: ActivityDao) {}
+  constructor(@Inject('ActivityDao') private activityDao: ActivityDao) {}
 
   public async create(activityCreateVO: ActivityCreateVO): Promise<Activity> {
     return this.activityDao.create(activityCreateVO);
@@ -16,8 +16,8 @@ export class ActivityComponentImpl implements ActivityComponent {
     return this.activityDao.findByActivityId(activityId);
   }
 
-  public async update(activity: Activity) {
-    return this.activityDao.update(activity);
+  public async update(activity: Activity): Promise<void> {
+    this.activityDao.update(activity);
   }
 
   public async findAllByActivityIds(activityIds: number[]): Promise<Activity[]> {
@@ -28,7 +28,7 @@ export class ActivityComponentImpl implements ActivityComponent {
     return this.activityDao.findByMeetingId(meetingId);
   }
 
-  public async delete(activityId: number) {
-    return this.activityDao.delete(activityId);
+  public async delete(activityId: number): Promise<void> {
+    this.activityDao.delete(activityId);
   }
 }
