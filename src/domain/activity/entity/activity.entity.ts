@@ -111,6 +111,8 @@ export class Activity extends BaseEntity {
     activity.address = activityVO.address;
     activity.detailAddress = activityVO.detailAddress;
     activity.meeting_id = MeetingUtils.transformMeetingIdToInteger(activityVO.meetingId);
+    activity.createdAt = new Date();
+    activity.updatedAt = new Date();
     return activity;
   }
 }
