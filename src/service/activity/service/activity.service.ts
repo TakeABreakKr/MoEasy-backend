@@ -107,6 +107,7 @@ export class ActivityServiceImpl implements ActivityService {
   public async getActivity(activityId: number): Promise<ActivityResponse> {
     const activity: Activity | null = await this.activityComponent.findByActivityId(activityId);
     if (!activity) throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
+
     return {
       name: activity.name,
       explanation: activity.explanation,
@@ -179,8 +180,9 @@ export class ActivityServiceImpl implements ActivityService {
 
   @Transactional()
   public async withdraw(requester_id: number, req: ActivityWithdrawRequest): Promise<void> {
-    const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
+    const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     const requester = await this.memberComponent.findByUsersAndMeetingId(requester_id, meetingId);
+
     if (requester.authority === AuthorityEnum.OWNER) {
       throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_ACCESS);
     }
@@ -189,6 +191,7 @@ export class ActivityServiceImpl implements ActivityService {
       requester_id,
       req.activityId,
     );
+
     if (!participant) {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_PARTICIPANT);
     }
@@ -199,6 +202,7 @@ export class ActivityServiceImpl implements ActivityService {
   @Transactional()
   public async delete(requester_id: number, req: ActivityDeleteRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+
     await this.authorityComponent.validateAuthority(requester_id, meetingId);
     await this.activityComponent.delete(req.activityId);
   }
