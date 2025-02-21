@@ -26,6 +26,9 @@ class MockMeetingComponent implements MeetingComponent {
   public static findByMeetingIdLog = 'MeetingComponent.findByMeetingId called';
   public static createLog = 'MeetingComponent.create called';
   public static updateLog = 'MeetingComponent.update called';
+  public static findAllLog = 'MeetingComponent.findAll called';
+  public static deleteLog = 'MeetingComponent.delete called';
+  public static findByMeetingIdsLog = 'MeetingComponent.findByMeetingIds called';
 
   private mockMeetings: Meeting[] = [
     Meeting.createForTest({
@@ -54,6 +57,7 @@ class MockMeetingComponent implements MeetingComponent {
   }
 
   async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
+    componentAccessLog.push(MockMeetingComponent.findByMeetingIdsLog);
     return this.mockMeetings.filter((meeting) => ids.includes(meeting.meeting_id));
   }
 
@@ -71,10 +75,12 @@ class MockMeetingComponent implements MeetingComponent {
   }
 
   async findAll(): Promise<Meeting[]> {
+    componentAccessLog.push(MockMeetingComponent.findAllLog);
     return this.mockMeetings;
   }
 
   async delete(id: number): Promise<void> {
+    componentAccessLog.push(MockMeetingComponent.deleteLog);
     this.mockMeetings = this.mockMeetings.filter((meeting) => meeting.meeting_id !== id);
   }
 }
@@ -84,6 +90,10 @@ class MockMemberComponent implements MemberComponent {
   public static findByMeetingIdLog = 'MemberComponent.findByMeetingId called';
   public static saveAllLog = 'MemberComponent.saveAll called';
   public static findByUsersAndAuthoritiesLog = 'MemberComponent.findByUsersAndAuthorities called';
+  public static createLog = 'MemberComponent.create called';
+  public static updateAuthorityLog = 'MemberComponent.updateAuthority called';
+  public static deleteByUsersAndMeetingIdLog = 'MemberComponent.deleteByUsersAndMeetingId called';
+  public static findByUserIdLog = 'MemberComponent.findByUserId called';
 
   private mockMembers: Member[] = [
     Member.create({
@@ -119,10 +129,14 @@ class MockMemberComponent implements MemberComponent {
   }
 
   async findByUsersAndAuthorities(users_id: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
+    componentAccessLog.push(MockMemberComponent.findByUsersAndAuthoritiesLog);
+
     return this.mockMembers.filter((member) => member.users_id === users_id && authorities.includes(member.authority));
   }
 
   async findByUserId(users_id: number): Promise<Member[]> {
+    componentAccessLog.push(MockMemberComponent.findByUserIdLog);
+
     return this.mockMembers.filter((member) => member.users_id === users_id);
   }
 
@@ -133,16 +147,22 @@ class MockMemberComponent implements MemberComponent {
   }
 
   async create(createMemberDto: CreateMemberDto): Promise<Member> {
+    componentAccessLog.push(MockMemberComponent.createLog);
+
     const member = Member.create(createMemberDto);
     this.mockMembers.push(member);
     return member;
   }
 
   async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
+    componentAccessLog.push(MockMemberComponent.updateAuthorityLog);
+
     member.authority = authority;
   }
 
   async deleteByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<void> {
+    componentAccessLog.push(MockMemberComponent.deleteByUsersAndMeetingIdLog);
+
     this.mockMembers = this.mockMembers.filter(
       (member) => !(member.users_id === users_id && member.meeting_id === meeting_id),
     );
@@ -352,7 +372,8 @@ describe('ActivityServiceTest', () => {
   let activityComponent: MockActivityComponent;
   let participantComponent: MockParticipantComponent;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    componentAccessLog.length = 0;
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -453,10 +474,6 @@ describe('ActivityServiceTest', () => {
 
       expect(componentAccessLog).toEqual([
         MockAuthorityComponent.validateAuthorityLog,
-        MockActivityComponent.createLog,
-        MockParticipantComponent.saveAllLog,
-        MockNotificationComponent.addNotificationsLog,
-        MockAuthorityComponent.validateAuthorityLog,
         MockActivityComponent.findByActivityIdLog,
         MockParticipantComponent.findByActivityIdLog,
         MockParticipantComponent.deleteAllLog,
@@ -498,6 +515,8 @@ describe('ActivityServiceTest', () => {
       expect(result.explanation).toBe('모임설명2');
       expect(result.announcement).toBe('공지사항2');
       expect(result.onlineYn).toBe(false);
+
+      expect(componentAccessLog).toEqual([MockActivityComponent.findByActivityIdLog]);
     });
 
     it('getActivityTest - NOT_FOUND_ACTIVITY', async () => {
@@ -529,6 +548,12 @@ describe('ActivityServiceTest', () => {
       expect(result.activityList[1].meetingId).toBe('64');
       expect(result.meetings[1].name).toBe('모임 이름2');
       expect(result.meetings[1].thumbnail).toBe('testThumbnail2.jpg');
+
+      expect(componentAccessLog).toEqual([
+        MockActivityComponent.findByMeetingIdLog,
+        MockMemberComponent.findByUserIdLog,
+        MockMeetingComponent.findByMeetingIdsLog,
+      ]);
     });
 
     it('getActivityListTest - NOT_FOUND_ACTIVITY', async () => {
@@ -552,6 +577,14 @@ describe('ActivityServiceTest', () => {
 
       const afterWithdraw = await participantComponent.findByUserIdAndActivityId(200, 200);
       expect(afterWithdraw).toBeNull();
+
+      expect(componentAccessLog).toEqual([
+        MockParticipantComponent.findByUserIdAndActivityIdLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockParticipantComponent.findByUserIdAndActivityIdLog,
+        MockParticipantComponent.deleteLog,
+        MockParticipantComponent.findByUserIdAndActivityIdLog,
+      ]);
     });
 
     it('withdrawTest - UNAUTHORIZED_ACCESS  ', async () => {
@@ -575,6 +608,13 @@ describe('ActivityServiceTest', () => {
 
       const afterDelete = await activityComponent.findByActivityId(100);
       expect(afterDelete).toBeNull();
+
+      expect(componentAccessLog).toEqual([
+        MockActivityComponent.findByActivityIdLog,
+        MockAuthorityComponent.validateAuthorityLog,
+        MockActivityComponent.deleteLog,
+        MockActivityComponent.findByActivityIdLog,
+      ]);
     });
   });
 });

@@ -113,7 +113,7 @@ describe('ActivityController', () => {
 
   it('withdrawTest', async () => {
     const req: ActivityWithdrawRequest = {
-      meeting_id: 'OOOOOOO1',
+      meetingId: 'OOOOOOO1',
       activityId: 1,
     };
     const result = await activityController.withdraw(req, user);
