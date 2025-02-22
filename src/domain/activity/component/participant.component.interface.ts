@@ -5,6 +5,7 @@ export interface ParticipantComponent {
   findByUserIdAndActivityId(userId: number, activityId: number): Promise<Participant | null>;
   findByActivityId(activityId: number): Promise<Participant[]>;
   findAllByUserId(userId: number): Promise<Participant[]>;
+  getParticipantCount(activityId: number): Promise<number>;
   delete(userId: number, activityId: number): Promise<void>;
   deleteAll(userIds: number[], activityId: number): Promise<void>;
 }

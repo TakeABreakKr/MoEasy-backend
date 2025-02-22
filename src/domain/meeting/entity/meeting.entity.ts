@@ -25,6 +25,7 @@ export class Meeting extends BaseEntity {
   category: keyof typeof MeetingCategoryEnum.MeetingCategoryEnum;
 
   @Column({
+    type: 'longtext',
     nullable: true,
   })
   explanation: string;
@@ -34,6 +35,11 @@ export class Meeting extends BaseEntity {
     default: 10,
   })
   limit: number;
+
+  @Column({
+    type: 'tinyint',
+  })
+  publicYn: boolean;
 
   @Column()
   thumbnail: string;
@@ -66,13 +72,14 @@ export class Meeting extends BaseEntity {
     return this.members;
   }
 
-  static create({ name, category, explanation, limit, thumbnail, canJoin }: CreateMeetingDto): Meeting {
+  static create({ name, category, explanation, limit, publicYn, thumbnail, canJoin }: CreateMeetingDto): Meeting {
     const meeting = new Meeting();
 
     meeting.name = name;
     meeting.category = MeetingCategoryEnum.findEnumKeyFromValue(category);
     meeting.explanation = explanation;
     meeting.limit = limit;
+    meeting.publicYn = publicYn;
     meeting.thumbnail = thumbnail;
     meeting.canJoin = canJoin;
 
@@ -91,16 +98,19 @@ export class Meeting extends BaseEntity {
     name,
     explanation,
     limit,
+    publicYn,
     canJoin,
   }: {
     name: string;
     explanation: string;
     limit: number;
+    publicYn: boolean;
     canJoin: boolean;
   }) {
     this.name = name;
     this.explanation = explanation;
     this.limit = limit;
+    this.publicYn = publicYn;
     this.canJoin = canJoin;
   }
 }

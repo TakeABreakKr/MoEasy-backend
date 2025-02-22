@@ -52,6 +52,7 @@ export class MeetingServiceImpl implements MeetingService {
       category: req.category,
       explanation: req.explanation,
       limit: req.limit,
+      publicYn: req.publicYn,
       thumbnail: thumbnailPath,
       canJoin: req.canJoin,
     });
@@ -93,6 +94,7 @@ export class MeetingServiceImpl implements MeetingService {
     const name: string = request.name || meeting.name;
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
+    const publicYn: boolean = request.publicYn || meeting.publicYn;
     const canJoin = request.canJoin || meeting.canJoin;
 
     const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map(
@@ -104,7 +106,7 @@ export class MeetingServiceImpl implements MeetingService {
       await this.notificationComponent.addNotifications(content, userIdList);
     }
 
-    meeting.updateBasicInfo({ name, explanation, limit, canJoin });
+    meeting.updateBasicInfo({ name, explanation, limit, publicYn, canJoin });
     await this.meetingComponent.update(meeting);
   }
 

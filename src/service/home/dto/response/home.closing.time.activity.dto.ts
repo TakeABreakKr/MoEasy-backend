@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class HomeClosingTimeActivityDto {
   @ApiProperty()
+  id: number;
+
+  @ApiProperty()
   activityName: string;
 
   @ApiProperty()
@@ -17,8 +20,5 @@ export class HomeClosingTimeActivityDto {
   time: Date;
 
   @ApiProperty()
-  memberCount: number;
-
-  @ApiProperty()
-  isLiked?: boolean;
+  participantCount: number;
 }

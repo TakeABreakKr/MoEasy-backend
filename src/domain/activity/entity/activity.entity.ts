@@ -53,6 +53,9 @@ export class Activity extends BaseEntity {
   detailAddress: string;
 
   @Column()
+  participantLimit: number;
+
+  @Column()
   meeting_id: number;
 
   @ManyToOne(() => Meeting, (meeting) => meeting.activities, {
@@ -80,6 +83,7 @@ export class Activity extends BaseEntity {
     activity.onlineYn = activityCreateVO.onlineYn;
     activity.address = activityCreateVO.address;
     activity.detailAddress = activityCreateVO.detailAddress;
+    activity.participantLimit = activityCreateVO.participantLimit;
     activity.meeting_id = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
 
     return activity;
@@ -95,5 +99,6 @@ export class Activity extends BaseEntity {
     this.onlineYn = activityUpdateVO.onlineYn;
     this.address = activityUpdateVO.address;
     this.detailAddress = activityUpdateVO.detailAddress;
+    this.participantLimit = activityUpdateVO.participantLimit;
   }
 }

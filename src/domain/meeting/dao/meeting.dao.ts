@@ -17,6 +17,10 @@ export class MeetingDaoImpl implements MeetingDao {
     return this.meetingRepository.findBy({ meeting_id: In(ids) });
   }
 
+  async getNewMeetings(): Promise<Meeting[]> {
+    return this.meetingRepository.find({ order: { createdAt: 'DESC' }, take: 30 });
+  }
+
   async create(props: CreateMeetingDto): Promise<Meeting> {
     const meeting = Meeting.create(props);
     await this.meetingRepository.save(meeting);

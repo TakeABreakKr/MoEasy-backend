@@ -7,5 +7,6 @@ export interface ActivityComponent {
   update(activity: Activity): Promise<void>;
   findAllByActivityIds(activityIds: number[]): Promise<Activity[]>;
   findByMeetingId(meeting_id: number): Promise<Activity[]>;
+  getClosingTimeActivities(): Promise<Partial<Activity>[]>;
   delete(activityId: number): Promise<void>;
 }

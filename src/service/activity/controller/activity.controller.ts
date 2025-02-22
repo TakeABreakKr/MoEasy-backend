@@ -16,7 +16,7 @@ import { ActivityListResponse } from '@service/activity/dto/response/activity.li
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { ActivityUpdateRequest } from '@service/activity/dto/request/activity.update.request';
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
-import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activityStatusEnum';
+import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
 import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';

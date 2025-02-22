@@ -24,5 +24,9 @@ export class MeetingUpdateRequest {
 
   @ApiProperty()
   @IsBoolean()
+  publicYn: boolean;
+
+  @ApiProperty()
+  @IsBoolean()
   canJoin: boolean;
 }

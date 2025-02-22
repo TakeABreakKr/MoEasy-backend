@@ -11,7 +11,7 @@ import { ActivityListDto } from '@service/activity/dto/response/activity.list.dt
 import { SortUtils } from '@utils/sort.utils';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
-import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activityStatusEnum';
+import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
 import { AuthorityEnum } from '@enums/authority.enum';

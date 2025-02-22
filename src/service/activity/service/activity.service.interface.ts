@@ -2,7 +2,7 @@ import { ActivityCreateRequest } from '@service/activity/dto/request/activity.cr
 import { ActivityListResponse } from '@service/activity/dto/response/activity.list.response';
 import { ActivityUpdateRequest } from '@service/activity/dto/request/activity.update.request';
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
-import { ActivityStatusEnumType } from '@enums/activityStatusEnum';
+import { ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
 import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';

@@ -34,6 +34,10 @@ export class MeetingCreateRequest {
   limit: number;
 
   @ApiProperty()
+  @IsBoolean()
+  publicYn: boolean;
+
+  @ApiProperty()
   members: number[];
 
   @ApiProperty()

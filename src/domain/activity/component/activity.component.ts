@@ -28,6 +28,10 @@ export class ActivityComponentImpl implements ActivityComponent {
     return this.activityDao.findByMeetingId(meetingId);
   }
 
+  public async getClosingTimeActivities(): Promise<Partial<Activity>[]> {
+    return this.activityDao.getClosingTimeActivities();
+  }
+
   public async delete(activityId: number) {
     return this.activityDao.delete(activityId);
   }

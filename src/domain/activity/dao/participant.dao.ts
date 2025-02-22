@@ -23,6 +23,10 @@ export class ParticipantDao {
     return this.participantRepository.findBy({ users_id: user_id });
   }
 
+  async getParticipantCount(activity_id: number): Promise<number> {
+    return this.participantRepository.count({ where: { activity_id } });
+  }
+
   async delete(users_id: number, activity_id: number): Promise<void> {
     await this.participantRepository.delete({ activity_id, users_id });
   }

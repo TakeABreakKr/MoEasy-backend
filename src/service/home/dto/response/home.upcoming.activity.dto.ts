@@ -18,7 +18,4 @@ export class HomeUpcomingActivityDto {
 
   @ApiProperty()
   memberCount: number;
-
-  @ApiProperty()
-  isLiked: boolean;
 }

@@ -23,6 +23,10 @@ export class ParticipantComponentImpl implements ParticipantComponent {
     return this.participantDao.findAllByUserId(userId);
   }
 
+  public async getParticipantCount(activityId: number): Promise<number> {
+    return this.participantDao.getParticipantCount(activityId);
+  }
+
   public async delete(userId: number, activityId: number): Promise<void> {
     return this.participantDao.delete(userId, activityId);
   }

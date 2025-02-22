@@ -5,6 +5,7 @@ export interface CreateMeetingDto {
   category: MeetingCategoryEnumType;
   explanation: string;
   limit: number;
+  publicYn: boolean;
   thumbnail: string;
   canJoin: boolean;
 }
