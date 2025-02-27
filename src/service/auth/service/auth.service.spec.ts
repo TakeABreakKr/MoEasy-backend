@@ -76,24 +76,26 @@ class MockUsersComponent implements UsersComponent {
   }
 
   async findByIds(): Promise<Users[]> {
-    const users = this.mockUsers;
+    const users: Users[] = this.mockUsers;
     return users;
   }
 
   async createUsers(): Promise<Users> {
-    return null;
-  }
-
-  async findByDiscordId(): Promise<Users | null> {
-    return Users.createForTest({
-      users_id: 200,
-      discord_id: 'discordIdOne',
-      username: 'kimmoiji',
-      avatar: 'avatar1',
-      email: 'test@email.com',
-      explanation: 'explanation1',
+    const users = Users.createForTest({
+      users_id: 300,
+      discord_id: 'discordIdThree',
+      username: 'momo',
+      avatar: 'avatar3',
+      email: 'moeasy@naver.com',
+      explanation: 'explanation3',
       settings: { allowNotificationYn: true },
     });
+    return users;
+  }
+
+  async findByDiscordId(discord_id: string): Promise<Users | null> {
+    const users = this.mockUsers.find((user) => user.discord_id === discord_id);
+    return users || null;
   }
 }
 
@@ -164,6 +166,7 @@ describe('AuthService', () => {
       );
     });
   });
+
   describe('callbackTest', () => {
     const mockResponse: AuthCallbackResponse = {
       cookie: jest.fn().mockReturnThis(),
@@ -171,7 +174,8 @@ describe('AuthService', () => {
     };
 
     it('callbackTest - SUCCESS', async () => {
-      await authService.callback('valid-code', mockResponse);
+      const code = 'valid-code';
+      await authService.callback(code, mockResponse);
 
       expect(mockResponse.cookie).toHaveBeenCalledWith('AccessToken', 'moeasy-access-token');
       expect(mockResponse.cookie).toHaveBeenCalledWith('RefreshToken', 'moeasy-refresh-token');
@@ -179,13 +183,15 @@ describe('AuthService', () => {
     });
 
     it('callbackTest - DISCORD_AUTH_CODE_ERROR', async () => {
-      await expect(authService.callback('', mockResponse)).rejects.toThrow(
+      const code = '';
+      await expect(authService.callback(code, mockResponse)).rejects.toThrow(
         new BadRequestException(ErrorMessageType.DISCORD_AUTH_CODE_ERROR),
       );
     });
 
     it('callbackTest - TOKEN_ISSUANCE_FAILED', async () => {
-      await expect(authService.callback('invalid-code', mockResponse)).rejects.toThrow(
+      const code = 'invalid-code';
+      await expect(authService.callback(code, mockResponse)).rejects.toThrow(
         new UnauthorizedException(ErrorMessageType.TOKEN_ISSUANCE_FAILED),
       );
     });
@@ -193,13 +199,15 @@ describe('AuthService', () => {
 
   describe('refreshAccessTokenTest', () => {
     it('refreshAccessTokenTest - SUCCESS', () => {
-      const result = authService.refreshAccessToken('valid-token');
+      const refreshToken = 'valid-token';
+      const result = authService.refreshAccessToken(refreshToken);
 
       expect(result).toBe('moeasy-access-token');
     });
 
     it('refreshAccessTokenTest - INVALID_TOKEN', () => {
-      expect(() => authService.refreshAccessToken('invalid-token')).toThrow(ErrorMessageType.INVALID_TOKEN);
+      const refreshToken = 'invalid-token';
+      expect(() => authService.refreshAccessToken(refreshToken)).toThrow(ErrorMessageType.INVALID_TOKEN);
     });
   });
 });
