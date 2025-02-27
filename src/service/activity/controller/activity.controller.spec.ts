@@ -1,7 +1,7 @@
 import { ActivityService } from '@service/activity/service/activity.service.interface';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
 import { ActivityListResponse } from '@service/activity/dto/response/activity.list.response';
-import { ActivityController } from './activity.controller';
+import { ActivityController } from '@service/activity/controller/activity.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ActivityCreateRequest } from '@service/activity/dto/request/activity.create.request';
 import { AuthUser } from '@decorator/token.decorator';

@@ -342,13 +342,13 @@ class MockParticipantComponent implements ParticipantComponent {
   async findByActivityId(activity_id: number): Promise<Participant[]> {
     componentAccessLog.push(MockParticipantComponent.findByActivityIdLog);
 
-    return this.mockParticipants.filter((participant: Participant) => participant.activity_id === activity_id) || null;
+    return this.mockParticipants.filter((participant: Participant) => participant.activity_id === activity_id);
   }
 
   async findAllByUserId(user_id: number): Promise<Participant[] | null> {
     componentAccessLog.push(MockParticipantComponent.findAllByUserIdLog);
 
-    return this.mockParticipants.filter((participant: Participant) => participant.users_id === user_id);
+    return this.mockParticipants.filter((participant: Participant) => participant.users_id === user_id) || null;
   }
 
   async delete(userId: number, activityId: number): Promise<void> {
@@ -431,7 +431,8 @@ describe('ActivityServiceTest', () => {
         participants: [10, 20, 30],
       };
 
-      const result = await activityService.createActivity(activityCreateRequest, 200);
+      const requesterId = 200;
+      const result = await activityService.createActivity(activityCreateRequest, requesterId);
       expect(result).toBe('101');
 
       expect(componentAccessLog).toEqual([
@@ -461,7 +462,8 @@ describe('ActivityServiceTest', () => {
         participants: [10, 20],
       };
 
-      await activityService.updateActivity(activityUpdateRequest, 50);
+      const requesterId = 200;
+      await activityService.updateActivity(activityUpdateRequest, requesterId);
 
       const result = await activityComponent.findByActivityId(activityId);
       const participants = await participantComponent.findByActivityId(activityId);
@@ -505,7 +507,8 @@ describe('ActivityServiceTest', () => {
         participants: [10, 20, 30],
       };
 
-      await expect(activityService.updateActivity(activityUpdateRequest, 10)).rejects.toThrow(
+      const requesterId = 10;
+      await expect(activityService.updateActivity(activityUpdateRequest, requesterId)).rejects.toThrow(
         ErrorMessageType.NOT_FOUND_ACTIVITY,
       );
     });
@@ -513,7 +516,8 @@ describe('ActivityServiceTest', () => {
 
   describe('getActivityTest', () => {
     it('getActivityTest - SUCCESS', async () => {
-      const result = await activityService.getActivity(200);
+      const activityId = 200;
+      const result = await activityService.getActivity(activityId);
 
       expect(result.name).toBe('moeasy2');
       expect(result.explanation).toBe('모임설명2');
@@ -530,11 +534,13 @@ describe('ActivityServiceTest', () => {
 
   describe('getActivityListTest', () => {
     it('getActivityListTest - SUCCESS', async () => {
+      const requesterId = 200;
+      const meetingId = '64';
       const result = await activityService.getActivityList(
-        200,
+        requesterId,
         [ActivityStatusEnum.COMPLETED, ActivityStatusEnum.IN_PROGRESS],
         OrderingOptionEnum.LATEST,
-        '64',
+        meetingId,
       );
 
       expect(result.activityList[0].name).toBe('moeasy1');
@@ -561,9 +567,10 @@ describe('ActivityServiceTest', () => {
     });
 
     it('getActivityListTest - NOT_FOUND_ACTIVITY', async () => {
+      const requesterId = 999;
       await expect(
         activityService.getActivityList(
-          999,
+          requesterId,
           [ActivityStatusEnum.COMPLETED, ActivityStatusEnum.IN_PROGRESS],
           OrderingOptionEnum.LATEST,
         ),
