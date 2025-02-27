@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DiscordComponentImpl } from './discord.component';
-import { DiscordComponent } from './discord.component.interface';
+import { DiscordComponentImpl } from '@domain/discord/component/discord.component';
+import { DiscordComponent } from '@domain/discord/component/discord.component.interface';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 

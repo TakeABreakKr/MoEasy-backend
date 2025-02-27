@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { APIChannel, APIEmbed, Snowflake } from 'discord.js';
-import { MessageComponent } from './message.component.interface';
+import { MessageComponent } from '@domain/discord/component/message.component.interface';
 
 @Injectable()
 export class MessageComponentImpl implements MessageComponent {

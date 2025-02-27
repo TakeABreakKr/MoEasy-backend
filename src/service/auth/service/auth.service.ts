@@ -10,7 +10,7 @@ import { DiscordUserByTokenDto } from '@domain/discord/dto/response/discord.auth
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { TokenDto } from '@service/auth/dto/token.dto';
 import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
-import { AuthCallbackResponse } from '../dto/response/auth.callback.response';
+import { AuthCallbackResponse } from '@service/auth/dto/response/auth.callback.response';
 
 @Injectable()
 export class AuthService {

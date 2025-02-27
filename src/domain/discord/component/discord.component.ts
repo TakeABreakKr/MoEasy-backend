@@ -1,11 +1,10 @@
-import type { DiscordAccessTokenResponse } from '../dto/response/discord.access.token.response';
-import type { DiscordUserByTokenDto } from '../dto/response/discord.authorized.info.response';
-
+import type { DiscordAccessTokenResponse } from '@domain/discord/dto/response/discord.access.token.response';
+import type { DiscordUserByTokenDto } from '@domain/discord/dto/response/discord.authorized.info.response';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { TokenDto } from '@service/auth/dto/token.dto';
-import { DiscordComponent } from './discord.component.interface';
+import { DiscordComponent } from '@domain/discord/component/discord.component.interface';
 
 @Injectable()
 export class DiscordComponentImpl implements DiscordComponent {

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
-import { MessageComponentImpl } from './message.component';
-import { MessageComponent } from './message.component.interface';
+import { MessageComponentImpl } from '@domain/discord/component/message.component';
+import { MessageComponent } from '@domain/discord/component/message.component.interface';
 
 class MockConfigService extends ConfigService {
   private readonly TEST_CONFIG = {

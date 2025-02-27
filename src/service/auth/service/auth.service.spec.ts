@@ -4,13 +4,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DiscordComponent } from '@root/domain/discord/component/discord.component.interface';
 import { UsersComponent } from '@root/domain/user/component/users.component.interface';
 import { Users } from '@root/domain/user/entity/users.entity';
-import { AuthService } from './auth.service';
-import { TokenDto } from '../dto/token.dto';
+import { AuthService } from '@service/auth/service/auth.service';
+import { TokenDto } from '@service/auth/dto/token.dto';
 import { ErrorMessageType } from '@root/enums/error.message.enum';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { AuthUser } from '@root/decorator/token.decorator';
 import { DiscordUserByTokenDto } from '@root/domain/discord/dto/response/discord.authorized.info.response';
-import { AuthCallbackResponse } from '../dto/response/auth.callback.response';
+import { AuthCallbackResponse } from '@service/auth/dto/response/auth.callback.response';
 
 const TEST_CONFIG = {
   'auth.ACCESS_TOKEN_SECRET_KEY': 'moeasy-secret-key',
@@ -105,6 +105,7 @@ class MockDiscordComponent implements DiscordComponent {
         refreshToken: 'discord-refresh-token',
       };
     }
+
     throw new Error(ErrorMessageType.TOKEN_ISSUANCE_FAILED);
   }
 
@@ -148,6 +149,7 @@ describe('AuthService', () => {
         },
       ],
     }).compile();
+
     authService = module.get<AuthService>(AuthService);
   });
 
