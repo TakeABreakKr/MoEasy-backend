@@ -17,7 +17,10 @@ class MockParticipantRepository extends Repository<Participant> {
   async save(entities: Participant | Participant[]): Promise<Participant[]> {
     const toSave = Array.isArray(entities) ? entities : [entities];
     for (const entity of toSave) {
-      const index = this.mockParticipants.findIndex((participant) => participant.users_id === entity.users_id);
+      const index = this.mockParticipants.findIndex(
+        (participant) => participant.users_id === entity.users_id && participant.activity_id === entity.activity_id,
+      );
+
       if (index !== -1) {
         this.mockParticipants[index] = entity;
       } else {
@@ -62,22 +65,22 @@ class MockParticipantRepository extends Repository<Participant> {
     }
 
     if (where.activity_id) {
-      return this.mockParticipants.filter((participant) => participant.activity_id === where.activity_id) || null;
+      return this.mockParticipants.filter((participant) => participant.activity_id === where.activity_id);
     }
 
     return [];
   }
 
   async findOneBy(where: FindOptionsWhere<Participant>): Promise<Participant | null> {
-    if (where.activity_id)
-      return this.mockParticipants.find((participant) => participant.activity_id === where.activity_id) || null;
-
     if (where.users_id && where.activity_id)
       return (
         this.mockParticipants.find(
           (participant) => participant.users_id === where.users_id && participant.activity_id === where.activity_id,
         ) || null
       );
+
+    if (where.activity_id)
+      return this.mockParticipants.find((participant) => participant.activity_id === where.activity_id) || null;
 
     return null;
   }

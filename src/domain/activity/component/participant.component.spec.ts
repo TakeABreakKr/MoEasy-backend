@@ -37,13 +37,14 @@ class MockParticipantDao implements ParticipantDao {
 
   async delete(userId: number, activityId: number): Promise<void> {
     this.mockParticipants = this.mockParticipants.filter(
-      (participant: Participant) => participant.users_id !== userId && participant.activity_id !== activityId,
+      (participant: Participant) => !(participant.users_id === userId && participant.activity_id === activityId),
     );
   }
 
   async deleteAll(userIds: number[], activity_id: number): Promise<void> {
     this.mockParticipants = this.mockParticipants.filter(
-      (participant: Participant) => !userIds.includes(participant.users_id) && participant.activity_id !== activity_id,
+      (participant: Participant) =>
+        !(userIds.includes(participant.users_id) && participant.activity_id === activity_id),
     );
   }
 }
@@ -83,10 +84,10 @@ describe('ParticipantComponent', () => {
     const result1 = await participantComponent.findByUserIdAndActivityId(userId1, activityId1);
     const result2 = await participantComponent.findByUserIdAndActivityId(userId2, activityId2);
 
-    expect(result1.activity_id).toBe(userId1);
-    expect(result1.users_id).toBe(activityId1);
-    expect(result2.activity_id).toBe(userId2);
-    expect(result2.users_id).toBe(activityId2);
+    expect(result1.activity_id).toBe(activityId1);
+    expect(result1.users_id).toBe(userId1);
+    expect(result2.activity_id).toBe(activityId2);
+    expect(result2.users_id).toBe(userId2);
   });
 
   it('findByUserIdAndActivityIdTest', async () => {

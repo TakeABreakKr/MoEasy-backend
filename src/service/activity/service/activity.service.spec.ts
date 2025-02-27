@@ -58,6 +58,7 @@ class MockMeetingComponent implements MeetingComponent {
 
   async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
     componentAccessLog.push(MockMeetingComponent.findByMeetingIdsLog);
+
     return this.mockMeetings.filter((meeting) => ids.includes(meeting.meeting_id));
   }
 
@@ -76,11 +77,13 @@ class MockMeetingComponent implements MeetingComponent {
 
   async findAll(): Promise<Meeting[]> {
     componentAccessLog.push(MockMeetingComponent.findAllLog);
+
     return this.mockMeetings;
   }
 
   async delete(id: number): Promise<void> {
     componentAccessLog.push(MockMeetingComponent.deleteLog);
+
     this.mockMeetings = this.mockMeetings.filter((meeting) => meeting.meeting_id !== id);
   }
 }
@@ -274,7 +277,7 @@ class MockActivityComponent implements ActivityComponent {
   async update(activity: Activity): Promise<void> {
     componentAccessLog.push(MockActivityComponent.updateLog);
 
-    const index = this.mockActivitys.findIndex((activity) => activity.activity_id === activity.activity_id);
+    const index = this.mockActivitys.findIndex((item) => item.activity_id === activity.activity_id);
     this.mockActivitys[index] = activity;
   }
 
@@ -352,7 +355,7 @@ class MockParticipantComponent implements ParticipantComponent {
     componentAccessLog.push(MockParticipantComponent.deleteLog);
 
     this.mockParticipants = this.mockParticipants.filter(
-      (participant: Participant) => participant.users_id !== userId && participant.activity_id !== activityId,
+      (participant: Participant) => !(participant.users_id === userId && participant.activity_id === activityId),
     );
   }
 
@@ -442,8 +445,9 @@ describe('ActivityServiceTest', () => {
 
   describe('updateActivityTest', () => {
     it('updateActivityTest - SUCCESS', async () => {
+      const activityId = 300;
       const activityUpdateRequest = {
-        activityId: 300,
+        activityId: activityId,
         meeting_id: 'C8',
         name: 'moeasy3 수정',
         explanation: '모임설명3 수정',
@@ -459,8 +463,8 @@ describe('ActivityServiceTest', () => {
 
       await activityService.updateActivity(activityUpdateRequest, 50);
 
-      const result = await activityComponent.findByActivityId(300);
-      const participants = await participantComponent.findByActivityId(300);
+      const result = await activityComponent.findByActivityId(activityId);
+      const participants = await participantComponent.findByActivityId(activityId);
       const participant = participants.map((participant) => participant.users_id);
 
       expect(result.activity_id).toBe(300);
@@ -569,13 +573,16 @@ describe('ActivityServiceTest', () => {
 
   describe('withdrawTest', () => {
     it('withdrawTest - SUCCESS', async () => {
-      const beforeWithdraw = await participantComponent.findByUserIdAndActivityId(200, 200);
+      const usersId = 200;
+      const activityId = 200;
+
+      const beforeWithdraw = await participantComponent.findByUserIdAndActivityId(usersId, activityId);
       expect(beforeWithdraw).toBeDefined();
 
-      const req = { meetingId: 'C8', activityId: 200 };
+      const req = { meetingId: 'C8', activityId: activityId };
       await activityService.withdraw(200, req);
 
-      const afterWithdraw = await participantComponent.findByUserIdAndActivityId(200, 200);
+      const afterWithdraw = await participantComponent.findByUserIdAndActivityId(usersId, activityId);
       expect(afterWithdraw).toBeNull();
 
       expect(componentAccessLog).toEqual([

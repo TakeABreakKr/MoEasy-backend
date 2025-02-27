@@ -5,6 +5,7 @@ import { ActivityDao } from '@domain/activity/dao/activity.dao.interface';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { DeleteResult, FindOperator, FindOptionsWhere, Repository } from 'typeorm';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
+import { Address } from '@domain/activity/entity/address.embedded';
 
 class MockActivityRepository extends Repository<Activity> {
   private mockActivitys: Activity[] = [
@@ -17,7 +18,7 @@ class MockActivityRepository extends Repository<Activity> {
       reminder: [],
       announcement: '공지사항1',
       onlineYn: true,
-      address: null,
+      address: Address.createForTest(),
       detailAddress: '평택',
     }),
     Activity.createForTest(200, {
@@ -29,7 +30,7 @@ class MockActivityRepository extends Repository<Activity> {
       reminder: [],
       announcement: '공지사항2',
       onlineYn: false,
-      address: null,
+      address: Address.createForTest(),
       detailAddress: '수원',
     }),
   ];
@@ -96,6 +97,7 @@ describe('ActivityDao', () => {
         { provide: getRepositoryToken(Activity), useClass: MockActivityRepository },
       ],
     }).compile();
+
     activityDao = module.get<ActivityDao>('ActivityDao');
   });
 
@@ -108,7 +110,7 @@ describe('ActivityDao', () => {
     expect(result.explanation).toBe('모임설명1');
     expect(result.announcement).toBe('공지사항1');
     expect(result.onlineYn).toBe(true);
-    expect(result.address).toBe(null);
+    expect(result.address.address).toBe('address_test');
     expect(result.detailAddress).toBe('평택');
   });
 
@@ -116,23 +118,23 @@ describe('ActivityDao', () => {
     const activityIds = [100, 200];
     const results = await activityDao.findAllByActivityIds(activityIds);
 
-    expect(results[0].activity_id).toBe(100);
+    expect(results[0].activity_id).toBe(activityIds[0]);
     expect(results[0].meeting_id).toBe(100);
     expect(results[0].name).toBe('moeasy1');
     expect(results[0].explanation).toBe('모임설명1');
     expect(results[0].detailAddress).toBe('평택');
     expect(results[0].announcement).toBe('공지사항1');
     expect(results[0].onlineYn).toBe(true);
-    expect(results[0].address).toBe(null);
+    expect(results[0].address.address).toBe('address_test');
 
-    expect(results[1].activity_id).toBe(200);
+    expect(results[1].activity_id).toBe(activityIds[1]);
     expect(results[1].meeting_id).toBe(200);
     expect(results[1].name).toBe('moeasy2');
     expect(results[1].explanation).toBe('모임설명2');
     expect(results[1].detailAddress).toBe('수원');
     expect(results[1].announcement).toBe('공지사항2');
     expect(results[1].onlineYn).toBe(false);
-    expect(results[1].address).toBe(null);
+    expect(results[1].address.address).toBe('address_test');
   });
 
   it('createTest', async () => {
@@ -145,7 +147,7 @@ describe('ActivityDao', () => {
       reminder: [],
       announcement: '공지사항4',
       onlineYn: true,
-      address: null,
+      address: Address.createForTest(),
       detailAddress: '서울',
     };
     const result = await activityDao.create(createActivityDto);
@@ -156,7 +158,7 @@ describe('ActivityDao', () => {
     expect(result.detailAddress).toBe('서울');
     expect(result.announcement).toBe('공지사항4');
     expect(result.onlineYn).toBe(true);
-    expect(result.address).toBe(null);
+    expect(result.address.address).toBe('address_test');
   });
 
   it('updateTest', async () => {
@@ -169,7 +171,7 @@ describe('ActivityDao', () => {
       reminder: [],
       announcement: '공지사항1 변경',
       onlineYn: false,
-      address: null,
+      address: Address.createForTest(),
       detailAddress: '평택에서 변경',
     });
 
@@ -181,7 +183,7 @@ describe('ActivityDao', () => {
     expect(updatedActivity.explanation).toBe('모임설명1 변경');
     expect(updatedActivity.announcement).toBe('공지사항1 변경');
     expect(updatedActivity.onlineYn).toBe(false);
-    expect(updatedActivity.address).toBe(null);
+    expect(updatedActivity.address.address).toBe('address_test');
     expect(updatedActivity.detailAddress).toBe('평택에서 변경');
   });
 
@@ -189,13 +191,13 @@ describe('ActivityDao', () => {
     const meetingId = 200;
     const results = await activityDao.findByMeetingId(meetingId);
 
-    expect(results[0].activity_id).toBe(meetingId);
+    expect(results[0].activity_id).toBe(200);
     expect(results[0].name).toBe('moeasy2');
     expect(results[0].explanation).toBe('모임설명2');
     expect(results[0].detailAddress).toBe('수원');
     expect(results[0].announcement).toBe('공지사항2');
     expect(results[0].onlineYn).toBe(false);
-    expect(results[0].address).toBe(null);
+    expect(results[0].address.address).toBe('address_test');
   });
 
   it('deleteTest', async () => {

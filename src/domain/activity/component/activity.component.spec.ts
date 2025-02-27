@@ -4,6 +4,7 @@ import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { ActivityDao } from '@domain/activity/dao/activity.dao.interface';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityComponentImpl } from '@domain/activity/component/activity.component';
+import { Address } from '@domain/activity/entity/address.embedded';
 
 class MockActivityDao implements ActivityDao {
   public mockActivitys: Activity[] = [
@@ -16,7 +17,7 @@ class MockActivityDao implements ActivityDao {
       reminder: [],
       announcement: '공지사항1',
       onlineYn: true,
-      address: null,
+      address: Address.createForTest(),
       detailAddress: '평택',
     }),
     Activity.createForTest(200, {
@@ -28,7 +29,7 @@ class MockActivityDao implements ActivityDao {
       reminder: [],
       announcement: '공지사항2',
       onlineYn: false,
-      address: null,
+      address: Address.createForTest(),
       detailAddress: '수원',
     }),
   ];
@@ -49,7 +50,7 @@ class MockActivityDao implements ActivityDao {
   }
 
   async update(activity: Activity): Promise<void> {
-    const index = this.mockActivitys.findIndex((activity) => activity.activity_id === activity.activity_id);
+    const index = this.mockActivitys.findIndex((item) => item.activity_id === activity.activity_id);
     this.mockActivitys[index] = activity;
   }
 
@@ -92,7 +93,7 @@ describe('ActivityComponent', () => {
       reminder: [],
       announcement: '공지사항4',
       onlineYn: true,
-      address: null,
+      address: Address.createForTest(),
       detailAddress: '서울',
     };
     const result = await activityComponent.create(createActivityDto);
@@ -102,7 +103,7 @@ describe('ActivityComponent', () => {
     expect(result.explanation).toBe('모임설명4');
     expect(result.announcement).toBe('공지사항4');
     expect(result.onlineYn).toBe(true);
-    expect(result.address).toBe(null);
+    expect(result.address.address).toBe('address_test');
     expect(result.detailAddress).toBe('서울');
   });
 
@@ -115,7 +116,7 @@ describe('ActivityComponent', () => {
     expect(result.explanation).toBe('모임설명1');
     expect(result.announcement).toBe('공지사항1');
     expect(result.onlineYn).toBe(true);
-    expect(result.address).toBe(null);
+    expect(result.address.address).toBe('address_test');
     expect(result.detailAddress).toBe('평택');
   });
 
@@ -130,7 +131,7 @@ describe('ActivityComponent', () => {
       reminder: [],
       announcement: '공지사항1 변경',
       onlineYn: false,
-      address: null,
+      address: Address.createForTest(),
       detailAddress: '평택에서 변경',
     });
     await activityComponent.update(activity);
@@ -141,7 +142,7 @@ describe('ActivityComponent', () => {
     expect(updatedActivity.explanation).toBe('모임설명1 변경');
     expect(updatedActivity.announcement).toBe('공지사항1 변경');
     expect(updatedActivity.onlineYn).toBe(false);
-    expect(updatedActivity.address).toBe(null);
+    expect(updatedActivity.address.address).toBe('address_test');
     expect(updatedActivity.detailAddress).toBe('평택에서 변경');
   });
 
@@ -155,7 +156,7 @@ describe('ActivityComponent', () => {
     expect(results[0].explanation).toBe('모임설명1');
     expect(results[0].announcement).toBe('공지사항1');
     expect(results[0].onlineYn).toBe(true);
-    expect(results[0].address).toBe(null);
+    expect(results[0].address.address).toBe('address_test');
     expect(results[0].detailAddress).toBe('평택');
 
     expect(results[1].activity_id).toBe(200);
@@ -164,7 +165,7 @@ describe('ActivityComponent', () => {
     expect(results[1].explanation).toBe('모임설명2');
     expect(results[1].announcement).toBe('공지사항2');
     expect(results[1].onlineYn).toBe(false);
-    expect(results[1].address).toBe(null);
+    expect(results[1].address.address).toBe('address_test');
     expect(results[1].detailAddress).toBe('수원');
   });
 
@@ -177,7 +178,7 @@ describe('ActivityComponent', () => {
     expect(results[0].explanation).toBe('모임설명2');
     expect(results[0].announcement).toBe('공지사항2');
     expect(results[0].onlineYn).toBe(false);
-    expect(results[0].address).toBe(null);
+    expect(results[0].address.address).toBe('address_test');
     expect(results[0].detailAddress).toBe('수원');
   });
 

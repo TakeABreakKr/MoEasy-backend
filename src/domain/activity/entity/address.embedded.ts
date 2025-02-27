@@ -188,7 +188,7 @@ export class Address {
   static createForTest(): Address {
     const address = new Address();
     address.zonecode = 'test';
-    address.address = 'test';
+    address.address = 'address_test';
     address.addressEnglish = 'test';
     address.addressType = 'R';
     address.userSelectedType = 'R';
@@ -229,7 +229,7 @@ export class Address {
   static createTestDto(): AddressDto {
     const dto = new AddressDto();
     dto.zonecode = 'test';
-    dto.address = 'test';
+    dto.address = 'address_test';
     dto.addressType = 'R';
     dto.userSelectedType = 'R';
     dto.noSelected = 'N';
