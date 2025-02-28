@@ -2,6 +2,7 @@ import { In, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DateTime } from 'luxon';
 import { Activity } from '../entity/activity.entity';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { Participant } from '@domain/activity/entity/participant.entity';
@@ -58,6 +59,39 @@ export class ActivityDao {
       .andWhere('activity.participantLimit > subQuery.participantCount')
       .orderBy('participantLeft', 'ASC')
       .limit(30)
+      .getMany();
+  }
+
+  async getUpcomingActivities(id?: number): Promise<Activity[]> {
+    const upcomingLimit: number = 100;
+    const tenDaysLater = DateTime.now().plus({ days: 10 }).toJSDate();
+    if (id) {
+      const subQuery = this.activityRepository
+        .createQueryBuilder()
+        .subQuery()
+        .select('activity_id')
+        .from(Participant, 'participant')
+        .where('users_id = :id', { id })
+        .getQuery();
+
+      return this.activityRepository
+        .createQueryBuilder('activity')
+        .select()
+        .where('activity.startDate > :now', { now: new Date() })
+        .andWhere('activity.startDate < :tenDaysLater', { tenDaysLater })
+        .andWhere('activity.activity_id IN :subQuery', { subQuery })
+        .limit(upcomingLimit)
+        .getMany();
+    }
+
+    return this.activityRepository
+      .createQueryBuilder('activity')
+      .select()
+      .innerJoin(Meeting, 'meeting', 'activity.meeting_id = meeting.meeting_id')
+      .where('activity.startDate > :now', { now: new Date() })
+      .andWhere('activity.startDate < :tenDaysLater', { tenDaysLater })
+      .andWhere('meeting.publicYn = 1')
+      .limit(upcomingLimit)
       .getMany();
   }
 }

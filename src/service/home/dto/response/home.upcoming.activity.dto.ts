@@ -17,5 +17,5 @@ export class HomeUpcomingActivityDto {
   time: Date;
 
   @ApiProperty()
-  memberCount: number;
+  participantCount: number;
 }

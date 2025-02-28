@@ -32,6 +32,10 @@ export class ActivityComponentImpl implements ActivityComponent {
     return this.activityDao.getClosingTimeActivities();
   }
 
+  public async getUpcomingActivities(id?: number): Promise<Activity[]> {
+    return this.activityDao.getUpcomingActivities(id);
+  }
+
   public async delete(activityId: number) {
     return this.activityDao.delete(activityId);
   }

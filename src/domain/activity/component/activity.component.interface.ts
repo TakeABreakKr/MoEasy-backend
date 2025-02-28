@@ -9,4 +9,5 @@ export interface ActivityComponent {
   findByMeetingId(meeting_id: number): Promise<Activity[]>;
   getClosingTimeActivities(): Promise<Partial<Activity>[]>;
   delete(activityId: number): Promise<void>;
+  getUpcomingActivities(id?: number): Promise<Activity[]>;
 }

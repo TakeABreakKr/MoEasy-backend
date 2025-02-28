@@ -20,6 +20,7 @@ import { HomeUpcomingActivityDto } from '@service/home/dto/response/home.upcomin
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { getRegionEnum, RegionEnumType } from '@enums/region.enum';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
+import { Activity } from '@domain/activity/entity/activity.entity';
 
 @Injectable()
 export class HomeServiceImpl implements HomeService {
@@ -35,8 +36,8 @@ export class HomeServiceImpl implements HomeService {
   public async getHome(user: AuthUser): Promise<HomeResponse> {
     const userId: number = user?.id;
     const newMeetings = await this.getNewMeetings(userId);
-    const closingTimeActivities: HomeClosingTimeActivityDto[] = await this.getClosingTimeActivities();
-    const upcomingActivities: HomeUpcomingActivityDto[] = await this.getUpcomingActivities(userId);
+    const closingTimeActivities = await this.getClosingTimeActivities();
+    const upcomingActivities = await this.getUpcomingActivities(userId);
     const popularMeetings = await this.getPopularMeetings(userId);
     return {
       newMeetings,
@@ -82,7 +83,22 @@ export class HomeServiceImpl implements HomeService {
   }
 
   private async getUpcomingActivities(id?: number): Promise<HomeUpcomingActivityDto[]> {
-    return [];
+    const activities: Activity[] = await this.activityComponent.getUpcomingActivities(id);
+    return Promise.all(
+      activities.map(async (activity) => {
+        const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meeting_id);
+        const address = activity.address;
+        const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
+        return {
+          activityName: activity.name,
+          isOnlineYn: activity.onlineYn,
+          meetingName: meeting.name,
+          location: region.toString(),
+          time: activity.startDate,
+          participantCount: await this.participantComponent.getParticipantCount(activity.activity_id),
+        };
+      }),
+    );
   }
 
   private async getPopularMeetings(id?: number): Promise<HomePopularMeetingDto[]> {
