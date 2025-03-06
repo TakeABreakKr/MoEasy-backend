@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MeetingController } from './meeting.controller';
+import { MeetingController } from '@service/meeting/controller/meeting.controller';
 import { MeetingCreateRequest } from '@service/meeting/dto/request/meeting.create.request';
 import { MeetingResponse } from '@service/meeting/dto/response/meeting.response';
 import { MeetingListResponse } from '@service/meeting/dto/response/meeting.list.response';

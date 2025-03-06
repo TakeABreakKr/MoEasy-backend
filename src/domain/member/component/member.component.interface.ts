@@ -1,5 +1,5 @@
 import { Member } from '@domain/member/entity/member.entity';
-import { CreateMemberDto } from '../dto/create.member.dto';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 import { AuthorityEnumType } from '@root/enums/authority.enum';
 
 export interface MemberComponent {

@@ -1,5 +1,5 @@
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
-import { Sortable } from './sort.sortable';
+import { Sortable } from '@utils/sort.sortable';
 
 export class SortUtils {
   public static sort<T extends Sortable>(items: T[], options: OrderingOptionEnumType): T[] {

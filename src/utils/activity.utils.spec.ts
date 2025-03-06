@@ -1,5 +1,5 @@
 import { ReminderEnum, ReminderEnumType } from '@root/enums/reminder.enum';
-import { ActivityUtils } from './activity.utils';
+import { ActivityUtils } from '@root/utils/activity.utils';
 
 describe('ActivityUtilsTest', () => {
   it('reminderListToMaskTest', async () => {

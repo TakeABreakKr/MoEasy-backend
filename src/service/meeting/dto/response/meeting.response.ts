@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MeetingMemberDto } from './meeting.member.dto';
+import { MeetingMemberDto } from '@service/meeting/dto/response/meeting.member.dto';
 
 export class MeetingResponse {
   @ApiProperty()

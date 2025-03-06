@@ -5,7 +5,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { NecordModule } from 'necord';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
-
 import configuration from '@config/configuration';
 import { DiscordConfig } from '@config/discord.config';
 import { DBConfig } from '@config/db.config';

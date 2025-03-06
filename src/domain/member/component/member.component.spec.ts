@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MemberDao } from '../dao/member.dao.interface';
-import { Member } from '../entity/member.entity';
-import { MemberComponentImpl } from './member.component';
-import { MemberComponent } from './member.component.interface';
+import { MemberDao } from '@domain/member/dao/member.dao.interface';
+import { Member } from '@domain/member/entity/member.entity';
+import { MemberComponentImpl } from '@domain/member/component/member.component';
+import { MemberComponent } from '@domain/member/component/member.component.interface';
 import { AuthorityEnum, AuthorityEnumType } from '@root/enums/authority.enum';
-import { CreateMemberDto } from '../dto/create.member.dto';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 
 class MockMemberDao implements MemberDao {
   private mockMembers: Member[] = [
@@ -82,6 +82,7 @@ describe('KeywordComponent', () => {
         },
       ],
     }).compile();
+
     memberComponent = module.get<MemberComponent>('MemberComponent');
   });
 

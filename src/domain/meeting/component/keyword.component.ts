@@ -7,11 +7,11 @@ import { KeywordDao } from '@domain/meeting/dao/keyword.dao.interface';
 export class KeywordComponentImpl implements KeywordComponent {
   constructor(@Inject('KeywordDao') private keywordDao: KeywordDao) {}
 
-  async countByMeetingId(meetingId: number): Promise<number> {
+  public async countByMeetingId(meetingId: number): Promise<number> {
     return this.keywordDao.countByMeetingId(meetingId);
   }
 
-  async saveAll(keywords: Keyword[]): Promise<void> {
+  public async saveAll(keywords: Keyword[]): Promise<void> {
     await this.keywordDao.saveAll(keywords);
   }
 }

@@ -9,35 +9,35 @@ import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 export class MemberComponentImpl implements MemberComponent {
   constructor(@Inject('MemberDao') private memberDao: MemberDao) {}
 
-  async saveAll(members: Member[]): Promise<void> {
+  public async saveAll(members: Member[]): Promise<void> {
     await this.memberDao.saveAll(members);
   }
 
-  async findByMeetingId(meetingId: number): Promise<Member[]> {
+  public async findByMeetingId(meetingId: number): Promise<Member[]> {
     return this.memberDao.findByMeetingId(meetingId);
   }
 
-  async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
+  public async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
     return this.memberDao.findByUsersAndMeetingId(usersId, meetingId);
   }
 
-  async findByUserId(usersId: number): Promise<Member[]> {
+  public async findByUserId(usersId: number): Promise<Member[]> {
     return this.memberDao.findByUserId(usersId);
   }
 
-  async findByUsersAndAuthorities(usersId: number, authority: AuthorityEnumType[]): Promise<Member[]> {
+  public async findByUsersAndAuthorities(usersId: number, authority: AuthorityEnumType[]): Promise<Member[]> {
     return this.memberDao.findByUsersAndAuthorities(usersId, authority);
   }
 
-  async create(createMemberDto: CreateMemberDto): Promise<Member> {
+  public async create(createMemberDto: CreateMemberDto): Promise<Member> {
     return this.memberDao.create(createMemberDto);
   }
 
-  async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
+  public async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
     await this.memberDao.updateAuthority(member, authority);
   }
 
-  async deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void> {
+  public async deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void> {
     await this.memberDao.deleteByUsersAndMeetingId(usersId, meetingId);
   }
 }

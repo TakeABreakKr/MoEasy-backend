@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Meeting } from '../entity/meeting.entity';
-import { MeetingDao } from './meeting.dao.interface';
-import { CreateMeetingDto } from '../dto/create.meeting.dto';
+import { Meeting } from '@domain/meeting/entity/meeting.entity';
+import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
+import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 
 @Injectable()
 export class MeetingDaoImpl implements MeetingDao {

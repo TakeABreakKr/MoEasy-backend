@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MemberDao } from '../dao/member.dao.interface';
+import { MemberDao } from '@domain/member/dao/member.dao.interface';
 import { AuthorityEnum } from '@enums/authority.enum';
-import { Member } from '../entity/member.entity';
-import { AuthorityComponent } from './authority.component.interface';
-import { AuthorityComponentImpl } from './authority.component';
+import { Member } from '@domain/member/entity/member.entity';
+import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
+import { AuthorityComponentImpl } from '@domain/member/component/authority.component';
 import { BadRequestException } from '@nestjs/common';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
@@ -72,6 +72,7 @@ describe('AuthorityComponent', () => {
         },
       ],
     }).compile();
+
     authorityComponent = module.get<AuthorityComponent>('AuthorityComponent');
   });
 

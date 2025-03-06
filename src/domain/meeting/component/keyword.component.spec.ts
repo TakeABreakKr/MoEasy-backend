@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { KeywordDao } from '../dao/keyword.dao.interface';
-import { KeywordComponentImpl } from './keyword.component';
-import { KeywordComponent } from './keyword.component.interface';
-import { Keyword } from '../entity/keyword.entity';
+import { KeywordDao } from '@domain/meeting/dao/keyword.dao.interface';
+import { KeywordComponentImpl } from '@domain/meeting/component/keyword.component';
+import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
+import { Keyword } from '@domain/meeting/entity/keyword.entity';
 
 class MockKeywordDao implements KeywordDao {
   public mockKeywords: Keyword[] = [Keyword.create('테스트 키워드 1', 100), Keyword.create('테스트 키워드 2', 200)];

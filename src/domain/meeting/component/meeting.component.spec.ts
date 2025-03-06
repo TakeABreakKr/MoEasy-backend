@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MeetingDao } from '../dao/meeting.dao.interface';
-import { MeetingComponent } from './meeting.component.interface';
-import { MeetingComponentImpl } from './meeting.component';
-import { Meeting } from '../entity/meeting.entity';
-import { CreateMeetingDto } from '../dto/create.meeting.dto';
+import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
+import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
+import { MeetingComponentImpl } from '@domain/meeting/component/meeting.component';
+import { Meeting } from '@domain/meeting/entity/meeting.entity';
+import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 
 class MockMeetingDao implements MeetingDao {
   private mockMeetings: Meeting[] = [
@@ -70,6 +70,7 @@ describe('MeetingComponent', () => {
         },
       ],
     }).compile();
+
     meetingComponent = module.get<MeetingComponent>('MeetingComponent');
   });
 

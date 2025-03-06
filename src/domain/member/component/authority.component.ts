@@ -3,7 +3,7 @@ import { Member } from '@domain/member/entity/member.entity';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { MemberDao } from '@domain/member/dao/member.dao.interface';
-import { AuthorityComponent } from './authority.component.interface';
+import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
 
 @Injectable()
 export class AuthorityComponentImpl implements AuthorityComponent {

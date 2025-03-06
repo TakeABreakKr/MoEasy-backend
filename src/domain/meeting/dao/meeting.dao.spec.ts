@@ -1,9 +1,9 @@
 import { DeleteResult, FindOperator, FindOptionsWhere, Repository } from 'typeorm';
-import { Meeting } from '../entity/meeting.entity';
+import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MeetingDaoImpl } from './meeting.dao';
+import { MeetingDaoImpl } from '@domain/meeting/dao/meeting.dao';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MeetingDao } from './meeting.dao.interface';
+import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
 
 class MockMeetingRepository extends Repository<Meeting> {
   private mockMeetings: Meeting[] = [
@@ -82,6 +82,7 @@ describe('MeetingDao', () => {
         { provide: getRepositoryToken(Meeting), useClass: MockMeetingRepository },
       ],
     }).compile();
+
     meetingDao = module.get<MeetingDao>('MeetingDao');
   });
 

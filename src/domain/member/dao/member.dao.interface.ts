@@ -1,6 +1,6 @@
 import { AuthorityEnumType } from '@enums/authority.enum';
-import { Member } from '../entity/member.entity';
-import { CreateMemberDto } from '../dto/create.member.dto';
+import { Member } from '@domain/member/entity/member.entity';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 
 export interface MemberDao {
   saveAll(members: Member[]): Promise<void>;

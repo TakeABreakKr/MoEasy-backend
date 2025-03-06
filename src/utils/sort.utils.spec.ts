@@ -1,6 +1,6 @@
-import { SortUtils } from './sort.utils';
+import { SortUtils } from '@utils/sort.utils';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
-import { Sortable } from './sort.sortable';
+import { Sortable } from '@utils/sort.sortable';
 
 const oldesDate = new Date('2025-01-03');
 const middleDate = new Date('2025-01-15');

@@ -1,5 +1,5 @@
-import { CreateMeetingDto } from '../dto/create.meeting.dto';
-import { Meeting } from '../entity/meeting.entity';
+import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
+import { Meeting } from '@domain/meeting/entity/meeting.entity';
 
 export interface MeetingDao {
   findByMeetingId(id: number): Promise<Meeting | null>;
