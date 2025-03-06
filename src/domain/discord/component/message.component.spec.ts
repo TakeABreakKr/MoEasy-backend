@@ -17,7 +17,7 @@ class MockConfigService extends ConfigService {
 }
 
 class MockHttpService {
-  private channelResponse = {
+  public channelResponse = {
     data: {
       id: '345612',
       type: 1,
@@ -44,6 +44,7 @@ class MockHttpService {
 describe('MessageComponent', () => {
   let messageComponentImpl: MessageComponent;
   let httpService: MockHttpService;
+  let configService: MockConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -65,6 +66,7 @@ describe('MessageComponent', () => {
 
     messageComponentImpl = module.get<MessageComponent>('MessageComponent');
     httpService = module.get<MockHttpService>(HttpService);
+    configService = module.get<MockConfigService>(ConfigService);
   });
 
   it('sendMessageTest', async () => {
@@ -79,7 +81,7 @@ describe('MessageComponent', () => {
       url: `/api/v10/channels/${channelId}/messages`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bot test-discord-token',
+        Authorization: `Bot ${configService.get('discord.token')}`,
       },
       data: {
         content: testMessage,
@@ -92,14 +94,6 @@ describe('MessageComponent', () => {
     const recipientId = 'test-recipient-id';
     const result = await messageComponentImpl.getDMChannel(recipientId);
 
-    expect(result).toEqual({
-      id: '345612',
-      type: 1,
-      recipients: [
-        {
-          id: 'test-recipient-id',
-        },
-      ],
-    });
+    expect(result).toEqual(httpService.channelResponse.data);
   });
 });

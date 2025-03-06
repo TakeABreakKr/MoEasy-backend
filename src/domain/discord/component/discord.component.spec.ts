@@ -18,7 +18,7 @@ class MockConfigService extends ConfigService {
 }
 
 class MockHttpService {
-  private tokenResponse = {
+  public tokenResponse = {
     data: {
       token_type: 'Bearer',
       access_token: 'test-access-token',
@@ -28,7 +28,7 @@ class MockHttpService {
     },
   };
 
-  private userResponse = {
+  public userResponse = {
     data: {
       id: '123',
       username: 'momo',
@@ -54,6 +54,7 @@ class MockHttpService {
 
 describe('DiscordComponent', () => {
   let discordComponent: DiscordComponent;
+  let httpService: MockHttpService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -74,6 +75,7 @@ describe('DiscordComponent', () => {
     }).compile();
 
     discordComponent = module.get<DiscordComponent>('DiscordComponent');
+    httpService = module.get<MockHttpService>(HttpService);
   });
 
   it('getTokensTest', async () => {
@@ -82,8 +84,8 @@ describe('DiscordComponent', () => {
     const result = await discordComponent.getTokens(code);
 
     expect(result).toEqual({
-      accessToken: 'Bearer test-access-token',
-      refreshToken: 'Bearer test-refresh-token',
+      accessToken: httpService.tokenResponse.data.token_type + ' ' + httpService.tokenResponse.data.access_token,
+      refreshToken: httpService.tokenResponse.data.token_type + ' ' + httpService.tokenResponse.data.refresh_token,
     });
   });
 
@@ -94,13 +96,13 @@ describe('DiscordComponent', () => {
     });
 
     expect(result).toEqual({
-      id: '123',
-      username: 'momo',
-      discriminator: '1234',
-      avatar: 'avatar',
-      global_name: 'global name',
-      public_flags: 0,
-      email: 'moeasy@example.com',
+      id: httpService.userResponse.data.id,
+      username: httpService.userResponse.data.username,
+      discriminator: httpService.userResponse.data.discriminator,
+      avatar: httpService.userResponse.data.avatar,
+      global_name: httpService.userResponse.data.global_name,
+      public_flags: httpService.userResponse.data.public_flags,
+      email: httpService.userResponse.data.email,
     });
   });
 });

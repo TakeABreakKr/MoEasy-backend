@@ -72,7 +72,7 @@ export class AuthService {
     return res.redirect(`${host}`);
   }
 
-  public refreshAccessToken(refreshToken: string) {
+  public refreshAccessToken(refreshToken: string): string {
     let user: AuthUser;
     try {
       user = this.jwtService.verify(refreshToken, { secret: this.REFRESH_TOKEN_SECRET_KEY });
