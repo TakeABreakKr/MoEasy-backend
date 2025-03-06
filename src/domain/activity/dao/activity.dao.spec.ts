@@ -139,7 +139,7 @@ describe('ActivityDao', () => {
 
   it('createTest', async () => {
     const createActivityDto: ActivityCreateVO = {
-      meetingId: '400',
+      meetingId: 'G400',
       name: 'moeasy4',
       explanation: '모임설명4',
       startDate: new Date(),

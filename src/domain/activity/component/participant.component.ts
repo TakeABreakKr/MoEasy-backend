@@ -24,10 +24,10 @@ export class ParticipantComponentImpl implements ParticipantComponent {
   }
 
   public async delete(userId: number, activityId: number): Promise<void> {
-    this.participantDao.delete(userId, activityId);
+    await this.participantDao.delete(userId, activityId);
   }
 
   public async deleteAll(userIds: number[], activityId: number): Promise<void> {
-    this.participantDao.deleteAll(userIds, activityId);
+    await this.participantDao.deleteAll(userIds, activityId);
   }
 }
