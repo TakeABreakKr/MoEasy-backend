@@ -99,18 +99,8 @@ export class Activity extends BaseEntity {
 
   //only for test
   public static createForTest(activity_id: number, activityVO: ActivityCreateVO): Activity {
-    const activity = new Activity();
+    const activity = Activity.create(activityVO);
     activity.activity_id = activity_id;
-    activity.name = activityVO.name;
-    activity.explanation = activityVO.explanation;
-    activity.startDate = activityVO.startDate;
-    activity.endDate = activityVO.endDate;
-    activity.reminder = ActivityUtils.reminderListToMask(activityVO.reminder);
-    activity.announcement = activityVO.announcement;
-    activity.onlineYn = activityVO.onlineYn;
-    activity.address = activityVO.address;
-    activity.detailAddress = activityVO.detailAddress;
-    activity.meeting_id = MeetingUtils.transformMeetingIdToInteger(activityVO.meetingId);
     activity.createdAt = new Date();
     activity.updatedAt = new Date();
     return activity;

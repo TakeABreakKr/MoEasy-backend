@@ -19,10 +19,10 @@ class MockParticipantDao implements ParticipantDao {
     });
   }
 
-  async findByUserIdAndActivityId(user_id: number, activity_id: number): Promise<Participant | null> {
+  async findByUserIdAndActivityId(users_id: number, activity_id: number): Promise<Participant | null> {
     return (
       this.mockParticipants.find(
-        (participant: Participant) => participant.activity_id === activity_id && participant.users_id === user_id,
+        (participant: Participant) => participant.activity_id === activity_id && participant.users_id === users_id,
       ) || null
     );
   }
@@ -31,20 +31,20 @@ class MockParticipantDao implements ParticipantDao {
     return this.mockParticipants.filter((participant: Participant) => participant.activity_id === activity_id) || null;
   }
 
-  async findAllByUserId(user_id: number): Promise<Participant[] | null> {
-    return this.mockParticipants.filter((participant: Participant) => participant.users_id === user_id);
+  async findAllByUserId(users_id: number): Promise<Participant[] | null> {
+    return this.mockParticipants.filter((participant: Participant) => participant.users_id === users_id);
   }
 
-  async delete(userId: number, activityId: number): Promise<void> {
+  async delete(usersId: number, activityId: number): Promise<void> {
     this.mockParticipants = this.mockParticipants.filter(
-      (participant: Participant) => !(participant.users_id === userId && participant.activity_id === activityId),
+      (participant: Participant) => !(participant.users_id === usersId && participant.activity_id === activityId),
     );
   }
 
-  async deleteAll(userIds: number[], activity_id: number): Promise<void> {
+  async deleteAll(usersIds: number[], activity_id: number): Promise<void> {
     this.mockParticipants = this.mockParticipants.filter(
       (participant: Participant) =>
-        !(userIds.includes(participant.users_id) && participant.activity_id === activity_id),
+        !(usersIds.includes(participant.users_id) && participant.activity_id === activity_id),
     );
   }
 }

@@ -8,7 +8,7 @@ import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { Address } from '@domain/activity/entity/address.embedded';
 
 class MockActivityRepository extends Repository<Activity> {
-  private mockActivitys: Activity[] = [
+  private mockActivities: Activity[] = [
     Activity.createForTest(100, {
       meetingId: '64',
       name: 'moeasy1',
@@ -38,11 +38,11 @@ class MockActivityRepository extends Repository<Activity> {
   async save(entities: Activity | Activity[]): Promise<Activity[]> {
     const toSave = Array.isArray(entities) ? entities : [entities];
     for (const entity of toSave) {
-      const index = this.mockActivitys.findIndex((activity) => activity.activity_id === entity.activity_id);
+      const index = this.mockActivities.findIndex((activity) => activity.activity_id === entity.activity_id);
       if (index !== -1) {
-        this.mockActivitys[index] = entity;
+        this.mockActivities[index] = entity;
       } else {
-        this.mockActivitys.push(entity);
+        this.mockActivities.push(entity);
       }
     }
 
@@ -50,36 +50,36 @@ class MockActivityRepository extends Repository<Activity> {
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    const initialLength = this.mockActivitys.length;
+    const initialLength = this.mockActivities.length;
 
-    this.mockActivitys = this.mockActivitys.filter((activity) => {
+    this.mockActivities = this.mockActivities.filter((activity) => {
       return activity.activity_id !== id;
     });
 
     return {
       raw: {},
-      affected: initialLength > this.mockActivitys.length ? 1 : 0,
+      affected: initialLength > this.mockActivities.length ? 1 : 0,
     };
   }
 
   async find(): Promise<Activity[]> {
-    return this.mockActivitys;
+    return this.mockActivities;
   }
 
   async findBy(where: FindOptionsWhere<Activity>): Promise<Activity[]> {
     if (where.meeting_id) {
-      return this.mockActivitys.filter((activity) => activity.meeting_id === where.meeting_id);
+      return this.mockActivities.filter((activity) => activity.meeting_id === where.meeting_id);
     }
     if (where.activity_id instanceof FindOperator && Array.isArray(where.activity_id.value)) {
       const ids = where.activity_id.value;
-      return this.mockActivitys.filter((activity) => ids.includes(activity.activity_id));
+      return this.mockActivities.filter((activity) => ids.includes(activity.activity_id));
     }
 
     return [];
   }
 
   async findOneBy(where: FindOptionsWhere<Activity>): Promise<Activity | null> {
-    const activity = this.mockActivitys.find((activity) => {
+    const activity = this.mockActivities.find((activity) => {
       return activity.activity_id === where.activity_id;
     });
 

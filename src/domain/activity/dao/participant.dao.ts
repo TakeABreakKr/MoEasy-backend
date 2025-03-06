@@ -20,8 +20,8 @@ export class ParticipantDaoImpl implements ParticipantDao {
     return this.participantRepository.findBy({ activity_id });
   }
 
-  async findAllByUserId(user_id: number): Promise<Participant[]> {
-    return this.participantRepository.findBy({ users_id: user_id });
+  async findAllByUserId(users_id: number): Promise<Participant[]> {
+    return this.participantRepository.findBy({ users_id });
   }
 
   async delete(users_id: number, activity_id: number): Promise<void> {

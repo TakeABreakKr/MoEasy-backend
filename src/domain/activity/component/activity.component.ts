@@ -17,7 +17,7 @@ export class ActivityComponentImpl implements ActivityComponent {
   }
 
   public async update(activity: Activity): Promise<void> {
-    this.activityDao.update(activity);
+    await this.activityDao.update(activity);
   }
 
   public async findAllByActivityIds(activityIds: number[]): Promise<Activity[]> {
@@ -29,6 +29,6 @@ export class ActivityComponentImpl implements ActivityComponent {
   }
 
   public async delete(activityId: number): Promise<void> {
-    this.activityDao.delete(activityId);
+    await this.activityDao.delete(activityId);
   }
 }

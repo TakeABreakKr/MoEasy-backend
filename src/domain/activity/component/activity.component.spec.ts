@@ -99,6 +99,7 @@ describe('ActivityComponent', () => {
     const result = await activityComponent.create(createActivityDto);
 
     expect(result.meeting_id).toBe(201);
+    expect(result.activity_id).toBe(101);
     expect(result.name).toBe('moeasy4');
     expect(result.explanation).toBe('모임설명4');
     expect(result.announcement).toBe('공지사항4');
