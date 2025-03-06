@@ -77,12 +77,17 @@ export const RegionEnum = {
 export type RegionEnumType = (typeof RegionEnum)[keyof typeof RegionEnum];
 
 export function getRegionEnum(sido: string, sigungu: string): RegionEnumType {
-  return Object.keys(RegionEnum)
+  const enumValue = Object.keys(RegionEnum)
     .filter((key) => {
       if (sido.includes('서울') || sido.includes('경기')) {
         return sigungu.includes(RegionEnum[key]);
       }
       return sido.includes(RegionEnum[key]);
     })
-    .map((key) => RegionEnum[key])[0];
+    .map((key) => RegionEnum[key]);
+
+  if (enumValue.length === 0) {
+    throw new Error(`매칭되는 Region Enum을 찾지 못했습니다. sido: ${sido}, sigungu: ${sigungu}`);
+  }
+  return enumValue[0];
 }

@@ -77,6 +77,7 @@ export class HomeServiceImpl implements HomeService {
           location: region.toString(),
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.activity_id),
+          participantLimit: activity.participantLimit,
         };
       }),
     );

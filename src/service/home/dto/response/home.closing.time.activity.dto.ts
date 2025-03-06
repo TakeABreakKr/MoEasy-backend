@@ -21,4 +21,7 @@ export class HomeClosingTimeActivityDto {
 
   @ApiProperty()
   participantCount: number;
+
+  @ApiProperty()
+  participantLimit: number;
 }

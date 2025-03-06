@@ -15,6 +15,8 @@ export class Region extends BaseEntity {
   })
   name: keyof typeof RegionEnum;
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   count: number;
 }

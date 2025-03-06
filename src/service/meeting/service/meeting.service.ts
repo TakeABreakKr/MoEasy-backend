@@ -114,13 +114,13 @@ export class MeetingServiceImpl implements MeetingService {
     const getLineSeperator: lineSeperatorFunctionType = (content) => (content === '' ? '\n' : '');
 
     let content = '';
-    if (!request.name) {
+    if (request.name && request.name !== meeting.name) {
       content += meeting.name + '모임 이름이 ' + request.name + '으로 변경되었습니다.';
     }
-    if (!request.explanation) {
+    if (request.explanation && request.explanation !== meeting.explanation) {
       content += getLineSeperator(content) + meeting.name + '모임 소개가 변경되었습니다.';
     }
-    if (!request.limit) {
+    if (request.limit && request.limit !== meeting.limit) {
       content +=
         getLineSeperator(content) + meeting.name + '의 인원 제한이 ' + request.limit + '명으로 변경되었습니다.';
     }

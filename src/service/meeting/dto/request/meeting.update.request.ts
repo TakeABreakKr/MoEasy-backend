@@ -23,10 +23,12 @@ export class MeetingUpdateRequest {
   limit: number = 10;
 
   @ApiProperty()
+  @IsOptional()
   @IsBoolean()
   publicYn: boolean;
 
   @ApiProperty()
+  @IsOptional()
   @IsBoolean()
   canJoin: boolean;
 }

@@ -9,6 +9,10 @@ export class CategoryStatComponentImpl implements CategoryStatComponent {
 
   async getOrder(category: MeetingCategoryEnumType): Promise<number> {
     const categoryStat = await this.categoryStatDao.findByCategory(category);
+    if (!categoryStat) {
+      throw new Error(`CategoryStat이 존재하지 않습니다. category: ${category}`);
+    }
+
     return categoryStat.order;
   }
 }
