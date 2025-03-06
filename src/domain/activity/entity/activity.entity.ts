@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
-import { Participant } from './participant.entity';
-import { BaseEntity } from '../../common/base.entity';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { BaseEntity } from '@domain/common/base.entity';
 import { Address } from '@domain/activity/entity/address.embedded';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { ActivityUpdateVO } from '@domain/activity/vo/activity.update.vo';
@@ -95,5 +95,14 @@ export class Activity extends BaseEntity {
     this.onlineYn = activityUpdateVO.onlineYn;
     this.address = activityUpdateVO.address;
     this.detailAddress = activityUpdateVO.detailAddress;
+  }
+
+  //only for test
+  public static createForTest(activity_id: number, activityVO: ActivityCreateVO): Activity {
+    const activity = Activity.create(activityVO);
+    activity.activity_id = activity_id;
+    activity.createdAt = new Date();
+    activity.updatedAt = new Date();
+    return activity;
   }
 }

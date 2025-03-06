@@ -1,7 +1,7 @@
 import { ActivityService } from '@service/activity/service/activity.service.interface';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
 import { ActivityListResponse } from '@service/activity/dto/response/activity.list.response';
-import { ActivityController } from './activity.controller';
+import { ActivityController } from '@service/activity/controller/activity.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ActivityCreateRequest } from '@service/activity/dto/request/activity.create.request';
 import { AuthUser } from '@decorator/token.decorator';
@@ -113,7 +113,7 @@ describe('ActivityController', () => {
 
   it('withdrawTest', async () => {
     const req: ActivityWithdrawRequest = {
-      meeting_id: 'OOOOOOO1',
+      meetingId: 'OOOOOOO1',
       activityId: 1,
     };
     const result = await activityController.withdraw(req, user);

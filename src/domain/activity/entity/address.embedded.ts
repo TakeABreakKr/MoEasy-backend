@@ -184,4 +184,74 @@ export class Address {
 
     return addressDto;
   }
+
+  static createForTest(): Address {
+    const address = new Address();
+    address.zonecode = 'test';
+    address.address = 'address_test';
+    address.addressEnglish = 'test';
+    address.addressType = 'R';
+    address.userSelectedType = 'R';
+    address.noSelected = 'N';
+    address.userLanguageType = 'K';
+    address.roadAddress = 'test';
+    address.roadAddressEnglish = 'test';
+    address.jibunAddress = 'test';
+    address.jibunAddressEnglish = 'test';
+    address.autoRoadAddress = 'test';
+    address.autoRoadAddressEnglish = 'test';
+    address.autoJibunAddress = 'test';
+    address.autoJibunAddressEnglish = 'test';
+    address.buildingCode = 'test';
+    address.buildingName = 'test';
+    address.apartment = 'Y';
+    address.sido = 'test';
+    address.sidoEnglish = 'test';
+    address.sigungu = 'test';
+    address.sigunguEnglish = 'test';
+    address.sigunguCode = 'test';
+    address.roadnameCode = 'test';
+    address.bcode = 'test';
+    address.roadname = 'test';
+    address.roadnameEnglish = 'test';
+    address.bname = 'test';
+    address.bnameEnglish = 'test';
+    address.bname1 = 'test';
+    address.bname1English = 'test';
+    address.bname2 = 'test';
+    address.bname2English = 'test';
+    address.hname = 'test';
+    address.query = 'test';
+
+    return address;
+  }
+
+  static createTestDto(): AddressDto {
+    const dto = new AddressDto();
+    dto.zonecode = 'test';
+    dto.address = 'address_test';
+    dto.addressType = 'R';
+    dto.userSelectedType = 'R';
+    dto.noSelected = 'N';
+    dto.userLanguageType = 'K';
+    dto.roadAddress = 'test';
+    dto.sido = 'test';
+    dto.sigungu = 'test';
+    dto.sigunguEnglish = 'test';
+    dto.sigunguCode = 'test';
+    dto.roadnameCode = 'test';
+    dto.bcode = 'test';
+    dto.roadname = 'test';
+    dto.roadnameEnglish = 'test';
+    dto.bname = 'test';
+    dto.bnameEnglish = 'test';
+    dto.bname1 = 'test';
+    dto.bname1English = 'test';
+    dto.bname2 = 'test';
+    dto.bname2English = 'test';
+    dto.hname = 'test';
+    dto.query = 'test';
+
+    return dto;
+  }
 }
