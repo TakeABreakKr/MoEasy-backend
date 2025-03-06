@@ -1,4 +1,4 @@
 export class CreateParticipantDto {
-  activityId: number;
-  usersId: number;
+  activity_id: number;
+  users_id: number;
 }
