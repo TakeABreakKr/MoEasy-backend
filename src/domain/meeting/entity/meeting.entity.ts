@@ -1,8 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Schedule } from '@domain/schedule/entity/schedule.entity';
-import { Member } from './member.entity';
-import { Keyword } from './keyword.entity';
-import { BaseEntity } from '../../common/base.entity';
+import { Activity } from '@domain/activity/entity/activity.entity';
+import { Member } from '@domain/member/entity/member.entity';
+import { BaseEntity } from '@domain//common/base.entity';
+import { Keyword } from '@domain/meeting/entity/keyword.entity';
+import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 
 @Entity()
 export class Meeting extends BaseEntity {
@@ -35,8 +36,8 @@ export class Meeting extends BaseEntity {
   @OneToMany(() => Keyword, (keyword) => keyword.meeting)
   keywords: Promise<Keyword[]>;
 
-  @OneToMany(() => Schedule, (schedule) => schedule.meeting)
-  schedules: Promise<Schedule[]>;
+  @OneToMany(() => Activity, (activity) => activity.meeting)
+  activities: Promise<Activity[]>;
 
   @OneToMany(() => Member, (member) => member.meeting)
   members: Promise<Member[]>;
@@ -45,12 +46,32 @@ export class Meeting extends BaseEntity {
     return this.keywords;
   }
 
-  async getSchedules(): Promise<Schedule[]> {
-    return this.schedules;
+  async getActivities(): Promise<Activity[]> {
+    return this.activities;
   }
 
   async getMembers(): Promise<Member[]> {
     return this.members;
+  }
+
+  static create({ name, explanation, limit, thumbnail, canJoin }: CreateMeetingDto): Meeting {
+    const meeting = new Meeting();
+
+    meeting.name = name;
+    meeting.explanation = explanation;
+    meeting.limit = limit;
+    meeting.thumbnail = thumbnail;
+    meeting.canJoin = canJoin;
+
+    return meeting;
+  }
+
+  // only use for test
+  static createForTest({ meeting_id, ...props }: CreateMeetingDto & { meeting_id: number }) {
+    const meeting = Meeting.create(props);
+    meeting.meeting_id = meeting_id;
+
+    return meeting;
   }
 
   updateBasicInfo({

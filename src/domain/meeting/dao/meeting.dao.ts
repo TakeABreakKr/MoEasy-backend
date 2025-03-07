@@ -1,33 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Meeting } from '../entity/meeting.entity';
+import { Meeting } from '@domain/meeting/entity/meeting.entity';
+import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
+import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 
 @Injectable()
-export class MeetingDao {
+export class MeetingDaoImpl implements MeetingDao {
   constructor(@InjectRepository(Meeting) private meetingRepository: Repository<Meeting>) {}
 
   async findByMeetingId(id: number): Promise<Meeting | null> {
     return this.meetingRepository.findOneBy({ meeting_id: id });
   }
 
-  async findByMeetingIds(ids: number[]) {
+  async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
     return this.meetingRepository.findBy({ meeting_id: In(ids) });
   }
 
-  async create(props: {
-    name: string;
-    explanation: string;
-    limit: number;
-    thumbnail: string;
-    canJoin: boolean;
-  }): Promise<Meeting> {
-    const meeting = this.meetingRepository.create({ ...props });
+  async create(props: CreateMeetingDto): Promise<Meeting> {
+    const meeting = Meeting.create(props);
     await this.meetingRepository.save(meeting);
     return meeting;
   }
 
-  async update(meeting: Meeting) {
+  async update(meeting: Meeting): Promise<void> {
     await this.meetingRepository.save(meeting);
   }
 
@@ -35,7 +31,7 @@ export class MeetingDao {
     return this.meetingRepository.find();
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<void> {
     await this.meetingRepository.delete(id);
   }
 }
