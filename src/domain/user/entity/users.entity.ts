@@ -26,6 +26,9 @@ export class Users extends BaseEntity {
   @Column()
   explanation: string;
 
+  @Column()
+  thumbnail: string;
+
   @Column(() => Settings)
   settings: Settings;
 
@@ -51,6 +54,7 @@ export class Users extends BaseEntity {
     users.avatar = usersCreateDto.avatar;
     users.email = usersCreateDto.email;
     users.explanation = usersCreateDto.explanation;
+    users.thumbnail = usersCreateDto.thumbnail;
     users.settings = Settings.create(usersCreateDto.settings);
     return users;
   }

@@ -54,7 +54,7 @@ export class HomeServiceImpl implements HomeService {
         return {
           id: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
           name: meeting.name,
-          description: meeting.explanation,
+          explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.meeting_id),
           isLikedYn: id ? false : false, // TODO: Implement this after Like system developed
         };
@@ -67,14 +67,18 @@ export class HomeServiceImpl implements HomeService {
     return Promise.all(
       activities.map(async (activity) => {
         const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meeting_id);
+        const participantThumbnailUrls: string[] = await this.participantComponent.getParticipantThumbnailUrls(
+          activity.activity_id,
+        );
         const address = activity.address;
         const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
         return {
+          region,
+          participantThumbnailUrls,
           id: activity.activity_id,
           activityName: activity.name,
           isOnlineYn: activity.onlineYn,
           meetingName: meeting.name,
-          location: region.toString(),
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.activity_id),
           participantLimit: activity.participantLimit,
@@ -88,15 +92,21 @@ export class HomeServiceImpl implements HomeService {
     return Promise.all(
       activities.map(async (activity) => {
         const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meeting_id);
+        const participantThumbnailUrls: string[] = await this.participantComponent.getParticipantThumbnailUrls(
+          activity.activity_id,
+        );
         const address = activity.address;
         const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
         return {
+          participantThumbnailUrls,
+          id: activity.activity_id,
           activityName: activity.name,
           isOnlineYn: activity.onlineYn,
           meetingName: meeting.name,
           location: region.toString(),
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.activity_id),
+          participantLimit: activity.participantLimit,
         };
       }),
     );

@@ -28,6 +28,7 @@ export class UsersDaoImpl implements UsersDao {
       avatar: profile.avatar || '',
       email: profile.email,
       explanation: '',
+      thumbnail: '',
       settings: {
         allowNotificationYn: false,
       },

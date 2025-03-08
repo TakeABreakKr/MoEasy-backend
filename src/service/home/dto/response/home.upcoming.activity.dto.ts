@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class HomeUpcomingActivityDto {
   @ApiProperty()
+  id: number;
+
+  @ApiProperty()
   activityName: string;
 
   @ApiProperty()
@@ -18,4 +21,10 @@ export class HomeUpcomingActivityDto {
 
   @ApiProperty()
   participantCount: number;
+
+  @ApiProperty()
+  participantLimit: number;
+
+  @ApiProperty()
+  participantThumbnailUrls: string[];
 }

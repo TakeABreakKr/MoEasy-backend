@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { RegionEnum, RegionEnumType } from '@enums/region.enum';
 
 export class HomeClosingTimeActivityDto {
   @ApiProperty()
@@ -13,8 +14,11 @@ export class HomeClosingTimeActivityDto {
   @ApiProperty()
   meetingName: string;
 
-  @ApiProperty()
-  location: string;
+  @ApiProperty({
+    type: Object.keys(RegionEnum),
+    example: RegionEnum.SEOCHO,
+  })
+  region: RegionEnumType;
 
   @ApiProperty()
   time: Date;
@@ -24,4 +28,7 @@ export class HomeClosingTimeActivityDto {
 
   @ApiProperty()
   participantLimit: number;
+
+  @ApiProperty()
+  participantThumbnailUrls: string[];
 }

@@ -8,7 +8,7 @@ export class HomeNewMeetingDto {
   name: string;
 
   @ApiProperty()
-  description: string;
+  explanation: string;
 
   @ApiProperty()
   memberCount: number;

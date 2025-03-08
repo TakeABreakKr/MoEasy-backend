@@ -34,4 +34,14 @@ export class ParticipantDao {
   async deleteAll(userIds: number[], activity_id: number): Promise<void> {
     await this.participantRepository.delete({ users_id: In(userIds), activity_id });
   }
+
+  async getParticipantThumbnailUrls(activity_id: number): Promise<string[]> {
+    return this.participantRepository
+      .createQueryBuilder()
+      .select('user.thumbnail')
+      .from(Participant, 'participant')
+      .leftJoin('users', 'user', 'user.users_id = participant.users_id')
+      .where('participant.activity_id = :activity_id', { activity_id })
+      .getRawMany<string>();
+  }
 }
