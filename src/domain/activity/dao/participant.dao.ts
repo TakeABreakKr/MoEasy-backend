@@ -42,6 +42,7 @@ export class ParticipantDao {
       .from(Participant, 'participant')
       .leftJoin('users', 'user', 'user.users_id = participant.users_id')
       .where('participant.activity_id = :activity_id', { activity_id })
-      .getRawMany<string>();
+      .getRawMany()
+      .then((results) => results.filter((result) => result.thumbnail !== null).map((result) => result.thumbnail));
   }
 }
