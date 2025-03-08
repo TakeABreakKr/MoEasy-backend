@@ -17,12 +17,12 @@ export class ActivityDao {
 
   constructor(@InjectRepository(Activity) private activityRepository: Repository<Activity>) {}
 
-  async findByActivityId(activity_id: number): Promise<Activity | null> {
-    return this.activityRepository.findOneBy({ activity_id });
+  async findByActivityId(id: number): Promise<Activity | null> {
+    return this.activityRepository.findOneBy({ id });
   }
 
-  async findAllByActivityIds(activityIds: number[]): Promise<Activity[]> {
-    return this.activityRepository.findBy({ activity_id: In(activityIds) });
+  async findAllByActivityIds(ids: number[]): Promise<Activity[]> {
+    return this.activityRepository.findBy({ id: In(ids) });
   }
 
   async create(activityCreateVO: ActivityCreateVO): Promise<Activity> {
@@ -35,12 +35,12 @@ export class ActivityDao {
     await this.activityRepository.save(activity);
   }
 
-  async findByMeetingId(meeting_id: number): Promise<Activity[]> {
-    return this.activityRepository.findBy({ meeting_id });
+  async findByMeetingId(meetingId: number): Promise<Activity[]> {
+    return this.activityRepository.findBy({ meetingId });
   }
 
-  async delete(activity_id: number) {
-    await this.activityRepository.delete(activity_id);
+  async delete(id: number) {
+    await this.activityRepository.delete({ id });
   }
 
   async getClosingTimeActivities(): Promise<Partial<Activity>[]> {

@@ -4,8 +4,10 @@ import { MeetingCategoryEnum, MeetingCategoryEnumType } from '@enums/meeting.cat
 
 @Entity()
 export class CategoryStat extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  category_id: number;
+  @PrimaryGeneratedColumn('increment', {
+    name: 'category_id',
+  })
+  id: number;
 
   @Column({
     type: 'enum',

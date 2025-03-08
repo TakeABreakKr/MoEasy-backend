@@ -4,13 +4,13 @@ import { CreateMemberDto } from '../dto/create.member.dto';
 
 export interface MemberDao {
   saveAll(members: Member[]): Promise<void>;
-  findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null>;
-  findByMeetingId(meeting_id: number): Promise<Member[]>;
-  findByUsersAndAuthorities(users_id: number, authority: AuthorityEnumType[]): Promise<Member[]>;
-  findByUserId(users_id: number): Promise<Member[]>;
-  create({ authority, ...props }: CreateMemberDto): Promise<Member>;
+  findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null>;
+  findByMeetingId(meetingId: number): Promise<Member[]>;
+  findByUsersAndAuthorities(userId: number, authority: AuthorityEnumType[]): Promise<Member[]>;
+  findByUserId(userId: number): Promise<Member[]>;
+  create(createMemberDto: CreateMemberDto): Promise<Member>;
   updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void>;
-  deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void>;
-  getMemberCountByMeetingId(meeting_id: number): Promise<number>;
+  deleteByUsersAndMeetingId(userId: number, meetingId: number): Promise<void>;
+  getMemberCountByMeetingId(meetingId: number): Promise<number>;
   getMostPopularMeetingIds(popularMeetingCount: number): Promise<number[]>;
 }

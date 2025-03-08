@@ -30,13 +30,13 @@ class MockNotificationRepository extends Repository<Notification> {
   }
 
   private getMockNotificationsByUserId(option: FindOptionsWhere<Notification>): Notification[] {
-    if (option.users_id === MockNotificationRepository.userIdList[0]) {
+    if (option.userId === MockNotificationRepository.userIdList[0]) {
       return [MockNotificationRepository.notifications[0]];
     }
-    if (option.users_id === MockNotificationRepository.userIdList[1]) {
+    if (option.userId === MockNotificationRepository.userIdList[1]) {
       return MockNotificationRepository.notifications.slice(1);
     }
-    if (option.notification_id) return MockNotificationRepository.notifications;
+    if (option.id) return MockNotificationRepository.notifications;
     return [];
   }
 }

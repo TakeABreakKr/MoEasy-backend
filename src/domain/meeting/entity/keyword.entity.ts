@@ -4,11 +4,15 @@ import { BaseEntity } from '../../common/base.entity';
 
 @Entity()
 export class Keyword extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  keyword_id: number;
+  @PrimaryGeneratedColumn('increment', {
+    name: 'keyword_id',
+  })
+  id: number;
 
-  @Column()
-  meeting_id: number;
+  @Column({
+    name: 'meeting_id',
+  })
+  meetingId: number;
 
   @Column({
     length: 10,
@@ -23,9 +27,9 @@ export class Keyword extends BaseEntity {
     return this.meeting;
   }
 
-  public static create(keyword: string, meeting_id: number): Keyword {
+  public static create(keyword: string, meetingId: number): Keyword {
     const keywordEntity = new Keyword();
-    keywordEntity.meeting_id = meeting_id;
+    keywordEntity.meetingId = meetingId;
     keywordEntity.keyword = keyword;
     return keywordEntity;
   }

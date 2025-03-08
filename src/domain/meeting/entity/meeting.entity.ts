@@ -8,8 +8,10 @@ import * as MeetingCategoryEnum from '@enums/meeting.category.enum';
 
 @Entity()
 export class Meeting extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  meeting_id: number;
+  @PrimaryGeneratedColumn('increment', {
+    name: 'meeting_id',
+  })
+  id: number;
 
   @Column({
     nullable: false,
@@ -87,9 +89,9 @@ export class Meeting extends BaseEntity {
   }
 
   // only use for test
-  static createForTest({ meeting_id, ...props }: CreateMeetingDto & { meeting_id: number }) {
+  static createForTest({ meetingId, ...props }: CreateMeetingDto & { meetingId: number }) {
     const meeting = Meeting.create(props);
-    meeting.meeting_id = meeting_id;
+    meeting.id = meetingId;
 
     return meeting;
   }

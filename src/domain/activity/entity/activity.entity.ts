@@ -10,8 +10,10 @@ import { MeetingUtils } from '@utils/meeting.utils';
 
 @Entity()
 export class Activity extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  activity_id: number;
+  @PrimaryGeneratedColumn('increment', {
+    name: 'activity_id',
+  })
+  id: number;
 
   @Column({
     nullable: false,
@@ -55,8 +57,11 @@ export class Activity extends BaseEntity {
   @Column()
   participantLimit: number;
 
-  @Column()
-  meeting_id: number;
+  @Column({
+    name: 'meeting_id',
+    nullable: false,
+  })
+  meetingId: number;
 
   @ManyToOne(() => Meeting, (meeting) => meeting.activities, {
     nullable: false,
@@ -84,7 +89,7 @@ export class Activity extends BaseEntity {
     activity.address = activityCreateVO.address;
     activity.detailAddress = activityCreateVO.detailAddress;
     activity.participantLimit = activityCreateVO.participantLimit;
-    activity.meeting_id = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
+    activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
 
     return activity;
   }

@@ -39,10 +39,10 @@ export class MemberServiceImpl implements MemberService {
     }; // TODO: develop after friend system
   }
 
-  public async getMember(meeting_id: string, user_id: number) {
-    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
-    const member: Member | null = await this.memberComponent.findByUsersAndMeetingId(user_id, meetingId);
-    const user: Users | null = await this.usersComponent.findById(user_id);
+  public async getMember(_meetingId: string, _userId: number) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
+    const member: Member | null = await this.memberComponent.findByUsersAndMeetingId(_userId, meetingId);
+    const user: Users | null = await this.usersComponent.findById(_userId);
     if (!user || !member) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEMBER);
 
     return {
@@ -53,18 +53,18 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async withdraw(requester_id: number, meeting_id: string) {
-    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
-    const user: Users | null = await this.usersComponent.findById(requester_id);
+  public async withdraw(requesterId: number, _meetingId: string) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
+    const user: Users | null = await this.usersComponent.findById(requesterId);
     if (!user) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
 
-    const member: Member | null = await this.memberComponent.findByUsersAndMeetingId(requester_id, meetingId);
+    const member: Member | null = await this.memberComponent.findByUsersAndMeetingId(requesterId, meetingId);
     if (!member) throw new BadRequestException(ErrorMessageType.NOT_EXIST_REQUESTER);
 
-    await this.memberComponent.deleteByUsersAndMeetingId(requester_id, meetingId);
+    await this.memberComponent.deleteByUsersAndMeetingId(requesterId, meetingId);
 
     const members = await this.memberComponent.findByMeetingId(meetingId);
-    const userIdList: number[] = members.map((member) => member.users_id);
+    const userIdList: number[] = members.map((member) => member.userId);
 
     let content = user.username + '님이 모임에서 탈퇴하였습니다.';
     await this.notificationComponent.addNotifications(content, userIdList);
@@ -85,9 +85,9 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async updateAuthority(requester_id: number, req: MemberAuthorityUpdateRequest) {
+  public async updateAuthority(requesterId: number, req: MemberAuthorityUpdateRequest) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
 
     const member = await this.memberComponent.findByUsersAndMeetingId(req.usersId, meetingId);
     if (member.authority === AuthorityEnum.MEMBER && req.isManager) {
@@ -96,32 +96,32 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async deleteMember(requester_id: number, req: MemberDeleteRequest): Promise<void> {
+  public async deleteMember(requesterId: number, req: MemberDeleteRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-    await this.authorityComponent.validateAuthority(requester_id, meetingId);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
-    const member: Member | null = await this.memberComponent.findByUsersAndMeetingId(requester_id, meetingId);
+    const member: Member | null = await this.memberComponent.findByUsersAndMeetingId(requesterId, meetingId);
     if (!member) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEMBER);
 
     await this.memberComponent.deleteByUsersAndMeetingId(req.memberId, meetingId);
   }
 
   @Transactional()
-  public async join(requester_id: number, req: MemberJoinRequest) {
+  public async join(requesterId: number, req: MemberJoinRequest) {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     const meeting = await this.meetingComponent.findByMeetingId(meetingId);
     if (meeting.canJoin) throw new BadRequestException(ErrorMessageType.JOIN_REQUEST_DISABLED);
     await this.memberComponent.create({
       meetingId,
-      usersId: requester_id,
+      userId: requesterId,
       authority: AuthorityEnum.WAITING,
       applicationMessage: req.joinMessage,
     });
   }
 
-  public async getWaitingList(requester_id: number): Promise<MemberWaitingListResponse> {
-    const members = await this.memberComponent.findByUsersAndAuthorities(requester_id, MANAGING_AUTHORITIES);
-    const meetingIds: number[] = members.map((member) => member.meeting_id);
+  public async getWaitingList(requesterId: number): Promise<MemberWaitingListResponse> {
+    const members = await this.memberComponent.findByUsersAndAuthorities(requesterId, MANAGING_AUTHORITIES);
+    const meetingIds: number[] = members.map((member) => member.meetingId);
 
     const response: MemberWaitingListResponse = {
       meetings: [],
@@ -147,15 +147,15 @@ export class MemberServiceImpl implements MemberService {
     const filteredMembers = members.filter((member: Member) => member.authority === AuthorityEnum.WAITING);
     const sortedMembers = SortUtils.sort<Member>(filteredMembers, OrderingOptionEnum.OLDEST);
 
-    const userIds: number[] = sortedMembers.map((member: Member) => member.users_id);
+    const userIds: number[] = sortedMembers.map((member: Member) => member.userId);
     const userList: Users[] = await this.usersComponent.findByIds(userIds);
     const usernameMap: Map<number, string> = new Map();
     userList.forEach((user) => {
-      usernameMap.set(user.users_id, user.username);
+      usernameMap.set(user.id, user.username);
     });
 
     return sortedMembers.map((member) => {
-      const username: string = usernameMap.get(member.users_id);
+      const username: string = usernameMap.get(member.userId);
       return {
         name: username,
         applicationMessage: member.applicationMessage,
@@ -176,7 +176,7 @@ export class MemberServiceImpl implements MemberService {
 
       const content = user.username + '님의 가입이 수락되었습니다.';
       const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map(
-        (member: Member) => member.users_id,
+        (member: Member) => member.userId,
       );
       await this.notificationComponent.addNotifications(content, userIdList);
     } else {

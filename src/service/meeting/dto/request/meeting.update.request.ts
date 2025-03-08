@@ -4,7 +4,7 @@ import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'clas
 export class MeetingUpdateRequest {
   @ApiProperty()
   @IsNotEmpty()
-  meeting_id: string;
+  meetingId: string;
 
   @ApiProperty()
   @IsOptional()

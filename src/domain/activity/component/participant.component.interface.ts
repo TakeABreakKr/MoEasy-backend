@@ -8,5 +8,5 @@ export interface ParticipantComponent {
   getParticipantCount(activityId: number): Promise<number>;
   delete(userId: number, activityId: number): Promise<void>;
   deleteAll(userIds: number[], activityId: number): Promise<void>;
-  getParticipantThumbnailUrls(activity_id: number): Promise<string[]>;
+  getParticipantThumbnailUrls(activityId: number): Promise<string[]>;
 }

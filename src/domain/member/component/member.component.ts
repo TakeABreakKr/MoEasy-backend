@@ -30,8 +30,8 @@ export class MemberComponentImpl implements MemberComponent {
     return this.memberDao.getMostPopularMeetingIds(popularMeetingCount);
   }
 
-  async getMemberCount(meeting_id: number): Promise<number> {
-    return this.memberDao.getMemberCountByMeetingId(meeting_id);
+  async getMemberCount(meetingId: number): Promise<number> {
+    return this.memberDao.getMemberCountByMeetingId(meetingId);
   }
 
   async findByUsersAndAuthorities(usersId: number, authority: AuthorityEnumType[]): Promise<Member[]> {

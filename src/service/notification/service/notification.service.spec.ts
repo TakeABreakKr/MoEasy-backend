@@ -45,7 +45,7 @@ class MockNotificationComponent implements NotificationComponent {
     componentAccessLog.push(MockNotificationComponent.getListByNotificationIdsLog);
 
     return MockNotificationComponent.notification.filter((notification) =>
-      notificationIdList.includes(notification.notification_id),
+      notificationIdList.includes(notification.id),
     );
   }
 }

@@ -8,8 +8,10 @@ import { Settings } from './settings.embedded';
 
 @Entity()
 export class Users extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  users_id: number;
+  @PrimaryGeneratedColumn('increment', {
+    name: 'users_id',
+  })
+  id: number;
 
   @Column()
   discord_id: string;
@@ -60,9 +62,9 @@ export class Users extends BaseEntity {
   }
 
   // use only for test
-  static createForTest({ users_id, ...props }: UsersCreateDto & { users_id: number }): Users {
+  static createForTest({ id, ...props }: UsersCreateDto & { id: number }): Users {
     const users = Users.create(props);
-    users.users_id = users_id;
+    users.id = id;
     return users;
   }
 }

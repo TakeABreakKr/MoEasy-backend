@@ -10,11 +10,11 @@ export class AuthorityComponentImpl implements AuthorityComponent {
   constructor(@Inject('MemberDao') private memberDao: MemberDao) {}
 
   public async validateAuthority(
-    requester_id: number,
+    requesterId: number,
     meetingId: number,
     validAuthorities: AuthorityEnumType[] = MANAGING_AUTHORITIES,
   ): Promise<void> {
-    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(requester_id, meetingId);
+    const member: Member | null = await this.memberDao.findByUsersAndMeetingId(requesterId, meetingId);
 
     if (!member) {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEMBER);

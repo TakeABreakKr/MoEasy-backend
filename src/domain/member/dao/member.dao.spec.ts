@@ -10,12 +10,12 @@ class MockMemberRepository extends Repository<Member> {
   private mockMembers: Member[] = [
     Member.create({
       meetingId: 10,
-      usersId: 10,
+      userId: 10,
       authority: AuthorityEnum.OWNER,
     }),
     Member.create({
       meetingId: 5,
-      usersId: 5,
+      userId: 5,
       authority: AuthorityEnum.MEMBER,
       applicationMessage: '저는 이 프로젝트 모임에 꼭 가입하고 싶습니다.',
     }),
@@ -29,36 +29,36 @@ class MockMemberRepository extends Repository<Member> {
 
   async findOneBy(where: FindOptionsWhere<Member>): Promise<Member | null> {
     const member = this.mockMembers.find(
-      (member) => member.users_id === where.users_id && member.meeting_id === where.meeting_id,
+      (member) => member.userId === where.userId && member.meetingId === where.meetingId,
     );
 
     return member || null;
   }
 
   async findBy(where: FindOptionsWhere<Member>): Promise<Member[]> {
-    if (where.meeting_id) {
-      return this.mockMembers.filter((member) => member.meeting_id === where.meeting_id);
+    if (where.meetingId) {
+      return this.mockMembers.filter((member) => member.meetingId === where.meetingId);
     }
 
-    if (where.users_id && where.authority instanceof FindOperator) {
+    if (where.userId && where.authority instanceof FindOperator) {
       const authorities = where.authority.value;
 
       return this.mockMembers.filter(
-        (member) => member.users_id === where.users_id && authorities.includes(member.authority),
+        (member) => member.userId === where.userId && authorities.includes(member.authority),
       );
     }
 
-    if (where.users_id) {
-      return this.mockMembers.filter((member) => member.users_id === where.users_id);
+    if (where.userId) {
+      return this.mockMembers.filter((member) => member.userId === where.userId);
     }
 
     return [];
   }
 
-  async delete(criteria: { users_id: number; meeting_id: number }): Promise<DeleteResult> {
+  async delete(criteria: { userId: number; meetingId: number }): Promise<DeleteResult> {
     const initialLength = this.mockMembers.length;
     this.mockMembers = this.mockMembers.filter(
-      (member) => !(member.users_id === criteria.users_id && member.meeting_id === criteria.meeting_id),
+      (member) => !(member.userId === criteria.userId && member.meetingId === criteria.meetingId),
     );
 
     return { raw: {}, affected: initialLength - this.mockMembers.length };
@@ -81,13 +81,13 @@ describe('MemberDao', () => {
   it('saveAllTest', async () => {
     const newMembers = [
       Member.create({
-        usersId: 100,
+        userId: 100,
         meetingId: 100,
         authority: AuthorityEnum.MEMBER,
         applicationMessage: '참가 요청1',
       }),
       Member.create({
-        usersId: 200,
+        userId: 200,
         meetingId: 200,
         authority: AuthorityEnum.MEMBER,
         applicationMessage: '참가 요청2',
@@ -98,13 +98,13 @@ describe('MemberDao', () => {
     const result1 = await memberDao.findByMeetingId(100);
     const result2 = await memberDao.findByMeetingId(200);
 
-    expect(result1[0].users_id).toBe(100);
-    expect(result1[0].meeting_id).toBe(100);
+    expect(result1[0].userId).toBe(100);
+    expect(result1[0].meetingId).toBe(100);
     expect(result1[0].applicationMessage).toBe('참가 요청1');
     expect(result1[0].authority).toBe(AuthorityEnum.MEMBER);
 
-    expect(result2[0].users_id).toBe(200);
-    expect(result1[0].meeting_id).toBe(100);
+    expect(result2[0].userId).toBe(200);
+    expect(result1[0].meetingId).toBe(100);
     expect(result2[0].applicationMessage).toBe('참가 요청2');
     expect(result1[0].authority).toBe(AuthorityEnum.MEMBER);
   });
@@ -115,8 +115,8 @@ describe('MemberDao', () => {
 
     const result = await memberDao.findByUsersAndMeetingId(usersId, meetingId);
 
-    expect(result.users_id).toBe(usersId);
-    expect(result.meeting_id).toBe(meetingId);
+    expect(result.userId).toBe(usersId);
+    expect(result.meetingId).toBe(meetingId);
     expect(result.authority).toBe(AuthorityEnum.MEMBER);
     expect(result.applicationMessage).toBe('저는 이 프로젝트 모임에 꼭 가입하고 싶습니다.');
   });
@@ -126,8 +126,8 @@ describe('MemberDao', () => {
     const usersId = 10;
     const result = await memberDao.findByMeetingId(meetingId);
 
-    expect(result[0].meeting_id).toBe(meetingId);
-    expect(result[0].users_id).toBe(usersId);
+    expect(result[0].meetingId).toBe(meetingId);
+    expect(result[0].userId).toBe(usersId);
     expect(result[0].authority).toBe(AuthorityEnum.OWNER);
   });
 
@@ -137,8 +137,8 @@ describe('MemberDao', () => {
 
     const result = await memberDao.findByUsersAndAuthorities(usersId, [AuthorityEnum.MEMBER]);
 
-    expect(result[0].users_id).toBe(usersId);
-    expect(result[0].meeting_id).toBe(meetingId);
+    expect(result[0].userId).toBe(usersId);
+    expect(result[0].meetingId).toBe(meetingId);
     expect(result[0].authority).toBe(AuthorityEnum.MEMBER);
   });
 
@@ -148,8 +148,8 @@ describe('MemberDao', () => {
 
     const result = await memberDao.findByUserId(usersId);
 
-    expect(result[0].users_id).toBe(usersId);
-    expect(result[0].meeting_id).toBe(meetingId);
+    expect(result[0].userId).toBe(usersId);
+    expect(result[0].meetingId).toBe(meetingId);
   });
 
   it('createTest', async () => {
@@ -163,8 +163,8 @@ describe('MemberDao', () => {
 
     const result = await memberDao.create(createMemberDto);
 
-    expect(result.users_id).toBe(1000);
-    expect(result.meeting_id).toBe(1000);
+    expect(result.userId).toBe(1000);
+    expect(result.meetingId).toBe(1000);
     expect(result.authority).toBe(AuthorityEnum.MEMBER);
     expect(result.applicationMessage).toBe('꼭 뽑아주세요!');
   });
@@ -182,11 +182,11 @@ describe('MemberDao', () => {
     const meetingId = 5;
 
     const beforeDelete = await memberDao.findByUserId(usersId);
-    expect(beforeDelete.find((member) => member.meeting_id === meetingId)).toBeDefined();
+    expect(beforeDelete.find((member) => member.meetingId === meetingId)).toBeDefined();
 
     await memberDao.deleteByUsersAndMeetingId(usersId, meetingId);
 
     const afterDelete = await memberDao.findByUserId(usersId);
-    expect(afterDelete.find((member) => member.meeting_id === meetingId)).toBeUndefined();
+    expect(afterDelete.find((member) => member.meetingId === meetingId)).toBeUndefined();
   });
 });

@@ -41,7 +41,7 @@ export class MeetingServiceImpl implements MeetingService {
   ) {}
 
   @Transactional()
-  public async createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string> {
+  public async createMeeting(req: MeetingCreateRequest, requesterId: number): Promise<string> {
     if (req.keywords.length > 10) {
       throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
     }
@@ -61,30 +61,30 @@ export class MeetingServiceImpl implements MeetingService {
       if (keyword.length > 10) {
         throw new BadRequestException(ErrorMessageType.INVALID_KEYWORD_LENGTH);
       }
-      return Keyword.create(keyword, meeting.meeting_id);
+      return Keyword.create(keyword, meeting.id);
     });
     await this.keywordComponent.saveAll(keywords);
 
     const members: Member[] = req.members.map((member) => {
-      const authority: AuthorityEnumType = member === requester_id ? AuthorityEnum.OWNER : AuthorityEnum.MEMBER;
+      const authority: AuthorityEnumType = member === requesterId ? AuthorityEnum.OWNER : AuthorityEnum.MEMBER;
       return Member.create({
         authority,
-        meetingId: meeting.meeting_id,
-        usersId: member,
+        meetingId: meeting.id,
+        userId: member,
       });
     });
     await this.memberComponent.saveAll(members);
 
     const content = meeting.name + ' 모임이 생성되었습니다.';
-    const userIdList: number[] = members.map((member) => member.users_id);
+    const userIdList: number[] = members.map((member) => member.userId);
     await this.notificationComponent.addNotifications(content, userIdList);
-    return MeetingUtils.transformMeetingIdToString(meeting.meeting_id);
+    return MeetingUtils.transformMeetingIdToString(meeting.id);
   }
 
   @Transactional()
-  public async updateMeeting(request: MeetingUpdateRequest, requester_id: number) {
-    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meeting_id);
-    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+  public async updateMeeting(request: MeetingUpdateRequest, requesterId: number) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
 
     const meeting: Meeting | null = await this.meetingComponent.findByMeetingId(meetingId);
     if (!meeting) {
@@ -95,11 +95,9 @@ export class MeetingServiceImpl implements MeetingService {
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
     const publicYn: boolean = request.publicYn || meeting.publicYn;
-    const canJoin = request.canJoin || meeting.canJoin;
+    const canJoin = request.canJoin !== null ? request.canJoin : meeting.canJoin;
 
-    const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map(
-      (member) => member.users_id,
-    );
+    const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map((member) => member.userId);
 
     const content: string = this.getUpdateMeetingNotificationContent(request, meeting);
     if (content !== '') {
@@ -128,40 +126,36 @@ export class MeetingServiceImpl implements MeetingService {
   }
 
   @Transactional()
-  public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requester_id: number) {
+  public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requesterId: number) {
     const thumbnailPath: string = await this.fileService.uploadThumbnailFile(request.thumbnail);
 
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
-    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
     const meeting: Meeting = await this.meetingComponent.findByMeetingId(meetingId);
 
     meeting.thumbnail = thumbnailPath;
     await this.meetingComponent.update(meeting);
 
     const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
-    const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map(
-      (member) => member.users_id,
-    );
+    const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map((member) => member.userId);
     await this.notificationComponent.addNotifications(content, userIdList);
   }
 
   @Transactional()
-  public async deleteMeeting(meeting_id: string, requester_id: number) {
-    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
-    await this.authorityComponent.validateAuthority(requester_id, meetingId, [AuthorityEnum.OWNER]);
+  public async deleteMeeting(_meetingId: string, requesterId: number) {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
 
     const meeting = await this.meetingComponent.findByMeetingId(meetingId);
     const content = meeting.name + ' 모임이 삭제되었습니다.';
-    const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map(
-      (member) => member.users_id,
-    );
+    const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map((member) => member.userId);
     await this.notificationComponent.addNotifications(content, userIdList);
 
     await this.meetingComponent.delete(meetingId);
   }
 
-  public async getMeeting(meeting_id: string): Promise<MeetingResponse> {
-    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+  public async getMeeting(_meetingId: string): Promise<MeetingResponse> {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
     const meeting: Meeting | null = await this.meetingComponent.findByMeetingId(meetingId);
     if (!meeting) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
 
@@ -177,7 +171,7 @@ export class MeetingServiceImpl implements MeetingService {
     SortUtils.sort<Meeting>(meetings, options);
     const meetingList: MeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
-        meetingId: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
+        meetingId: MeetingUtils.transformMeetingIdToString(meeting.id),
         name: meeting.name,
         explanation: meeting.explanation,
         canJoin: meeting.canJoin,
@@ -206,16 +200,16 @@ export class MeetingServiceImpl implements MeetingService {
   }
 
   private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {
-    const members: Member[] = await this.memberComponent.findByMeetingId(meeting.meeting_id);
-    const usersIds = members.map((member) => member.users_id);
+    const members: Member[] = await this.memberComponent.findByMeetingId(meeting.id);
+    const usersIds = members.map((member) => member.userId);
     const users: Users[] = await this.usersComponent.findByIds(usersIds);
     const userMap = new Map<number, Users>();
     users.forEach((user) => {
-      userMap.set(user.users_id, user);
+      userMap.set(user.id, user);
     });
 
     const memberDtos: MeetingMemberDto[] = members.map((member): MeetingMemberDto => {
-      const user: Users = userMap.get(member.users_id);
+      const user: Users = userMap.get(member.userId);
       return {
         username: user.username,
         authority: member.authority,

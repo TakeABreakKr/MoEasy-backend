@@ -52,10 +52,10 @@ export class HomeServiceImpl implements HomeService {
     return Promise.all(
       meetings.map(async (meeting) => {
         return {
-          id: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
+          id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
           explanation: meeting.explanation,
-          memberCount: await this.memberComponent.getMemberCount(meeting.meeting_id),
+          memberCount: await this.memberComponent.getMemberCount(meeting.id),
           isLikedYn: id ? false : false, // TODO: Implement this after Like system developed
         };
       }),
@@ -66,21 +66,21 @@ export class HomeServiceImpl implements HomeService {
     const activities = await this.activityComponent.getClosingTimeActivities();
     return Promise.all(
       activities.map(async (activity) => {
-        const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meeting_id);
+        const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meetingId);
         const participantThumbnailUrls: string[] = await this.participantComponent.getParticipantThumbnailUrls(
-          activity.activity_id,
+          activity.id,
         );
         const address = activity.address;
         const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
         return {
           region,
           participantThumbnailUrls,
-          id: activity.activity_id,
+          id: activity.id,
           activityName: activity.name,
           isOnlineYn: activity.onlineYn,
           meetingName: meeting.name,
           time: activity.startDate,
-          participantCount: await this.participantComponent.getParticipantCount(activity.activity_id),
+          participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,
         };
       }),
@@ -91,21 +91,21 @@ export class HomeServiceImpl implements HomeService {
     const activities: Activity[] = await this.activityComponent.getUpcomingActivities(id);
     return Promise.all(
       activities.map(async (activity) => {
-        const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meeting_id);
+        const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meetingId);
         const participantThumbnailUrls: string[] = await this.participantComponent.getParticipantThumbnailUrls(
-          activity.activity_id,
+          activity.id,
         );
         const address = activity.address;
         const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
         return {
           participantThumbnailUrls,
-          id: activity.activity_id,
+          id: activity.id,
           activityName: activity.name,
           isOnlineYn: activity.onlineYn,
           meetingName: meeting.name,
           location: region.toString(),
           time: activity.startDate,
-          participantCount: await this.participantComponent.getParticipantCount(activity.activity_id),
+          participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,
         };
       }),
@@ -118,11 +118,11 @@ export class HomeServiceImpl implements HomeService {
     return Promise.all(
       popularMeetings.map(async (meeting) => {
         return {
-          id: MeetingUtils.transformMeetingIdToString(meeting.meeting_id),
+          id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
           thumbnail: meeting.thumbnail,
           explanation: meeting.explanation,
-          memberCount: await this.memberComponent.getMemberCount(meeting.meeting_id),
+          memberCount: await this.memberComponent.getMemberCount(meeting.id),
           isLikedYn: id ? false : false, // TODO: Implement this after Like system developed
         };
       }),

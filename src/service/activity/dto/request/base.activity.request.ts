@@ -6,7 +6,7 @@ import { AddressDto } from '@service/activity/dto/request/activity.address.dto';
 export abstract class ActivityRequest {
   @ApiProperty()
   @IsNotEmpty()
-  meeting_id: string;
+  meetingId: string;
 
   @ApiProperty()
   @IsString()

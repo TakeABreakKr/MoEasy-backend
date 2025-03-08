@@ -4,8 +4,10 @@ import { RegionEnum } from '@enums/region.enum';
 
 @Entity()
 export class Region extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  region_id: number;
+  @PrimaryGeneratedColumn('increment', {
+    name: 'region_id',
+  })
+  id: number;
 
   @Column({
     type: 'enum',

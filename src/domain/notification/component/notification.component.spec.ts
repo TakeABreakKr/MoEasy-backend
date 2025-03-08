@@ -22,7 +22,7 @@ class MockNotificationDao implements NotificationDao {
   async getListByUserId(userId: number): Promise<Notification[]> {
     daoAccessLog.push(MockNotificationDao.getListByUserIdLog);
     return this.notifications.filter((notification: Notification) => {
-      if (notification.users_id === userId) return notification;
+      if (notification.userId === userId) return notification;
     });
   }
 
@@ -38,13 +38,13 @@ class MockNotificationDao implements NotificationDao {
   async getListByNotificationIds(notificationIdList: number[]): Promise<Notification[]> {
     daoAccessLog.push(MockNotificationDao.getListByNotificationIdsLog);
     return this.notifications.filter((notification: Notification) =>
-      notificationIdList.includes(notification.notification_id),
+      notificationIdList.includes(notification.id),
     );
   }
 
   //only for test
   async getListByUserIds(userId: number[]): Promise<Notification[]> {
-    return this.notifications.filter((notification: Notification) => userId.includes(notification.users_id));
+    return this.notifications.filter((notification: Notification) => userId.includes(notification.userId));
   }
 }
 

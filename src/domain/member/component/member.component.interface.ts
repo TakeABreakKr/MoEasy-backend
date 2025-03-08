@@ -7,7 +7,7 @@ export interface MemberComponent {
   findByMeetingId(meetingId: number): Promise<Member[]>;
   findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null>;
   findByUserId(usersId: number): Promise<Member[]>;
-  getMemberCount(meeting_id: number): Promise<number>;
+  getMemberCount(meetingId: number): Promise<number>;
   getMostPopularMeetingIds(): Promise<number[]>;
   findByUsersAndAuthorities(usersId: number, authority: AuthorityEnumType[]): Promise<Member[]>;
   create(createMemberDto: CreateMemberDto): Promise<Member>;

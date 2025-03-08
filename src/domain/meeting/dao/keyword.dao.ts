@@ -10,10 +10,9 @@ export class KeywordDaoImpl implements KeywordDao {
   constructor(@InjectRepository(Keyword) private keywordRepository: Repository<Keyword>) {}
 
   async countByMeetingId(meetingId: number): Promise<number> {
-    const kewordsCount = await this.keywordRepository.count({
-      where: { meeting: { meeting_id: meetingId } },
+    return this.keywordRepository.count({
+      where: { meetingId },
     });
-    return kewordsCount;
   }
 
   async saveAll(keywords: Keyword[]): Promise<void> {

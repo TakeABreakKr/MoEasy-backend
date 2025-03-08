@@ -95,7 +95,7 @@ export class AuthService {
 
   private createTokens(user: Users): TokenDto {
     const payload: AuthUser = {
-      id: user.users_id,
+      id: user.id,
       name: user.username,
       issueDate: Date.now(),
     };

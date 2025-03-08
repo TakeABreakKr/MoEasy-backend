@@ -35,7 +35,7 @@ export class ParticipantComponentImpl implements ParticipantComponent {
     return this.participantDao.deleteAll(userIds, activityId);
   }
 
-  public async getParticipantThumbnailUrls(activity_id: number): Promise<string[]> {
-    return this.participantDao.getParticipantThumbnailUrls(activity_id);
+  public async getParticipantThumbnailUrls(activityId: number): Promise<string[]> {
+    return this.participantDao.getParticipantThumbnailUrls(activityId);
   }
 }

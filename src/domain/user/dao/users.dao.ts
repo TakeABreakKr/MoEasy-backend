@@ -10,11 +10,11 @@ export class UsersDaoImpl implements UsersDao {
   constructor(@InjectRepository(Users) private usersRepository: Repository<Users>) {}
 
   public async findById(id: number): Promise<Users | null> {
-    return this.usersRepository.findOneBy({ users_id: id });
+    return this.usersRepository.findOneBy({ id });
   }
 
   public async findByIds(usersIds: number[]): Promise<Users[]> {
-    return this.usersRepository.findBy({ users_id: In(usersIds) });
+    return this.usersRepository.findBy({ id: In(usersIds) });
   }
 
   public async findByDiscordId(discord_id: string): Promise<Users | null> {
