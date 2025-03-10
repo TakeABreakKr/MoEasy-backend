@@ -36,8 +36,8 @@ class MockUsersDao implements UsersDao {
     return user || null;
   }
 
-  async findByIds(usersIds: number[]): Promise<Users[]> {
-    return this.mockUsers.filter((user) => usersIds.includes(user.id));
+  async findByIds(userIds: number[]): Promise<Users[]> {
+    return this.mockUsers.filter((user) => userIds.includes(user.id));
   }
 
   async findByDiscordId(discord_id: string): Promise<Users | null> {
@@ -110,9 +110,9 @@ describe('UsersComponent', () => {
   });
 
   it('findByIdTest', async () => {
-    const usersId = 30;
+    const userId = 30;
 
-    const user = await usersComponent.findById(usersId);
+    const user = await usersComponent.findById(userId);
 
     expect(user.id).toBe(30);
     expect(user.discord_id).toBe('discordIdOne');
@@ -122,9 +122,9 @@ describe('UsersComponent', () => {
   });
 
   it('findByIdsTest', async () => {
-    const usersIds = [30, 50];
+    const userIds = [30, 50];
 
-    const users = await usersComponent.findByIds(usersIds);
+    const users = await usersComponent.findByIds(userIds);
 
     expect(users[0].id).toBe(30);
     expect(users[0].discord_id).toBe('discordIdOne');

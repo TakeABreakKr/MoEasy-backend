@@ -77,11 +77,11 @@ describe('UsersDao', () => {
   });
 
   it('findByIdTest', async () => {
-    const usersId = 30;
+    const userId = 30;
 
-    const result = await usersDao.findById(usersId);
+    const result = await usersDao.findById(userId);
 
-    expect(result.id).toBe(usersId);
+    expect(result.id).toBe(userId);
     expect(result.discord_id).toBe('discordIdOne');
     expect(result.username).toBe('kimmoiji');
     expect(result.avatar).toBe('avatar1');
@@ -89,9 +89,9 @@ describe('UsersDao', () => {
   });
 
   it('findByIdsTest', async () => {
-    const usersIds = [30, 50];
+    const userIds = [30, 50];
 
-    const result = await usersDao.findByIds(usersIds);
+    const result = await usersDao.findByIds(userIds);
 
     expect(result[0].id).toBe(30);
     expect(result[0].discord_id).toBe('discordIdOne');

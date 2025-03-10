@@ -163,7 +163,7 @@ export class MeetingServiceImpl implements MeetingService {
   }
 
   public async getMeetingList(
-    usersId?: number,
+    userId?: number,
     authorities?: AuthorityEnumType[],
     options?: OrderingOptionEnumType,
   ): Promise<MeetingListResponse> {
@@ -178,7 +178,7 @@ export class MeetingServiceImpl implements MeetingService {
       };
     });
 
-    if (!usersId) {
+    if (!userId) {
       return {
         meetingList,
       };
@@ -186,7 +186,7 @@ export class MeetingServiceImpl implements MeetingService {
 
     for (const meeting of meetingList) {
       const member: Member = await this.memberComponent.findByUsersAndMeetingId(
-        usersId,
+        userId,
         MeetingUtils.transformMeetingIdToInteger(meeting.meetingId),
       );
       meeting.authority = member.authority;
@@ -201,8 +201,8 @@ export class MeetingServiceImpl implements MeetingService {
 
   private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {
     const members: Member[] = await this.memberComponent.findByMeetingId(meeting.id);
-    const usersIds = members.map((member) => member.userId);
-    const users: Users[] = await this.usersComponent.findByIds(usersIds);
+    const userIds = members.map((member) => member.userId);
+    const users: Users[] = await this.usersComponent.findByIds(userIds);
     const userMap = new Map<number, Users>();
     users.forEach((user) => {
       userMap.set(user.id, user);

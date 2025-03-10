@@ -30,9 +30,9 @@ class MockMemberDao implements MemberDao {
     return Member.create(dto);
   }
 
-  async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
     const member: Member = this.mockMember.find(
-      (member: Member) => member.userId === usersId && member.meetingId === meetingId,
+      (member: Member) => member.userId === userId && member.meetingId === meetingId,
     );
     return member ? member : null;
   }

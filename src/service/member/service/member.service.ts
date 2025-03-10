@@ -89,7 +89,7 @@ export class MemberServiceImpl implements MemberService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
 
-    const member = await this.memberComponent.findByUsersAndMeetingId(req.usersId, meetingId);
+    const member = await this.memberComponent.findByUsersAndMeetingId(req.userId, meetingId);
     if (member.authority === AuthorityEnum.MEMBER && req.isManager) {
       await this.memberComponent.updateAuthority(member, AuthorityEnum.MANAGER);
     }

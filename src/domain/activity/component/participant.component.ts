@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
+import {
+  HomeActivityParticipantDto,
+  ParticipantComponent,
+} from '@domain/activity/component/participant.component.interface';
 import { Participant } from '../entity/participant.entity';
 import { ParticipantDao } from '@domain/activity/dao/participant.dao';
 
@@ -35,7 +38,7 @@ export class ParticipantComponentImpl implements ParticipantComponent {
     return this.participantDao.deleteAll(userIds, activityId);
   }
 
-  public async getParticipantThumbnailUrls(activityId: number): Promise<string[]> {
-    return this.participantDao.getParticipantThumbnailUrls(activityId);
+  public async getHomeActivityParticipants(activityId: number): Promise<HomeActivityParticipantDto[]> {
+    return this.participantDao.getHomeActivityParticipants(activityId);
   }
 }

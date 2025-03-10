@@ -401,7 +401,7 @@ describe('MemberService', () => {
     it('updateAuthority - SUCCESS', async () => {
       const req = {
         meetingId: '50',
-        usersId: 200,
+        userId: 200,
         isManager: true,
       };
 

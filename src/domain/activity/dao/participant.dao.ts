@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Participant } from '../entity/participant.entity';
 import { Users } from '@domain/user/entity/users.entity';
+import { HomeActivityParticipantDto } from '@domain/activity/component/participant.component.interface';
+import { Member } from '@domain/member/entity/member.entity';
+import { Activity } from '@domain/activity/entity/activity.entity';
 
 @Injectable()
 export class ParticipantDao {
@@ -39,14 +42,16 @@ export class ParticipantDao {
     });
   }
 
-  async getParticipantThumbnailUrls(activityId: number): Promise<string[]> {
+  async getHomeActivityParticipants(activityId: number): Promise<HomeActivityParticipantDto[]> {
     return this.participantRepository
       .createQueryBuilder()
-      .select('user.thumbnail')
+      .select('user.thumbnail', 'thumbnail')
+      .addSelect('member.authority', 'authority')
       .from(Participant, 'participant')
       .leftJoin(Users, 'user', 'user.users_id = participant.users_id')
+      .leftJoin(Activity, 'activity', 'activity.activity_id = participant.activity_id')
+      .leftJoin(Member, 'member', 'member.users_id = user.users_id and member.meeting_id = activity.meeting_id')
       .where('participant.activity_id = :activityId', { activityId })
-      .getRawMany()
-      .then((results) => results.filter((result) => result.thumbnail !== null).map((result) => result.thumbnail));
+      .getRawMany<HomeActivityParticipantDto>();
   }
 }

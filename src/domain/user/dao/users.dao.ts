@@ -13,8 +13,8 @@ export class UsersDaoImpl implements UsersDao {
     return this.usersRepository.findOneBy({ id });
   }
 
-  public async findByIds(usersIds: number[]): Promise<Users[]> {
-    return this.usersRepository.findBy({ id: In(usersIds) });
+  public async findByIds(userIds: number[]): Promise<Users[]> {
+    return this.usersRepository.findBy({ id: In(userIds) });
   }
 
   public async findByDiscordId(discord_id: string): Promise<Users | null> {

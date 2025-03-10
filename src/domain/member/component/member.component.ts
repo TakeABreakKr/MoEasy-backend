@@ -17,12 +17,12 @@ export class MemberComponentImpl implements MemberComponent {
     return this.memberDao.findByMeetingId(meetingId);
   }
 
-  async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
-    return this.memberDao.findByUsersAndMeetingId(usersId, meetingId);
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
+    return this.memberDao.findByUsersAndMeetingId(userId, meetingId);
   }
 
-  async findByUserId(usersId: number): Promise<Member[]> {
-    return this.memberDao.findByUserId(usersId);
+  async findByUserId(userId: number): Promise<Member[]> {
+    return this.memberDao.findByUserId(userId);
   }
 
   async getMostPopularMeetingIds(): Promise<number[]> {
@@ -34,8 +34,8 @@ export class MemberComponentImpl implements MemberComponent {
     return this.memberDao.getMemberCountByMeetingId(meetingId);
   }
 
-  async findByUsersAndAuthorities(usersId: number, authority: AuthorityEnumType[]): Promise<Member[]> {
-    return this.memberDao.findByUsersAndAuthorities(usersId, authority);
+  async findByUsersAndAuthorities(userId: number, authority: AuthorityEnumType[]): Promise<Member[]> {
+    return this.memberDao.findByUsersAndAuthorities(userId, authority);
   }
 
   async create(createMemberDto: CreateMemberDto): Promise<Member> {
@@ -46,7 +46,7 @@ export class MemberComponentImpl implements MemberComponent {
     await this.memberDao.updateAuthority(member, authority);
   }
 
-  async deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void> {
-    await this.memberDao.deleteByUsersAndMeetingId(usersId, meetingId);
+  async deleteByUsersAndMeetingId(userId: number, meetingId: number): Promise<void> {
+    await this.memberDao.deleteByUsersAndMeetingId(userId, meetingId);
   }
 }

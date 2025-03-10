@@ -20,6 +20,7 @@ import { HomeUpcomingActivityDto } from '@service/home/dto/response/home.upcomin
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { getRegionEnum, RegionEnumType } from '@enums/region.enum';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
+import { HomeActivityParticipantDto } from '@service/home/dto/response/home.activity.participant.dto';
 import { Activity } from '@domain/activity/entity/activity.entity';
 
 @Injectable()
@@ -54,6 +55,7 @@ export class HomeServiceImpl implements HomeService {
         return {
           id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
+          thumbnail: meeting.thumbnail,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
           isLikedYn: id ? false : false, // TODO: Implement this after Like system developed
@@ -67,18 +69,19 @@ export class HomeServiceImpl implements HomeService {
     return Promise.all(
       activities.map(async (activity) => {
         const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meetingId);
-        const participantThumbnailUrls: string[] = await this.participantComponent.getParticipantThumbnailUrls(
+        const participants: HomeActivityParticipantDto[] = await this.participantComponent.getHomeActivityParticipants(
           activity.id,
         );
         const address = activity.address;
         const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
         return {
           region,
-          participantThumbnailUrls,
+          participants,
           id: activity.id,
           activityName: activity.name,
           isOnlineYn: activity.onlineYn,
           meetingName: meeting.name,
+          thumbnail: meeting.thumbnail,
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,
@@ -92,18 +95,19 @@ export class HomeServiceImpl implements HomeService {
     return Promise.all(
       activities.map(async (activity) => {
         const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meetingId);
-        const participantThumbnailUrls: string[] = await this.participantComponent.getParticipantThumbnailUrls(
+        const participants: HomeActivityParticipantDto[] = await this.participantComponent.getHomeActivityParticipants(
           activity.id,
         );
         const address = activity.address;
         const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
         return {
-          participantThumbnailUrls,
+          participants,
           id: activity.id,
           activityName: activity.name,
           isOnlineYn: activity.onlineYn,
           meetingName: meeting.name,
-          location: region.toString(),
+          thumbnail: meeting.thumbnail,
+          region: region.toString(),
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,

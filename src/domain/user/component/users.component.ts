@@ -20,7 +20,7 @@ export class UsersComponentImpl implements UsersComponent {
     return this.usersDao.findById(id);
   }
 
-  public async findByIds(usersIds: number[]): Promise<Users[]> {
-    return this.usersDao.findByIds(usersIds);
+  public async findByIds(userIds: number[]): Promise<Users[]> {
+    return this.usersDao.findByIds(userIds);
   }
 }

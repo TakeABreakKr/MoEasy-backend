@@ -1,4 +1,10 @@
 import { Participant } from '@domain/activity/entity/participant.entity';
+import { AuthorityEnumType } from '@enums/authority.enum';
+
+export interface HomeActivityParticipantDto {
+  authority: AuthorityEnumType;
+  thumbnail: string;
+}
 
 export interface ParticipantComponent {
   saveAll(participants: Participant[]): Promise<void>;
@@ -8,5 +14,5 @@ export interface ParticipantComponent {
   getParticipantCount(activityId: number): Promise<number>;
   delete(userId: number, activityId: number): Promise<void>;
   deleteAll(userIds: number[], activityId: number): Promise<void>;
-  getParticipantThumbnailUrls(activityId: number): Promise<string[]>;
+  getHomeActivityParticipants(activityId: number): Promise<HomeActivityParticipantDto[]>;
 }

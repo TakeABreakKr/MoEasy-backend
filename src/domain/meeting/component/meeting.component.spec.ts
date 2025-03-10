@@ -45,9 +45,9 @@ class MockMeetingDao implements MeetingDao {
     return meeting;
   }
 
-  async update(meeting: Meeting): Promise<void> {
-    const index = this.mockMeetings.findIndex((meeting) => meeting.id === meeting.id);
-    this.mockMeetings[index] = meeting;
+  async update(_meeting: Meeting): Promise<void> {
+    const index = this.mockMeetings.findIndex((meeting) => meeting.id === _meeting.id);
+    this.mockMeetings[index] = _meeting;
   }
 
   async findAll(): Promise<Meeting[]> {

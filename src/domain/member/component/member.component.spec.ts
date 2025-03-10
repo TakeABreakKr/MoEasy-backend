@@ -34,12 +34,12 @@ class MockMemberDao implements MemberDao {
     return this.mockMembers.filter((member) => member.meetingId === meetingId);
   }
 
-  async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
-    return this.mockMembers.find((member) => member.userId === usersId && member.meetingId === meetingId) || null;
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
+    return this.mockMembers.find((member) => member.userId === userId && member.meetingId === meetingId) || null;
   }
 
-  async findByUserId(usersId: number): Promise<Member[]> {
-    return this.mockMembers.filter((member) => member.userId === usersId);
+  async findByUserId(userId: number): Promise<Member[]> {
+    return this.mockMembers.filter((member) => member.userId === userId);
   }
 
   async findByUsersAndAuthorities(userId: number, authority: AuthorityEnumType[]): Promise<Member[]> {
@@ -59,8 +59,8 @@ class MockMemberDao implements MemberDao {
     this.mockMembers[index].updateAuthority(authority);
   }
 
-  async deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void> {
-    this.mockMembers = this.mockMembers.filter((member) => member.userId !== usersId && member.meetingId !== meetingId);
+  async deleteByUsersAndMeetingId(userId: number, meetingId: number): Promise<void> {
+    this.mockMembers = this.mockMembers.filter((member) => member.userId !== userId && member.meetingId !== meetingId);
   }
 
   async getMemberCountByMeetingId(meetingId: number): Promise<number> {
@@ -130,22 +130,22 @@ describe('KeywordComponent', () => {
 
   it('findByUsersAndMeetingIdTest', async () => {
     const meetingId = 400;
-    const usersId = 400;
+    const userId = 400;
 
-    const result = await memberComponent.findByUsersAndMeetingId(meetingId, usersId);
+    const result = await memberComponent.findByUsersAndMeetingId(meetingId, userId);
 
-    expect(result.userId).toBe(usersId);
+    expect(result.userId).toBe(userId);
     expect(result.meetingId).toBe(meetingId);
     expect(result.authority).toBe(AuthorityEnum.MEMBER);
   });
 
   it('findByUserIdTest', async () => {
     const meetingId = 300;
-    const usersId = 300;
+    const userId = 300;
 
     const result = await memberComponent.findByUserId(meetingId);
 
-    expect(result[0].userId).toBe(usersId);
+    expect(result[0].userId).toBe(userId);
     expect(result[0].meetingId).toBe(meetingId);
     expect(result[0].authority).toBe(AuthorityEnum.OWNER);
   });
@@ -162,9 +162,9 @@ describe('KeywordComponent', () => {
   });
 
   it('createTest', async () => {
-    const createMemberDto = {
+    const createMemberDto: CreateMemberDto = {
       meetingId: 600,
-      usersId: 600,
+      userId: 600,
       authority: AuthorityEnum.MEMBER,
     };
 
@@ -177,28 +177,28 @@ describe('KeywordComponent', () => {
 
   it('updateAuthorityTest', async () => {
     const meetingId = 400;
-    const usersId = 400;
+    const userId = 400;
 
-    const member = await memberComponent.findByUsersAndMeetingId(usersId, meetingId);
+    const member = await memberComponent.findByUsersAndMeetingId(userId, meetingId);
 
     await memberComponent.updateAuthority(member, AuthorityEnum.MANAGER);
-    const result = await memberComponent.findByUsersAndMeetingId(usersId, meetingId);
+    const result = await memberComponent.findByUsersAndMeetingId(userId, meetingId);
 
-    expect(result.userId).toBe(usersId);
+    expect(result.userId).toBe(userId);
     expect(result.meetingId).toBe(meetingId);
     expect(result.authority).toBe(AuthorityEnum.MANAGER);
   });
 
   it('deleteByUsersAndMeetingIdTest', async () => {
-    const usersId = 400;
+    const userId = 400;
     const meetingId = 400;
 
-    const beforeDelete = await memberComponent.findByUserId(usersId);
+    const beforeDelete = await memberComponent.findByUserId(userId);
     expect(beforeDelete.find((member) => member.meetingId === meetingId)).toBeDefined();
 
-    await memberComponent.deleteByUsersAndMeetingId(usersId, meetingId);
+    await memberComponent.deleteByUsersAndMeetingId(userId, meetingId);
 
-    const afterDelete = await memberComponent.findByUserId(usersId);
+    const afterDelete = await memberComponent.findByUserId(userId);
     expect(afterDelete.find((member) => member.meetingId === meetingId)).toBeUndefined();
   });
 });

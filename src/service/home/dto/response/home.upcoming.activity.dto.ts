@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { HomeActivityParticipantDto } from '@service/home/dto/response/home.activity.participant.dto';
 
 export class HomeUpcomingActivityDto {
   @ApiProperty()
@@ -8,13 +9,16 @@ export class HomeUpcomingActivityDto {
   activityName: string;
 
   @ApiProperty()
+  thumbnail: string;
+
+  @ApiProperty()
   isOnlineYn: boolean;
 
   @ApiProperty()
   meetingName: string;
 
   @ApiProperty()
-  location: string;
+  region: string;
 
   @ApiProperty()
   time: Date;
@@ -25,6 +29,9 @@ export class HomeUpcomingActivityDto {
   @ApiProperty()
   participantLimit: number;
 
-  @ApiProperty()
-  participantThumbnailUrls: string[];
+  @ApiProperty({
+    type: HomeActivityParticipantDto,
+    isArray: true,
+  })
+  participants: HomeActivityParticipantDto[];
 }

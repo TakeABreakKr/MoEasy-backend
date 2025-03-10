@@ -14,5 +14,8 @@ export class HomeNewMeetingDto {
   memberCount: number;
 
   @ApiProperty()
+  thumbnail: string;
+
+  @ApiProperty()
   isLikedYn: boolean = false;
 }
