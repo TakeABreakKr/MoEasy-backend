@@ -9,7 +9,7 @@ export class NotificationDaoImpl implements NotificationDao {
   constructor(@InjectRepository(Notification) private notificationRepository: Repository<Notification>) {}
 
   async getListByUserId(userId: number): Promise<Notification[]> {
-    const notificationList = await this.notificationRepository.findBy({ users_id: userId });
+    const notificationList = await this.notificationRepository.findBy({ userId });
 
     return notificationList || [];
   }
@@ -23,6 +23,6 @@ export class NotificationDaoImpl implements NotificationDao {
   }
 
   async getListByNotificationIds(notificationIdList: number[]) {
-    return this.notificationRepository.findBy({ notification_id: In(notificationIdList) });
+    return this.notificationRepository.findBy({ id: In(notificationIdList) });
   }
 }

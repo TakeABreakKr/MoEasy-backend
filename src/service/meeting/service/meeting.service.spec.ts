@@ -16,6 +16,8 @@ import { MemberComponent } from '@root/domain/member/component/member.component.
 import { MeetingComponent } from '@root/domain/meeting/component/meeting.component.interface';
 import { KeywordComponent } from '@root/domain/meeting/component/keyword.component.interface';
 import { CreateMemberDto } from '@root/domain/member/dto/create.member.dto';
+import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
+import { MeetingUpdateRequest } from '@service/meeting/dto/request/meeting.update.request';
 
 const componentAccessLog: string[] = [];
 
@@ -26,38 +28,41 @@ class MockMeetingComponent implements MeetingComponent {
 
   private mockMeetings: Meeting[] = [
     Meeting.createForTest({
-      meeting_id: 80,
+      meetingId: 80,
       name: '모임 이름1',
       explanation: '모임 설명1',
       limit: 10,
       thumbnail: 'testThumbnail1.jpg',
       canJoin: false,
+      category: MeetingCategoryEnum.CAREER,
+      publicYn: true,
     }),
     Meeting.createForTest({
-      meeting_id: 200,
+      meetingId: 200,
       name: '모임 이름2',
       explanation: '모임 설명2',
       limit: 10,
       thumbnail: 'testThumbnail2.jpg',
       canJoin: true,
+      category: MeetingCategoryEnum.CAREER,
+      publicYn: true,
     }),
   ];
 
   async findByMeetingId(id: number): Promise<Meeting | null> {
     componentAccessLog.push(MockMeetingComponent.findByMeetingIdLog);
 
-    const meeting = this.mockMeetings.find((meeting) => meeting.meeting_id === id);
-    return meeting;
+    return this.mockMeetings.find((meeting) => meeting.id === id);
   }
 
   async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
-    return this.mockMeetings.filter((meeting) => ids.includes(meeting.meeting_id));
+    return this.mockMeetings.filter((meeting) => ids.includes(meeting.id));
   }
 
   async create(createMeetingDto: CreateMeetingDto): Promise<Meeting> {
     componentAccessLog.push(MockMeetingComponent.createLog);
 
-    const meeting = Meeting.createForTest({ ...createMeetingDto, meeting_id: 3 });
+    const meeting = Meeting.createForTest({ ...createMeetingDto, meetingId: 3 });
 
     this.mockMeetings.push(meeting);
     return meeting;
@@ -72,7 +77,11 @@ class MockMeetingComponent implements MeetingComponent {
   }
 
   async delete(id: number): Promise<void> {
-    this.mockMeetings = this.mockMeetings.filter((meeting) => meeting.meeting_id !== id);
+    this.mockMeetings = this.mockMeetings.filter((meeting) => meeting.id !== id);
+  }
+
+  async getNewMeetings(): Promise<Meeting[]> {
+    return this.mockMeetings;
   }
 }
 
@@ -85,37 +94,37 @@ class MockMemberComponent implements MemberComponent {
   private mockMembers: Member[] = [
     Member.create({
       meetingId: 80,
-      usersId: 200,
+      userId: 200,
       authority: AuthorityEnum.MANAGER,
       applicationMessage: '꼭 가입하고 싶습니다.',
     }),
     Member.create({
       meetingId: 200,
-      usersId: 200,
+      userId: 200,
       authority: AuthorityEnum.MANAGER,
       applicationMessage: '이 스터디에 꼭 들어가고 싶어요.',
     }),
   ];
 
-  async findByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<Member | null> {
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
     componentAccessLog.push(MockMemberComponent.findByUsersAndMeetingIdLog);
 
-    const member = this.mockMembers.find((member) => member.users_id === users_id && member.meeting_id === meeting_id);
+    const member = this.mockMembers.find((member) => member.userId === userId && member.meetingId === meetingId);
     return member || null;
   }
 
-  async findByUsersAndAuthorities(users_id: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
-    return this.mockMembers.filter((member) => member.users_id === users_id && authorities.includes(member.authority));
+  async findByUsersAndAuthorities(userId: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
+    return this.mockMembers.filter((member) => member.userId === userId && authorities.includes(member.authority));
   }
 
-  async findByUserId(users_id: number): Promise<Member[]> {
-    return this.mockMembers.filter((member) => member.users_id === users_id);
+  async findByUserId(userId: number): Promise<Member[]> {
+    return this.mockMembers.filter((member) => member.userId === userId);
   }
 
-  async findByMeetingId(meeting_id: number): Promise<Member[]> {
+  async findByMeetingId(meetingId: number): Promise<Member[]> {
     componentAccessLog.push(MockMemberComponent.findByMeetingIdLog);
 
-    return this.mockMembers.filter((member) => member.meeting_id === meeting_id);
+    return this.mockMembers.filter((member) => member.meetingId === meetingId);
   }
 
   async create(createMemberDto: CreateMemberDto): Promise<Member> {
@@ -128,9 +137,9 @@ class MockMemberComponent implements MemberComponent {
     member.authority = authority;
   }
 
-  async deleteByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<void> {
+  async deleteByUsersAndMeetingId(userId: number, meetingId: number): Promise<void> {
     this.mockMembers = this.mockMembers.filter(
-      (member) => !(member.users_id === users_id && member.meeting_id === meeting_id),
+      (member) => !(member.userId === userId && member.meetingId === meetingId),
     );
   }
 
@@ -140,6 +149,14 @@ class MockMemberComponent implements MemberComponent {
     members.forEach((member) => {
       this.mockMembers.push(member);
     });
+  }
+
+  async getMemberCount(meetingId: number): Promise<number> {
+    return this.mockMembers.filter((member) => member.meetingId === meetingId).length;
+  }
+
+  async getMostPopularMeetingIds(): Promise<number[]> {
+    return this.mockMembers.map((member) => member.meetingId);
   }
 }
 
@@ -191,21 +208,23 @@ class MockUsersComponent implements UsersComponent {
 
   private mockUsers: Users[] = [
     Users.createForTest({
-      users_id: 200,
+      id: 200,
       discord_id: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
+      thumbnail: '',
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
-      users_id: 512,
+      id: 512,
       discord_id: 'discordIdTwo',
       username: 'parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
+      thumbnail: '',
       settings: { allowNotificationYn: true },
     }),
   ];
@@ -213,15 +232,14 @@ class MockUsersComponent implements UsersComponent {
   async findById(user_id: number): Promise<Users | null> {
     componentAccessLog.push(MockUsersComponent.findByIdLog);
 
-    const user = this.mockUsers.find((user) => user.users_id === user_id);
+    const user = this.mockUsers.find((user) => user.id === user_id);
     return user || null;
   }
 
   async findByIds(): Promise<Users[]> {
     componentAccessLog.push(MockUsersComponent.findByIdsLog);
 
-    const users = this.mockUsers;
-    return users;
+    return this.mockUsers;
   }
 
   async createUsers(): Promise<Users> {
@@ -283,6 +301,8 @@ describe('MeetingService', () => {
         canJoin: true,
         keywords: ['정상적인키워드1', '정상적인키워드2'],
         members: [1, 2, 3],
+        category: MeetingCategoryEnum.CAREER,
+        publicYn: true,
       };
       const result = await meetingService.createMeeting(req, 1);
 
@@ -318,6 +338,8 @@ describe('MeetingService', () => {
           '키워드12',
         ],
         members: [1, 2, 3],
+        category: MeetingCategoryEnum.CAREER,
+        publicYn: true,
       };
 
       await expect(meetingService.createMeeting(req, 1)).rejects.toThrow(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
@@ -332,6 +354,8 @@ describe('MeetingService', () => {
         canJoin: true,
         keywords: ['이키워드는열글자를넘어가는키워드입니다1', '이키워드는열글자를넘어가는키워드입니다2'],
         members: [1, 2, 3],
+        category: MeetingCategoryEnum.CAREER,
+        publicYn: true,
       };
 
       await expect(meetingService.createMeeting(req, 1)).rejects.toThrow(ErrorMessageType.INVALID_KEYWORD_LENGTH);
@@ -340,39 +364,42 @@ describe('MeetingService', () => {
 
   describe('updateMeetingTest', () => {
     it('updateMeetingTest - SUCCESS', async () => {
-      const req = {
-        meeting_id: 'c8',
+      const req: MeetingUpdateRequest = {
+        meetingId: 'c8',
         name: '수정된 모임이름',
         explanation: '수정된 모임 설명',
         limit: 3,
         canJoin: false,
+        publicYn: true,
       };
 
       await meetingService.updateMeeting(req, 1);
 
       const updatedMeeting = await meetingComponent.findByMeetingId(200);
-      expect(updatedMeeting.meeting_id).toBe(200);
+      expect(updatedMeeting.id).toBe(200);
       expect(updatedMeeting.name).toBe('수정된 모임이름');
       expect(updatedMeeting.explanation).toBe('수정된 모임 설명');
       expect(updatedMeeting.limit).toBe(3);
-      expect(updatedMeeting.canJoin).toBe(true);
+      expect(updatedMeeting.canJoin).toBe(false);
 
       expect(componentAccessLog).toEqual([
         MockAuthorityComponent.validateAuthorityLog,
         MockMeetingComponent.findByMeetingIdLog,
         MockMemberComponent.findByMeetingIdLog,
+        MockNotificationComponent.addNotificationsLog,
         MockMeetingComponent.updateLog,
         MockMeetingComponent.findByMeetingIdLog,
       ]);
     });
 
     it('updateMeetingTest - NOT_FOUND_MEETING', async () => {
-      const req = {
-        meeting_id: '999',
+      const req: MeetingUpdateRequest = {
+        meetingId: '999',
         name: '수정된 모임이름',
         explanation: '수정된 모임 설명',
         limit: 10,
         canJoin: true,
+        publicYn: true,
       };
 
       await expect(meetingService.updateMeeting(req, 1)).rejects.toThrow(ErrorMessageType.NOT_FOUND_MEETING);

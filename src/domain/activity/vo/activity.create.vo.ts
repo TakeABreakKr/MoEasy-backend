@@ -12,4 +12,5 @@ export interface ActivityCreateVO {
   onlineYn: boolean;
   address: Address;
   detailAddress: string;
+  participantLimit: number;
 }

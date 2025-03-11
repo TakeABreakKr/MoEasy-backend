@@ -5,7 +5,7 @@ export class ActivityWithdrawRequest {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  meeting_id: string;
+  meetingId: string;
 
   @ApiProperty()
   @IsNotEmpty()

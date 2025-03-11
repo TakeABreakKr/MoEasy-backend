@@ -9,6 +9,7 @@ import { MeetingService } from '@service/meeting/service/meeting.service.interfa
 import { AuthUser } from '@decorator/token.decorator';
 import { AuthorityEnum } from '@enums/authority.enum';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
+import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
 
 class MockMeetingService implements MeetingService {
   public static meetingId: string = 'OOOOOOO1';
@@ -79,6 +80,8 @@ describe('MeetingController', () => {
       limit: 1,
       members: [],
       canJoin: false,
+      category: MeetingCategoryEnum.PET,
+      publicYn: true,
     };
 
     const result = await meetingController.createMeeting(request, user);
@@ -87,11 +90,12 @@ describe('MeetingController', () => {
 
   it('updateMeetingTest', async () => {
     const request: MeetingUpdateRequest = {
-      meeting_id: '',
+      meetingId: '',
       name: '',
       explanation: '',
       limit: 1,
       canJoin: false,
+      publicYn: true,
     };
     const result = await meetingController.updateMeeting(request, user);
     expect(result).toBe(void 0);

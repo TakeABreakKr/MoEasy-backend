@@ -11,21 +11,23 @@ import { DiscordProfileDto } from '../dto/discord.profile.dto';
 class MockUsersRepository extends Repository<Users> {
   private mockUsers: Users[] = [
     Users.createForTest({
-      users_id: 30,
+      id: 30,
       discord_id: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@example.com',
       explanation: 'explanation1',
+      thumbnail: '',
       settings: Settings.create({ allowNotificationYn: false }),
     }),
     Users.createForTest({
-      users_id: 50,
+      id: 50,
       discord_id: 'discordIdTwo',
       username: 'Parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@example.com',
       explanation: 'explanation2',
+      thumbnail: '',
       settings: Settings.create({ allowNotificationYn: false }),
     }),
   ];
@@ -38,9 +40,9 @@ class MockUsersRepository extends Repository<Users> {
   }
 
   async findBy(where: FindOptionsWhere<Users>): Promise<Users[]> {
-    if (where.users_id instanceof FindOperator && Array.isArray(where.users_id.value)) {
-      const ids = where.users_id.value;
-      return this.mockUsers.filter((users) => ids.includes(users.users_id));
+    if (where.id instanceof FindOperator && Array.isArray(where.id.value)) {
+      const ids = where.id.value;
+      return this.mockUsers.filter((users) => ids.includes(users.id));
     }
 
     return [];
@@ -48,8 +50,8 @@ class MockUsersRepository extends Repository<Users> {
 
   async findOneBy(where: FindOptionsWhere<Users>): Promise<Users | null> {
     const users = this.mockUsers.find((users) => {
-      if (typeof where.users_id === 'number' || typeof where.users_id === 'string') {
-        return users.users_id === where.users_id;
+      if (typeof where.id === 'number' || typeof where.id === 'string') {
+        return users.id === where.id;
       }
       if (typeof where.discord_id === 'string') {
         return users.discord_id === where.discord_id;
@@ -75,11 +77,11 @@ describe('UsersDao', () => {
   });
 
   it('findByIdTest', async () => {
-    const usersId = 30;
+    const userId = 30;
 
-    const result = await usersDao.findById(usersId);
+    const result = await usersDao.findById(userId);
 
-    expect(result.users_id).toBe(usersId);
+    expect(result.id).toBe(userId);
     expect(result.discord_id).toBe('discordIdOne');
     expect(result.username).toBe('kimmoiji');
     expect(result.avatar).toBe('avatar1');
@@ -87,17 +89,17 @@ describe('UsersDao', () => {
   });
 
   it('findByIdsTest', async () => {
-    const usersIds = [30, 50];
+    const userIds = [30, 50];
 
-    const result = await usersDao.findByIds(usersIds);
+    const result = await usersDao.findByIds(userIds);
 
-    expect(result[0].users_id).toBe(30);
+    expect(result[0].id).toBe(30);
     expect(result[0].discord_id).toBe('discordIdOne');
     expect(result[0].username).toBe('kimmoiji');
     expect(result[0].avatar).toBe('avatar1');
     expect(result[0].email).toBe('kimmoiji@example.com');
 
-    expect(result[1].users_id).toBe(50);
+    expect(result[1].id).toBe(50);
     expect(result[1].discord_id).toBe('discordIdTwo');
     expect(result[1].username).toBe('Parkmoiji');
     expect(result[1].avatar).toBe('avatar2');
@@ -107,7 +109,7 @@ describe('UsersDao', () => {
   it('findByDiscordIdTest', async () => {
     const result = await usersDao.findByDiscordId('discordIdOne');
 
-    expect(result.users_id).toBe(30);
+    expect(result.id).toBe(30);
     expect(result.discord_id).toBe('discordIdOne');
     expect(result.username).toBe('kimmoiji');
     expect(result.avatar).toBe('avatar1');

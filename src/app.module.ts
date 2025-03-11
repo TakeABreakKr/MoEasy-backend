@@ -9,7 +9,6 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
 import configuration from '@config/configuration';
 import { DiscordConfig } from '@config/discord.config';
 import { DBConfig } from '@config/db.config';
-import { DiscordModule } from '@domain/discord/discord.module';
 import { DomainModule } from '@domain/domain.module';
 import { FileModule } from '@file/file.module';
 import { ServiceModule } from '@service/service.module';
@@ -44,7 +43,6 @@ import AuthGuard from '@root/middleware/auth.guard';
       inject: [ConfigService],
       useClass: DiscordConfig,
     }),
-    DiscordModule,
     DomainModule,
     ServiceModule,
     FileModule.forRoot({

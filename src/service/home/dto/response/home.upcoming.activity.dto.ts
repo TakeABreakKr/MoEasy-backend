@@ -1,24 +1,41 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
+import { RegionEnum, RegionEnumType } from '@enums/region.enum';
 
 export class HomeUpcomingActivityDto {
   @ApiProperty()
-  name: string;
+  id: number;
+
+  @ApiProperty()
+  activityName: string;
+
+  @ApiProperty()
+  thumbnail: string;
 
   @ApiProperty()
   isOnlineYn: boolean;
 
   @ApiProperty()
-  description: string;
+  meetingName: string;
 
-  @ApiProperty()
-  location: string;
+  @ApiProperty({
+    enum: RegionEnum,
+    example: RegionEnum.SEOCHO,
+  })
+  region: RegionEnumType;
 
   @ApiProperty()
   time: Date;
 
   @ApiProperty()
-  memberCount: number;
+  participantCount: number;
 
   @ApiProperty()
-  isLiked: boolean;
+  participantLimit: number;
+
+  @ApiProperty({
+    type: ActivityParticipantDto,
+    isArray: true,
+  })
+  participants: ActivityParticipantDto[];
 }

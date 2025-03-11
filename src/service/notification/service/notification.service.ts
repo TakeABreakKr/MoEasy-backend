@@ -17,7 +17,7 @@ export class NotificationServiceImpl implements NotificationService {
     return {
       notificationList: notificationList.map((notification: Notification): NotificationDto => {
         return {
-          id: notification.notification_id,
+          id: notification.id,
           content: notification.content,
         };
       }),
@@ -39,7 +39,7 @@ export class NotificationServiceImpl implements NotificationService {
 
   private validateCheckNotifications(notificationList: Notification[], userId: number) {
     const ownedNotificationCount: number = notificationList.filter((notification) => {
-      return notification.users_id === userId;
+      return notification.userId === userId;
     }).length;
 
     if (ownedNotificationCount !== notificationList.length) {

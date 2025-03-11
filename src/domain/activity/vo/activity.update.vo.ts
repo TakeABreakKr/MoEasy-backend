@@ -11,4 +11,5 @@ export interface ActivityUpdateVO {
   onlineYn: boolean;
   address: Address;
   detailAddress: string;
+  participantLimit: number;
 }

@@ -4,8 +4,10 @@ import { Users } from '@domain/user/entity/users.entity';
 
 @Entity()
 export class Notification extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  notification_id: number;
+  @PrimaryGeneratedColumn('increment', {
+    name: 'notification_id',
+  })
+  id: number;
 
   @Column()
   content: string;
@@ -16,8 +18,10 @@ export class Notification extends BaseEntity {
   })
   checkedYn: boolean;
 
-  @Column()
-  users_id: number;
+  @Column({
+    name: 'users_id',
+  })
+  userId: number;
 
   @ManyToOne(() => Users, (user) => user.notifications)
   @JoinColumn({ name: 'users_id' })
@@ -26,14 +30,14 @@ export class Notification extends BaseEntity {
   static create(content: string, userId: number) {
     const notification = new Notification();
     notification.content = content;
-    notification.users_id = userId;
+    notification.userId = userId;
     return notification;
   }
 
   //only use for test
-  static createForTest(notification_id: number, content: string, userId: number) {
+  static createForTest(notificationId: number, content: string, userId: number) {
     const notification = this.create(content, userId);
-    notification.notification_id = notification_id;
+    notification.id = notificationId;
     notification.checkedYn = false;
     return notification;
   }

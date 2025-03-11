@@ -5,5 +5,5 @@ export interface UsersComponent {
   findByDiscordId(discord_id: string): Promise<Users | null>;
   createUsers(profile: DiscordProfileDto): Promise<Users>;
   findById(id: number): Promise<Users | null>;
-  findByIds(usersIds: number[]): Promise<Users[]>;
+  findByIds(userIds: number[]): Promise<Users[]>;
 }

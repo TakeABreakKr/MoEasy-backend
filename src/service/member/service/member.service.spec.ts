@@ -13,6 +13,7 @@ import { AuthorityComponent } from '@domain/member/component/authority.component
 import { MeetingComponent } from '@root/domain/meeting/component/meeting.component.interface';
 import { MemberComponent } from '@root/domain/member/component/member.component.interface';
 import { Notification } from '@root/domain/notification/entity/notification.entity';
+import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
 
 const componentAccessLog: string[] = [];
 
@@ -21,27 +22,31 @@ class MockMeetingComponent implements MeetingComponent {
 
   private mockMeetings: Meeting[] = [
     Meeting.createForTest({
-      meeting_id: 80,
+      meetingId: 80,
       name: '모임 이름1',
       explanation: '모임 설명1',
       limit: 10,
       thumbnail: 'testThumbnail1.jpg',
       canJoin: false,
+      category: MeetingCategoryEnum.STUDY,
+      publicYn: true,
     }),
     Meeting.createForTest({
-      meeting_id: 200,
+      meetingId: 200,
       name: '모임 이름2',
       explanation: '모임 설명2',
       limit: 10,
       thumbnail: 'testThumbnail2.jpg',
       canJoin: true,
+      category: MeetingCategoryEnum.STUDY,
+      publicYn: true,
     }),
   ];
 
   async findByMeetingId(id: number): Promise<Meeting | null> {
     componentAccessLog.push(MockMeetingComponent.findByMeetingIdLog);
 
-    return this.mockMeetings.find((meeting) => meeting.meeting_id === id);
+    return this.mockMeetings.find((meeting) => meeting.id === id);
   }
 
   async findByMeetingIds(): Promise<Meeting[]> {
@@ -59,6 +64,10 @@ class MockMeetingComponent implements MeetingComponent {
   }
 
   async delete(): Promise<void> {}
+
+  async getNewMeetings(): Promise<Meeting[]> {
+    return this.mockMeetings;
+  }
 }
 
 class MockMemberComponent implements MemberComponent {
@@ -72,88 +81,91 @@ class MockMemberComponent implements MemberComponent {
   private mockMembers: Member[] = [
     Member.create({
       meetingId: 80,
-      usersId: 80,
+      userId: 80,
       authority: AuthorityEnum.MANAGER,
     }),
     Member.create({
       meetingId: 200,
-      usersId: 80,
+      userId: 80,
       authority: AuthorityEnum.MANAGER,
     }),
     Member.create({
       meetingId: 80,
-      usersId: 15,
+      userId: 15,
       authority: AuthorityEnum.WAITING,
       applicationMessage: '꼭 가입하고 싶습니다.',
     }),
     Member.create({
       meetingId: 80,
-      usersId: 200,
+      userId: 200,
       authority: AuthorityEnum.MEMBER,
     }),
     Member.create({
       meetingId: 80,
-      usersId: 60,
+      userId: 60,
       authority: AuthorityEnum.OWNER,
     }),
   ];
 
   private mockUsers: Users[] = [
     Users.createForTest({
-      users_id: 80,
+      id: 80,
       discord_id: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
+      thumbnail: '',
       settings: { allowNotificationYn: false },
     }),
     Users.createForTest({
-      users_id: 200,
+      id: 200,
       discord_id: 'discordIdThree',
       username: 'parkmoiji2',
       avatar: 'avatar3',
       email: 'parkmoiji2@test.com',
       explanation: 'explanation3',
+      thumbnail: '',
       settings: { allowNotificationYn: false },
     }),
     Users.createForTest({
-      users_id: 15,
+      id: 15,
       discord_id: 'discordIdFour',
       username: 'kimmoiji2',
       avatar: 'avatar4',
       email: 'kimmoiji2@test.com',
       explanation: 'explanation4',
+      thumbnail: '',
       settings: { allowNotificationYn: false },
     }),
   ];
 
-  async findByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<Member | null> {
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
     componentAccessLog.push(MockMemberComponent.findByUsersAndMeetingIdLog);
 
-    const member = this.mockMembers.find((member) => member.users_id === users_id && member.meeting_id === meeting_id);
+    const member = this.mockMembers.find((member) => member.userId === userId && member.meetingId === meetingId);
     if (member) {
-      member.user = Promise.resolve(this.mockUsers.find((user) => user.users_id === users_id) || null);
+      member.user = Promise.resolve(this.mockUsers.find((user) => user.id === userId) || null);
     }
     return member || null;
   }
 
-  async findByUsersAndAuthorities(users_id: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
+  async findByUsersAndAuthorities(userId: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
     componentAccessLog.push(MockMemberComponent.findByUsersAndAuthoritiesLog);
 
-    return this.mockMembers.filter((member) => member.users_id === users_id && authorities.includes(member.authority));
+    return this.mockMembers.filter((member) => member.userId === userId && authorities.includes(member.authority));
   }
 
-  async findByUserId(users_id: number): Promise<Member[]> {
-    return this.mockMembers.filter((member) => member.users_id === users_id);
+  async findByUserId(userId: number): Promise<Member[]> {
+    return this.mockMembers.filter((member) => member.userId === userId);
   }
 
-  async findByMeetingId(meeting_id: number): Promise<Member[]> {
+  async findByMeetingId(meetingId: number): Promise<Member[]> {
     componentAccessLog.push(MockMemberComponent.findByMeetingIdLog);
 
-    const members = this.mockMembers.filter((member) => member.meeting_id === meeting_id);
+    const members = this.mockMembers.filter((member) => member.meetingId === meetingId);
     members.forEach((member) => {
-      member.user = Promise.resolve(this.mockUsers.find((user) => user.users_id === member.users_id) || null);
+      member.user = Promise.resolve(this.mockUsers.find((user) => user.id === member.userId) || null);
     });
     return members;
   }
@@ -170,11 +182,11 @@ class MockMemberComponent implements MemberComponent {
     member.authority = authority;
   }
 
-  async deleteByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<void> {
+  async deleteByUsersAndMeetingId(userId: number, meetingId: number): Promise<void> {
     componentAccessLog.push(MockMemberComponent.deleteByUsersAndMeetingIdLog);
 
     this.mockMembers = this.mockMembers.filter(
-      (member) => !(member.users_id === users_id && member.meeting_id === meeting_id),
+      (member) => !(member.userId === userId && member.meetingId === meetingId),
     );
   }
 
@@ -185,6 +197,14 @@ class MockMemberComponent implements MemberComponent {
       this.mockMembers.push(member);
     });
   }
+
+  async getMemberCount(meetingId: number): Promise<number> {
+    return this.mockMembers.filter((member) => member.meetingId === meetingId).length;
+  }
+
+  async getMostPopularMeetingIds(): Promise<number[]> {
+    return this.mockMembers.map((member) => member.meetingId);
+  }
 }
 
 class MockUsersComponent implements UsersComponent {
@@ -192,30 +212,33 @@ class MockUsersComponent implements UsersComponent {
 
   private mockUsers: Users[] = [
     Users.createForTest({
-      users_id: 80,
+      id: 80,
       discord_id: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
+      thumbnail: '',
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
-      users_id: 60,
+      id: 60,
       discord_id: 'discordIdTwo',
       username: 'parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
+      thumbnail: '',
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
-      users_id: 200,
+      id: 200,
       discord_id: 'discordIdThree',
       username: 'parkmoiji2',
       avatar: 'avatar3',
       email: 'parkmoiji2@test.com',
       explanation: 'explanation3',
+      thumbnail: '',
       settings: { allowNotificationYn: true },
     }),
   ];
@@ -223,7 +246,7 @@ class MockUsersComponent implements UsersComponent {
   async findById(user_id: number): Promise<Users | null> {
     componentAccessLog.push(MockUsersComponent.findByIdLog);
 
-    return this.mockUsers.find((user) => user.users_id === user_id) || null;
+    return this.mockUsers.find((user) => user.id === user_id) || null;
   }
 
   async findByIds(): Promise<Users[]> {
@@ -248,7 +271,8 @@ class MockAuthorityComponent implements AuthorityComponent {
 }
 
 class MockNotificationComponent implements NotificationComponent {
-  public static addNotificationsLog = 'addNotifications called';
+  public static addNotificationsLog = 'Notification.addNotifications called';
+  public static addNotificationLog = 'Notification.addNotification called';
 
   async getListByNotificationIds(): Promise<Notification[]> {
     return [];
@@ -258,10 +282,12 @@ class MockNotificationComponent implements NotificationComponent {
   }
   async saveAll(): Promise<void> {}
 
-  async addNotifications() {}
+  async addNotifications() {
+    componentAccessLog.push(MockNotificationComponent.addNotificationsLog);
+  }
 
   async addNotification() {
-    componentAccessLog.push(MockNotificationComponent.addNotificationsLog);
+    componentAccessLog.push(MockNotificationComponent.addNotificationLog);
   }
 }
 
@@ -331,6 +357,7 @@ describe('MemberService', () => {
         MockMemberComponent.findByUsersAndMeetingIdLog,
         MockMemberComponent.deleteByUsersAndMeetingIdLog,
         MockMemberComponent.findByMeetingIdLog,
+        MockNotificationComponent.addNotificationsLog,
         MockMemberComponent.findByUsersAndMeetingIdLog,
       ]);
     });
@@ -344,8 +371,8 @@ describe('MemberService', () => {
       const members = await memberComponent.findByMeetingId(80);
       const newOwner = members.find((member) => member.authority === AuthorityEnum.OWNER);
 
-      expect(newOwner.users_id).toBe(80);
-      expect(newOwner.meeting_id).toBe(80);
+      expect(newOwner.userId).toBe(80);
+      expect(newOwner.meetingId).toBe(80);
       expect(newOwner.authority).toBe(AuthorityEnum.OWNER);
 
       expect(componentAccessLog).toEqual([
@@ -353,7 +380,9 @@ describe('MemberService', () => {
         MockMemberComponent.findByUsersAndMeetingIdLog,
         MockMemberComponent.deleteByUsersAndMeetingIdLog,
         MockMemberComponent.findByMeetingIdLog,
+        MockNotificationComponent.addNotificationsLog,
         MockMemberComponent.updateAuthorityLog,
+        MockNotificationComponent.addNotificationsLog,
         MockMemberComponent.findByUsersAndMeetingIdLog,
         MockMemberComponent.findByMeetingIdLog,
       ]);
@@ -372,7 +401,7 @@ describe('MemberService', () => {
     it('updateAuthority - SUCCESS', async () => {
       const req = {
         meetingId: '50',
-        usersId: 200,
+        userId: 200,
         isManager: true,
       };
 
@@ -380,8 +409,8 @@ describe('MemberService', () => {
       const updatedMember = await memberComponent.findByUsersAndMeetingId(200, 80);
 
       expect(updatedMember.authority).toBe(AuthorityEnum.MANAGER);
-      expect(updatedMember.users_id).toBe(200);
-      expect(updatedMember.meeting_id).toBe(80);
+      expect(updatedMember.userId).toBe(200);
+      expect(updatedMember.meetingId).toBe(80);
 
       expect(componentAccessLog).toEqual([
         MockAuthorityComponent.validateAuthorityLog,
@@ -486,8 +515,8 @@ describe('MemberService', () => {
       const updatedMember = await memberComponent.findByUsersAndMeetingId(15, 80);
 
       expect(updatedMember.authority).toBe(AuthorityEnum.MEMBER);
-      expect(updatedMember.users_id).toBe(15);
-      expect(updatedMember.meeting_id).toBe(80);
+      expect(updatedMember.userId).toBe(15);
+      expect(updatedMember.meetingId).toBe(80);
       expect(updatedMember.applicationMessage).toBe('꼭 가입하고 싶습니다.');
 
       expect(componentAccessLog).toEqual([
@@ -496,6 +525,7 @@ describe('MemberService', () => {
         MockMemberComponent.findByUsersAndMeetingIdLog,
         MockMemberComponent.updateAuthorityLog,
         MockMemberComponent.findByMeetingIdLog,
+        MockNotificationComponent.addNotificationsLog,
         MockMemberComponent.findByUsersAndMeetingIdLog,
       ]);
     });
@@ -517,7 +547,7 @@ describe('MemberService', () => {
         MockAuthorityComponent.validateAuthorityLog,
         MockMemberComponent.findByUsersAndMeetingIdLog,
         MockMemberComponent.deleteByUsersAndMeetingIdLog,
-        MockNotificationComponent.addNotificationsLog,
+        MockNotificationComponent.addNotificationLog,
         MockMemberComponent.findByUsersAndMeetingIdLog,
       ]);
     });

@@ -4,7 +4,7 @@ import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'clas
 export class MeetingUpdateRequest {
   @ApiProperty()
   @IsNotEmpty()
-  meeting_id: string;
+  meetingId: string;
 
   @ApiProperty()
   @IsOptional()
@@ -23,6 +23,12 @@ export class MeetingUpdateRequest {
   limit: number = 10;
 
   @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  publicYn: boolean;
+
+  @ApiProperty()
+  @IsOptional()
   @IsBoolean()
   canJoin: boolean;
 }

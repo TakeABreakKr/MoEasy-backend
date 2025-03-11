@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Participant } from '../entity/participant.entity';
+import { Users } from '@domain/user/entity/users.entity';
+import { Member } from '@domain/member/entity/member.entity';
+import { Activity } from '@domain/activity/entity/activity.entity';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 @Injectable()
 export class ParticipantDao {
@@ -11,23 +15,43 @@ export class ParticipantDao {
     await this.participantRepository.save(participants);
   }
 
-  async findByUserIdAndActivityId(user_id: number, activity_id: number): Promise<Participant | null> {
-    return this.participantRepository.findOneBy({ activity_id: activity_id, users_id: user_id });
+  async findByUserIdAndActivityId(userId: number, activityId: number): Promise<Participant | null> {
+    return this.participantRepository.findOneBy({ activityId, userId });
   }
 
-  async findByActivityId(activity_id: number): Promise<Participant[]> {
-    return this.participantRepository.findBy({ activity_id });
+  async findByActivityId(activityId: number): Promise<Participant[]> {
+    return this.participantRepository.findBy({ activityId });
   }
 
-  async findAllByUserId(user_id: number): Promise<Participant[]> {
-    return this.participantRepository.findBy({ users_id: user_id });
+  async findAllByUserId(userId: number): Promise<Participant[]> {
+    return this.participantRepository.findBy({ userId });
   }
 
-  async delete(users_id: number, activity_id: number): Promise<void> {
-    await this.participantRepository.delete({ activity_id, users_id });
+  async getParticipantCount(activityId: number): Promise<number> {
+    return this.participantRepository.count({ where: { activityId } });
   }
 
-  async deleteAll(userIds: number[], activity_id: number): Promise<void> {
-    await this.participantRepository.delete({ users_id: In(userIds), activity_id });
+  async delete(userId: number, activityId: number): Promise<void> {
+    await this.participantRepository.delete({ activityId, userId });
+  }
+
+  async deleteAll(userIds: number[], activityId: number): Promise<void> {
+    await this.participantRepository.delete({
+      activityId,
+      userId: In(userIds),
+    });
+  }
+
+  async getHomeActivityParticipants(activityId: number): Promise<ActivityParticipantDto[]> {
+    return this.participantRepository
+      .createQueryBuilder()
+      .select('user.thumbnail', 'thumbnail')
+      .addSelect('member.authority', 'authority')
+      .from(Participant, 'participant')
+      .leftJoin(Users, 'user', 'user.users_id = participant.users_id')
+      .leftJoin(Activity, 'activity', 'activity.activity_id = participant.activity_id')
+      .leftJoin(Member, 'member', 'member.users_id = user.users_id and member.meeting_id = activity.meeting_id')
+      .where('participant.activity_id = :activityId', { activityId })
+      .getRawMany<ActivityParticipantDto>();
   }
 }
