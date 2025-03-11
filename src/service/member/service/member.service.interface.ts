@@ -8,11 +8,11 @@ import { MemberWaitingListResponse } from '@service/member/dto/response/member.w
 
 export interface MemberService {
   search(keyword: string): Promise<MemberSearchResponse>;
-  getMember(meeting_id: string, user_id: number): Promise<MemberResponse>;
-  withdraw(requester_id: number, meeting_id: string): Promise<void>;
-  updateAuthority(requester_id: number, request: MemberAuthorityUpdateRequest): Promise<void>;
-  deleteMember(requester_id: number, request: MemberDeleteRequest): Promise<void>;
-  join(requester_id: number, request: MemberJoinRequest): Promise<void>;
-  getWaitingList(requester_id: number): Promise<MemberWaitingListResponse>;
-  manageMemberJoin(requester_id: number, request: MemberJoinManageRequest): Promise<void>;
+  getMember(meetingId: string, userId: number): Promise<MemberResponse>;
+  withdraw(requesterId: number, meetingId: string): Promise<void>;
+  updateAuthority(requesterId: number, request: MemberAuthorityUpdateRequest): Promise<void>;
+  deleteMember(requesterId: number, request: MemberDeleteRequest): Promise<void>;
+  join(requesterId: number, request: MemberJoinRequest): Promise<void>;
+  getWaitingList(requesterId: number): Promise<MemberWaitingListResponse>;
+  manageMemberJoin(requesterId: number, request: MemberJoinManageRequest): Promise<void>;
 }

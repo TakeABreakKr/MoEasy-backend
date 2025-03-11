@@ -1,20 +1,19 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { DiscordModule } from '@discord-nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
+import { NecordModule } from 'necord';
+import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 
 import configuration from '@config/configuration';
 import { DiscordConfig } from '@config/discord.config';
 import { DBConfig } from '@config/db.config';
-import { BotModule } from '@bot/bot.module';
+import { DomainModule } from '@domain/domain.module';
 import { FileModule } from '@file/file.module';
 import { ServiceModule } from '@service/service.module';
 import { FileModeEnum } from '@enums/file.mode.enum';
 import { AppController } from '@root/controller/app.controller';
-import AuthGuard from '@root/middleware/auth.guard';
 
 @Module({
   imports: [
@@ -38,17 +37,17 @@ import AuthGuard from '@root/middleware/auth.guard';
     JwtModule.register({
       global: true,
     }),
-    DiscordModule.forRootAsync({
+    NecordModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useClass: DiscordConfig,
     }),
-    BotModule,
+    DomainModule,
     ServiceModule,
     FileModule.forRoot({
       fileMode: FileModeEnum.local,
     }),
   ],
-  providers: [AuthGuard],
   controllers: [AppController],
 })
 export class AppModule {}

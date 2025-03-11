@@ -9,10 +9,9 @@ class MockKeywordRepository extends Repository<Keyword> {
   public mockKeywords: Keyword[] = [Keyword.create('테스트 키워드', 100), Keyword.create('테스트 키워드', 200)];
 
   async count(options: FindManyOptions<Keyword>): Promise<number> {
-    const meeting = options.where['meeting'];
-    const meetingId = meeting['meeting_id'];
+    const meetingId = options.where['meetingId'];
 
-    return this.mockKeywords.filter((keyword) => keyword.meeting_id === meetingId).length;
+    return this.mockKeywords.filter((keyword) => keyword.meetingId === meetingId).length;
   }
 
   async save(keywords: Keyword[]): Promise<Keyword[]> {

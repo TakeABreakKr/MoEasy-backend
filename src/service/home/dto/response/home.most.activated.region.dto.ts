@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { RegionEnum, RegionEnumType } from '@enums/region.enum';
 
 export class HomeMostActivatedRegionDto {
-  @ApiProperty()
-  name: string;
+  @ApiProperty({
+    enum: RegionEnum,
+    example: RegionEnum.SEOCHO,
+  })
+  name: RegionEnumType;
 
   @ApiProperty()
   activityCount: number;

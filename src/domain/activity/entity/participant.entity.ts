@@ -1,0 +1,47 @@
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Activity } from './activity.entity';
+import { Users } from '@domain/user/entity/users.entity';
+import { BaseEntity } from '@domain/common/base.entity';
+
+type CreateParticipantDto = {
+  activityId: number;
+  userId: number;
+};
+
+@Entity()
+export class Participant extends BaseEntity {
+  @PrimaryColumn({
+    name: 'activity_id',
+  })
+  activityId: number;
+
+  @PrimaryColumn({
+    name: 'users_id',
+  })
+  userId: number;
+
+  @ManyToOne(() => Activity, (activity) => activity.id, {
+    nullable: false,
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'activity_id' })
+  activity: Promise<Activity>;
+
+  @ManyToOne(() => Users, (users) => users.id, {
+    nullable: false,
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'users_id' })
+  user: Promise<Users>;
+
+  static create({ activityId, userId }: CreateParticipantDto): Participant {
+    const participant = new Participant();
+    participant.activityId = activityId;
+    participant.userId = userId;
+    return participant;
+  }
+
+  async getActivity(): Promise<Activity> {
+    return this.activity;
+  }
+}

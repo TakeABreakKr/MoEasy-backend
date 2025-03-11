@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MemberService } from './member.service.interface';
 import { MemberServiceImpl } from './member.service';
-import { MeetingDao } from '@domain/meeting/dao/meeting.dao.interface';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
-import { MemberDao } from '@domain/member/dao/member.dao.interface';
 import { Member } from '@domain/member/entity/member.entity';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { Users } from '@domain/user/entity/users.entity';
@@ -12,33 +10,43 @@ import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
+import { MeetingComponent } from '@root/domain/meeting/component/meeting.component.interface';
+import { MemberComponent } from '@root/domain/member/component/member.component.interface';
+import { Notification } from '@root/domain/notification/entity/notification.entity';
+import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
 
-const daoAccessLog: string[] = [];
+const componentAccessLog: string[] = [];
 
-class MockMeetingDao implements MeetingDao {
+class MockMeetingComponent implements MeetingComponent {
+  public static findByMeetingIdLog = 'MeetingComponent.findByMeetingId called';
+
   private mockMeetings: Meeting[] = [
     Meeting.createForTest({
-      meeting_id: 80,
+      meetingId: 80,
       name: '모임 이름1',
       explanation: '모임 설명1',
       limit: 10,
       thumbnail: 'testThumbnail1.jpg',
       canJoin: false,
+      category: MeetingCategoryEnum.STUDY,
+      publicYn: true,
     }),
     Meeting.createForTest({
-      meeting_id: 200,
+      meetingId: 200,
       name: '모임 이름2',
       explanation: '모임 설명2',
       limit: 10,
       thumbnail: 'testThumbnail2.jpg',
       canJoin: true,
+      category: MeetingCategoryEnum.STUDY,
+      publicYn: true,
     }),
   ];
 
   async findByMeetingId(id: number): Promise<Meeting | null> {
-    daoAccessLog.push('MeetingDao.findByMeetingId called');
+    componentAccessLog.push(MockMeetingComponent.findByMeetingIdLog);
 
-    return this.mockMeetings.find((meeting) => meeting.meeting_id === id);
+    return this.mockMeetings.find((meeting) => meeting.id === id);
   }
 
   async findByMeetingIds(): Promise<Meeting[]> {
@@ -56,134 +64,189 @@ class MockMeetingDao implements MeetingDao {
   }
 
   async delete(): Promise<void> {}
+
+  async getNewMeetings(): Promise<Meeting[]> {
+    return this.mockMeetings;
+  }
 }
 
-class MockMemberDao implements MemberDao {
+class MockMemberComponent implements MemberComponent {
+  public static findByUsersAndMeetingIdLog = 'MemberComponent.findByUsersAndMeetingId called';
+  public static findByMeetingIdLog = 'MemberComponent.findByMeetingId called';
+  public static updateAuthorityLog = 'MemberComponent.updateAuthority called';
+  public static deleteByUsersAndMeetingIdLog = 'MemberComponent.deleteByUsersAndMeetingId called';
+  public static saveAllLog = 'MemberComponent.saveAll called';
+  public static findByUsersAndAuthoritiesLog = 'MemberComponent.findByUsersAndAuthorities called';
+
   private mockMembers: Member[] = [
     Member.create({
       meetingId: 80,
-      usersId: 80,
+      userId: 80,
       authority: AuthorityEnum.MANAGER,
     }),
     Member.create({
       meetingId: 200,
-      usersId: 80,
+      userId: 80,
       authority: AuthorityEnum.MANAGER,
     }),
     Member.create({
       meetingId: 80,
-      usersId: 15,
+      userId: 15,
       authority: AuthorityEnum.WAITING,
       applicationMessage: '꼭 가입하고 싶습니다.',
     }),
     Member.create({
       meetingId: 80,
-      usersId: 200,
+      userId: 200,
       authority: AuthorityEnum.MEMBER,
     }),
     Member.create({
       meetingId: 80,
-      usersId: 60,
+      userId: 60,
       authority: AuthorityEnum.OWNER,
     }),
   ];
 
-  async findByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<Member | null> {
-    daoAccessLog.push('MemberDao.findByUsersAndMeetingId called');
+  private mockUsers: Users[] = [
+    Users.createForTest({
+      id: 80,
+      discord_id: 'discordIdOne',
+      username: 'kimmoiji',
+      avatar: 'avatar1',
+      email: 'kimmoiji@test.com',
+      explanation: 'explanation1',
+      thumbnail: '',
+      settings: { allowNotificationYn: false },
+    }),
+    Users.createForTest({
+      id: 200,
+      discord_id: 'discordIdThree',
+      username: 'parkmoiji2',
+      avatar: 'avatar3',
+      email: 'parkmoiji2@test.com',
+      explanation: 'explanation3',
+      thumbnail: '',
+      settings: { allowNotificationYn: false },
+    }),
+    Users.createForTest({
+      id: 15,
+      discord_id: 'discordIdFour',
+      username: 'kimmoiji2',
+      avatar: 'avatar4',
+      email: 'kimmoiji2@test.com',
+      explanation: 'explanation4',
+      thumbnail: '',
+      settings: { allowNotificationYn: false },
+    }),
+  ];
 
-    const userMap = {
-      80: { users_id: 80, username: '테스트 유저1', explanation: '테스트 유저 설명1' },
-      60: { users_id: 60, username: '테스트 유저2', explanation: '테스트 유저 설명2' },
-      200: { users_id: 200, username: '테스트 유저3', explanation: '테스트 유저 설명3' },
-      15: { users_id: 80, username: '테스트 유저4', explanation: '테스트 유저 설명4' },
-    };
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
+    componentAccessLog.push(MockMemberComponent.findByUsersAndMeetingIdLog);
 
-    const member = this.mockMembers.find((member) => member.users_id === users_id && member.meeting_id === meeting_id);
+    const member = this.mockMembers.find((member) => member.userId === userId && member.meetingId === meetingId);
     if (member) {
-      member.user = Promise.resolve(userMap[users_id]);
+      member.user = Promise.resolve(this.mockUsers.find((user) => user.id === userId) || null);
     }
     return member || null;
   }
 
-  async findByUsersAndAuthorities(users_id: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
-    daoAccessLog.push('MemberDao.findByUsersAndAuthorities called');
+  async findByUsersAndAuthorities(userId: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
+    componentAccessLog.push(MockMemberComponent.findByUsersAndAuthoritiesLog);
 
-    return this.mockMembers.filter((member) => member.users_id === users_id && authorities.includes(member.authority));
+    return this.mockMembers.filter((member) => member.userId === userId && authorities.includes(member.authority));
   }
 
-  async findByUserId(users_id: number): Promise<Member[]> {
-    return this.mockMembers.filter((member) => member.users_id === users_id);
+  async findByUserId(userId: number): Promise<Member[]> {
+    return this.mockMembers.filter((member) => member.userId === userId);
   }
 
-  async findByMeetingId(meeting_id: number): Promise<Member[]> {
-    daoAccessLog.push('MemberDao.findByMeetingId called');
+  async findByMeetingId(meetingId: number): Promise<Member[]> {
+    componentAccessLog.push(MockMemberComponent.findByMeetingIdLog);
 
-    const members = this.mockMembers.filter((member) => member.meeting_id === meeting_id);
+    const members = this.mockMembers.filter((member) => member.meetingId === meetingId);
     members.forEach((member) => {
-      member.user = Promise.resolve(
-        Users.createForTest({
-          users_id: member.users_id,
-          discord_id: '',
-          username: '테스트 유저',
-          avatar: '',
-          email: '',
-          explanation: '테스트 유저 설명',
-          settings: {
-            allowNotificationYn: true,
-          },
-        }),
-      );
+      member.user = Promise.resolve(this.mockUsers.find((user) => user.id === member.userId) || null);
     });
     return members;
   }
 
-  async create(props: CreateMemberDto): Promise<Member> {
-    const member = Member.create({
-      meetingId: props.meetingId,
-      usersId: props.usersId,
-      authority: props.authority,
-      applicationMessage: props.applicationMessage,
-    });
+  async create(createMemberDto: CreateMemberDto): Promise<Member> {
+    const member = Member.create(createMemberDto);
     this.mockMembers.push(member);
     return member;
   }
 
   async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
-    daoAccessLog.push('MemberDao.updateAuthority called');
+    componentAccessLog.push(MockMemberComponent.updateAuthorityLog);
 
     member.authority = authority;
   }
 
-  async deleteByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<void> {
-    daoAccessLog.push('MemberDao.deleteByUsersAndMeetingId called');
+  async deleteByUsersAndMeetingId(userId: number, meetingId: number): Promise<void> {
+    componentAccessLog.push(MockMemberComponent.deleteByUsersAndMeetingIdLog);
 
     this.mockMembers = this.mockMembers.filter(
-      (member) => !(member.users_id === users_id && member.meeting_id === meeting_id),
+      (member) => !(member.userId === userId && member.meetingId === meetingId),
     );
   }
 
   async saveAll(members: Member[]): Promise<void> {
-    daoAccessLog.push('MemberDao.saveAll called');
+    componentAccessLog.push(MockMemberComponent.saveAllLog);
 
     members.forEach((member) => {
       this.mockMembers.push(member);
     });
+  }
+
+  async getMemberCount(meetingId: number): Promise<number> {
+    return this.mockMembers.filter((member) => member.meetingId === meetingId).length;
+  }
+
+  async getMostPopularMeetingIds(): Promise<number[]> {
+    return this.mockMembers.map((member) => member.meetingId);
   }
 }
 
 class MockUsersComponent implements UsersComponent {
   static findByIdLog = 'UsersComponent.findById called';
 
+  private mockUsers: Users[] = [
+    Users.createForTest({
+      id: 80,
+      discord_id: 'discordIdOne',
+      username: 'kimmoiji',
+      avatar: 'avatar1',
+      email: 'kimmoiji@test.com',
+      explanation: 'explanation1',
+      thumbnail: '',
+      settings: { allowNotificationYn: true },
+    }),
+    Users.createForTest({
+      id: 60,
+      discord_id: 'discordIdTwo',
+      username: 'parkmoiji',
+      avatar: 'avatar2',
+      email: 'Parkmoiji@test.com',
+      explanation: 'explanation2',
+      thumbnail: '',
+      settings: { allowNotificationYn: true },
+    }),
+    Users.createForTest({
+      id: 200,
+      discord_id: 'discordIdThree',
+      username: 'parkmoiji2',
+      avatar: 'avatar3',
+      email: 'parkmoiji2@test.com',
+      explanation: 'explanation3',
+      thumbnail: '',
+      settings: { allowNotificationYn: true },
+    }),
+  ];
+
   async findById(user_id: number): Promise<Users | null> {
-    daoAccessLog.push(MockUsersComponent.findByIdLog);
+    componentAccessLog.push(MockUsersComponent.findByIdLog);
 
-    const userMap = {
-      80: { users_id: 80, username: '테스트 유저1', explanation: '테스트 유저 설명1' },
-      60: { users_id: 60, username: '테스트 유저2', explanation: '테스트 유저 설명2' },
-      200: { users_id: 200, username: '테스트 유저3', explanation: '테스트 유저 설명3' },
-    };
-
-    return userMap[user_id] || null;
+    return this.mockUsers.find((user) => user.id === user_id) || null;
   }
 
   async findByIds(): Promise<Users[]> {
@@ -200,16 +263,31 @@ class MockUsersComponent implements UsersComponent {
 }
 
 class MockAuthorityComponent implements AuthorityComponent {
+  public static validateAuthorityLog = 'AuthorityComponent.validateAuthority called';
+
   async validateAuthority() {
-    daoAccessLog.push('AuthorityComponent.validateAuthority called');
+    componentAccessLog.push(MockAuthorityComponent.validateAuthorityLog);
   }
 }
 
 class MockNotificationComponent implements NotificationComponent {
-  async addNotifications() {}
+  public static addNotificationsLog = 'Notification.addNotifications called';
+  public static addNotificationLog = 'Notification.addNotification called';
+
+  async getListByNotificationIds(): Promise<Notification[]> {
+    return [];
+  }
+  async getListByUserId(): Promise<Notification[]> {
+    return [];
+  }
+  async saveAll(): Promise<void> {}
+
+  async addNotifications() {
+    componentAccessLog.push(MockNotificationComponent.addNotificationsLog);
+  }
 
   async addNotification() {
-    daoAccessLog.push('addNotifications called');
+    componentAccessLog.push(MockNotificationComponent.addNotificationLog);
   }
 }
 
@@ -217,10 +295,10 @@ jest.mock('typeorm-transactional', () => ({ Transactional: () => () => {} }));
 
 describe('MemberService', () => {
   let memberService: MemberService;
-  let memberDao: MemberDao;
+  let memberComponent: MemberComponent;
 
   beforeEach(async () => {
-    daoAccessLog.length = 0;
+    componentAccessLog.length = 0;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -229,8 +307,8 @@ describe('MemberService', () => {
           provide: 'UsersComponent',
           useClass: MockUsersComponent,
         },
-        { provide: 'MemberDao', useClass: MockMemberDao },
-        { provide: 'MeetingDao', useClass: MockMeetingDao },
+        { provide: 'MemberComponent', useClass: MockMemberComponent },
+        { provide: 'MeetingComponent', useClass: MockMeetingComponent },
         {
           provide: 'AuthorityComponent',
           useClass: MockAuthorityComponent,
@@ -243,7 +321,7 @@ describe('MemberService', () => {
     }).compile();
 
     memberService = module.get<MemberService>('MemberService');
-    memberDao = module.get<MemberDao>('MemberDao');
+    memberComponent = module.get<MemberComponent>('MemberComponent');
   });
 
   describe('getMemberTest', () => {
@@ -251,12 +329,15 @@ describe('MemberService', () => {
       const result = await memberService.getMember('50', 80);
 
       expect(result).toEqual({
-        username: '테스트 유저1',
-        explanation: '테스트 유저 설명1',
+        username: 'kimmoiji',
+        explanation: 'explanation1',
         authority: AuthorityEnum.MANAGER,
       });
 
-      expect(daoAccessLog).toEqual(['MemberDao.findByUsersAndMeetingId called', MockUsersComponent.findByIdLog]);
+      expect(componentAccessLog).toEqual([
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockUsersComponent.findByIdLog,
+      ]);
     });
 
     it('getMemberTest - NOT_FOUND_MEMBER(USER & MEMBER)', async () => {
@@ -267,40 +348,43 @@ describe('MemberService', () => {
   describe('withdrawTest', () => {
     it('withdrawTest - SUCCESS', async () => {
       await memberService.withdraw(200, '50');
-      const withdrawMember = await memberDao.findByUsersAndMeetingId(200, 200);
+      const withdrawMember = await memberComponent.findByUsersAndMeetingId(200, 200);
 
       expect(withdrawMember).toBeNull();
 
-      expect(daoAccessLog).toEqual([
+      expect(componentAccessLog).toEqual([
         MockUsersComponent.findByIdLog,
-        'MemberDao.findByUsersAndMeetingId called',
-        'MemberDao.deleteByUsersAndMeetingId called',
-        'MemberDao.findByMeetingId called',
-        'MemberDao.findByUsersAndMeetingId called',
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockMemberComponent.deleteByUsersAndMeetingIdLog,
+        MockMemberComponent.findByMeetingIdLog,
+        MockNotificationComponent.addNotificationsLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
       ]);
     });
 
     it('withdrawTest - SUCCESS(OWNER_WITHDRAW)', async () => {
       await memberService.withdraw(60, '50');
-      const withdrawOwner = await memberDao.findByUsersAndMeetingId(60, 80);
+      const withdrawOwner = await memberComponent.findByUsersAndMeetingId(60, 80);
 
       expect(withdrawOwner).toBeNull();
 
-      const members = await memberDao.findByMeetingId(80);
+      const members = await memberComponent.findByMeetingId(80);
       const newOwner = members.find((member) => member.authority === AuthorityEnum.OWNER);
 
-      expect(newOwner.users_id).toBe(80);
-      expect(newOwner.meeting_id).toBe(80);
+      expect(newOwner.userId).toBe(80);
+      expect(newOwner.meetingId).toBe(80);
       expect(newOwner.authority).toBe(AuthorityEnum.OWNER);
 
-      expect(daoAccessLog).toEqual([
+      expect(componentAccessLog).toEqual([
         MockUsersComponent.findByIdLog,
-        'MemberDao.findByUsersAndMeetingId called',
-        'MemberDao.deleteByUsersAndMeetingId called',
-        'MemberDao.findByMeetingId called',
-        'MemberDao.updateAuthority called',
-        'MemberDao.findByUsersAndMeetingId called',
-        'MemberDao.findByMeetingId called',
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockMemberComponent.deleteByUsersAndMeetingIdLog,
+        MockMemberComponent.findByMeetingIdLog,
+        MockNotificationComponent.addNotificationsLog,
+        MockMemberComponent.updateAuthorityLog,
+        MockNotificationComponent.addNotificationsLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockMemberComponent.findByMeetingIdLog,
       ]);
     });
 
@@ -317,22 +401,22 @@ describe('MemberService', () => {
     it('updateAuthority - SUCCESS', async () => {
       const req = {
         meetingId: '50',
-        usersId: 200,
+        userId: 200,
         isManager: true,
       };
 
       await memberService.updateAuthority(80, req);
-      const updatedMember = await memberDao.findByUsersAndMeetingId(200, 80);
+      const updatedMember = await memberComponent.findByUsersAndMeetingId(200, 80);
 
       expect(updatedMember.authority).toBe(AuthorityEnum.MANAGER);
-      expect(updatedMember.users_id).toBe(200);
-      expect(updatedMember.meeting_id).toBe(80);
+      expect(updatedMember.userId).toBe(200);
+      expect(updatedMember.meetingId).toBe(80);
 
-      expect(daoAccessLog).toEqual([
-        'AuthorityComponent.validateAuthority called',
-        'MemberDao.findByUsersAndMeetingId called',
-        'MemberDao.updateAuthority called',
-        'MemberDao.findByUsersAndMeetingId called',
+      expect(componentAccessLog).toEqual([
+        MockAuthorityComponent.validateAuthorityLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockMemberComponent.updateAuthorityLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
       ]);
     });
   });
@@ -345,15 +429,15 @@ describe('MemberService', () => {
       };
 
       await memberService.deleteMember(80, req);
-      const deleteMember = await memberDao.findByUsersAndMeetingId(200, 80);
+      const deleteMember = await memberComponent.findByUsersAndMeetingId(200, 80);
 
       expect(deleteMember).toBeNull();
 
-      expect(daoAccessLog).toEqual([
-        'AuthorityComponent.validateAuthority called',
-        'MemberDao.findByUsersAndMeetingId called',
-        'MemberDao.deleteByUsersAndMeetingId called',
-        'MemberDao.findByUsersAndMeetingId called',
+      expect(componentAccessLog).toEqual([
+        MockAuthorityComponent.validateAuthorityLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockMemberComponent.deleteByUsersAndMeetingIdLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
       ]);
     });
 
@@ -375,12 +459,15 @@ describe('MemberService', () => {
       };
 
       await memberService.join(20, req);
-      const joinMember = await memberDao.findByUsersAndMeetingId(20, 80);
+      const joinMember = await memberComponent.findByUsersAndMeetingId(20, 80);
 
       expect(joinMember.authority).toBe(AuthorityEnum.WAITING);
       expect(joinMember.applicationMessage).toBe('모임에 꼭 들어가고 싶습니다.');
 
-      expect(daoAccessLog).toEqual(['MeetingDao.findByMeetingId called', 'MemberDao.findByUsersAndMeetingId called']);
+      expect(componentAccessLog).toEqual([
+        MockMeetingComponent.findByMeetingIdLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+      ]);
     });
 
     it('joinTest - JOIN_REQUEST_DISABLED', async () => {
@@ -400,12 +487,12 @@ describe('MemberService', () => {
       expect(result.meetings[0].name).toBe('모임 이름1');
       expect(result.meetings[1].name).toBe('모임 이름2');
 
-      expect(daoAccessLog).toEqual([
-        'MemberDao.findByUsersAndAuthorities called',
-        'MemberDao.findByMeetingId called',
-        'MemberDao.findByMeetingId called',
-        'MeetingDao.findByMeetingId called',
-        'MeetingDao.findByMeetingId called',
+      expect(componentAccessLog).toEqual([
+        MockMemberComponent.findByUsersAndAuthoritiesLog,
+        MockMemberComponent.findByMeetingIdLog,
+        MockMemberComponent.findByMeetingIdLog,
+        MockMeetingComponent.findByMeetingIdLog,
+        MockMeetingComponent.findByMeetingIdLog,
       ]);
     });
 
@@ -417,7 +504,7 @@ describe('MemberService', () => {
   });
 
   describe('manageMemberJoinTest', () => {
-    it('manageMemberJoin - SUCCESS(ACCEPT)', async () => {
+    it('manageMemberJoin - SUCCESS(수락)', async () => {
       const req = {
         meetingId: '50',
         memberId: 15,
@@ -425,24 +512,25 @@ describe('MemberService', () => {
       };
 
       await memberService.manageMemberJoin(80, req);
-      const updatedMember = await memberDao.findByUsersAndMeetingId(15, 80);
+      const updatedMember = await memberComponent.findByUsersAndMeetingId(15, 80);
 
       expect(updatedMember.authority).toBe(AuthorityEnum.MEMBER);
-      expect(updatedMember.users_id).toBe(15);
-      expect(updatedMember.meeting_id).toBe(80);
+      expect(updatedMember.userId).toBe(15);
+      expect(updatedMember.meetingId).toBe(80);
       expect(updatedMember.applicationMessage).toBe('꼭 가입하고 싶습니다.');
 
-      expect(daoAccessLog).toEqual([
-        'AuthorityComponent.validateAuthority called',
-        'AuthorityComponent.validateAuthority called',
-        'MemberDao.findByUsersAndMeetingId called',
-        'MemberDao.updateAuthority called',
-        'MemberDao.findByMeetingId called',
-        'MemberDao.findByUsersAndMeetingId called',
+      expect(componentAccessLog).toEqual([
+        MockAuthorityComponent.validateAuthorityLog,
+        MockAuthorityComponent.validateAuthorityLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockMemberComponent.updateAuthorityLog,
+        MockMemberComponent.findByMeetingIdLog,
+        MockNotificationComponent.addNotificationsLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
       ]);
     });
 
-    it('manageMemberJoin - SUCCESS(REJECT)', async () => {
+    it('manageMemberJoin - SUCCESS(거절)', async () => {
       const req = {
         meetingId: '50',
         memberId: 15,
@@ -450,17 +538,17 @@ describe('MemberService', () => {
       };
 
       await memberService.manageMemberJoin(20, req);
-      const deletedMember = await memberDao.findByUsersAndMeetingId(15, 80);
+      const deletedMember = await memberComponent.findByUsersAndMeetingId(15, 80);
 
       expect(deletedMember).toBeNull();
 
-      expect(daoAccessLog).toEqual([
-        'AuthorityComponent.validateAuthority called',
-        'AuthorityComponent.validateAuthority called',
-        'MemberDao.findByUsersAndMeetingId called',
-        'MemberDao.deleteByUsersAndMeetingId called',
-        'addNotifications called',
-        'MemberDao.findByUsersAndMeetingId called',
+      expect(componentAccessLog).toEqual([
+        MockAuthorityComponent.validateAuthorityLog,
+        MockAuthorityComponent.validateAuthorityLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
+        MockMemberComponent.deleteByUsersAndMeetingIdLog,
+        MockNotificationComponent.addNotificationLog,
+        MockMemberComponent.findByUsersAndMeetingIdLog,
       ]);
     });
   });

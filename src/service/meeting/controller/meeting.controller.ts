@@ -8,7 +8,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Get, Inject, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MeetingCreateRequest } from '@service/meeting/dto/request/meeting.create.request';
 import { MeetingUpdateRequest } from '@service/meeting/dto/request/meeting.update.request';
@@ -21,7 +21,9 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { Public } from '@decorator/public.decorator';
 import { AuthUser, Token } from '@decorator/token.decorator';
+import AuthGuard from '@root/middleware/auth.guard';
 
+@UseGuards(AuthGuard)
 @ApiTags('meeting')
 @Controller('meeting')
 export class MeetingController {
@@ -29,7 +31,7 @@ export class MeetingController {
 
   @Post('create')
   @UseInterceptors(FileInterceptor('thumbnail'))
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('multipart/form-data')
@@ -42,7 +44,7 @@ export class MeetingController {
   }
 
   @Post('update')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
@@ -56,7 +58,7 @@ export class MeetingController {
   }
 
   @Post('update/thumbnail')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @UseInterceptors(FileInterceptor('thumbnail'))
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
@@ -71,7 +73,7 @@ export class MeetingController {
   }
 
   @Get('delete')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully deleted.' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
@@ -101,7 +103,7 @@ export class MeetingController {
   }
 
   @Post('get/list')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({
     status: 200,
     description: 'Meeting list retrieved successfully.',

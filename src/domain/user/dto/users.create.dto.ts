@@ -6,5 +6,6 @@ export interface UsersCreateDto {
   avatar: string;
   email: string;
   explanation: string;
+  thumbnail: string;
   settings: SettingsCreateDto;
 }

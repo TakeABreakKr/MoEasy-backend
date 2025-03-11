@@ -1,6 +1,6 @@
 export const ReminderEnum = {
   ON_TIME: 'ON_TIME', //M : MINUTE, H : HOUR, D : DAY
-  TEN_M: 'TEM_M',
+  TEN_M: 'TEN_M',
   THIRTY_M: 'THIRTY_M',
   ONE_H: 'ONE_H',
   TWO_H: 'TWO_H',

@@ -17,7 +17,7 @@ export class NotificationServiceImpl implements NotificationService {
     return {
       notificationList: notificationList.map((notification: Notification): NotificationDto => {
         return {
-          id: notification.notification_id,
+          id: notification.id,
           content: notification.content,
         };
       }),
@@ -26,7 +26,8 @@ export class NotificationServiceImpl implements NotificationService {
 
   public async checkNotifications(req: NotificationCheckRequest, userId: number): Promise<void> {
     const notificationIdList: number[] = req.notificationIdList;
-    const notificationList: Notification[] = await this.notificationComponent.getByIdList(notificationIdList);
+    const notificationList: Notification[] =
+      await this.notificationComponent.getListByNotificationIds(notificationIdList);
 
     this.validateCheckNotifications(notificationList, userId);
     notificationList.forEach((notification) => {
@@ -38,7 +39,7 @@ export class NotificationServiceImpl implements NotificationService {
 
   private validateCheckNotifications(notificationList: Notification[], userId: number) {
     const ownedNotificationCount: number = notificationList.filter((notification) => {
-      return notification.users_id === userId;
+      return notification.userId === userId;
     }).length;
 
     if (ownedNotificationCount !== notificationList.length) {
