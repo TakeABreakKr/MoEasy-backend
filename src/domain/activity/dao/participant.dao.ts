@@ -44,10 +44,9 @@ export class ParticipantDao {
 
   async getHomeActivityParticipants(activityId: number): Promise<ActivityParticipantDto[]> {
     return this.participantRepository
-      .createQueryBuilder()
+      .createQueryBuilder('participant')
       .select('user.thumbnail', 'thumbnail')
       .addSelect('member.authority', 'authority')
-      .from(Participant, 'participant')
       .leftJoin(Users, 'user', 'user.users_id = participant.users_id')
       .leftJoin(Activity, 'activity', 'activity.activity_id = participant.activity_id')
       .leftJoin(Member, 'member', 'member.users_id = user.users_id and member.meeting_id = activity.meeting_id')

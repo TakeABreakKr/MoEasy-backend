@@ -55,7 +55,7 @@ export class ActivityDao {
         .getQuery(); // activityId, participantCount
 
       return this.activityRepository
-        .createQueryBuilder()
+        .createQueryBuilder('activity')
         .select(['activity_id', 'activity.name', 'onlineYn', 'addressSido', 'addressSigungu', 'startDate'])
         .addSelect('participantLimit - subQuery.participantCount', 'participantLeft')
         .leftJoin(subQuery, 'subQuery', 'activity.activity_id = subQuery.activityId')
