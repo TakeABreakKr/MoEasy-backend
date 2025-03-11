@@ -3,6 +3,7 @@ import * as path from 'path';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import AuthGuard from '@root/middleware/auth.guard';
 
 export function setupSwagger(app: INestApplication) {
   const configService: ConfigService = app.get(ConfigService);
@@ -10,6 +11,16 @@ export function setupSwagger(app: INestApplication) {
     .setTitle('MoEasy Backend')
     .setDescription('MoEasy Backend API')
     .setVersion(configService.get('version'))
+    .addBearerAuth(
+      {
+        type: 'apiKey',
+        scheme: 'bearer',
+        name: AuthGuard.ACCESS_TOKEN_HEADER,
+        in: 'header',
+        description: 'Enter your access token',
+      },
+      AuthGuard.ACCESS_TOKEN_HEADER,
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

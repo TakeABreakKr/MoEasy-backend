@@ -8,7 +8,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, UseGuards } from '@nestjs/common';
 import { MemberService } from '@service/member/service/member.service.interface';
 import { MemberSearchResponse } from '@service/member/dto/response/member.search.response';
 import { ErrorMessageType } from '@enums/error.message.enum';
@@ -19,14 +19,16 @@ import { MemberJoinRequest } from '@service/member/dto/request/member.join.reque
 import { MemberJoinManageRequest } from '@service/member/dto/request/member.join.manage.request';
 import { MemberDeleteRequest } from '@service/member/dto/request/member.delete.request';
 import { MemberWaitingListResponse } from '@service/member/dto/response/member.waiting.list.response';
+import AuthGuard from '@root/middleware/auth.guard';
 
+@UseGuards(AuthGuard)
 @ApiTags('member')
 @Controller('member')
 export class MemberController {
   constructor(@Inject('MemberService') private readonly memberService: MemberService) {}
 
   @Get('search')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'withdraw succeed', type: MemberSearchResponse })
   @ApiQuery({
     name: 'keyword',
@@ -59,7 +61,7 @@ export class MemberController {
   }
 
   @Get('withdraw')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'withdraw succeed' })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
@@ -73,7 +75,7 @@ export class MemberController {
   }
 
   @Post('authority/update')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'authority updated succeed' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
@@ -86,7 +88,7 @@ export class MemberController {
   }
 
   @Post('delete')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'member deleted successfully' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
@@ -99,7 +101,7 @@ export class MemberController {
   }
 
   @Post('join')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({
     status: 200,
     description: 'The join request has been successfully submitted and is awaiting approval.',
@@ -116,7 +118,7 @@ export class MemberController {
   }
 
   @Get('waiting/get')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'waiting list retrieved successfully', type: MemberWaitingListResponse })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiQuery({ name: 'meetingId', type: String, required: true })
@@ -125,7 +127,7 @@ export class MemberController {
   }
 
   @Post('manage')
-  @ApiBearerAuth()
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'member join approved successfully' })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')

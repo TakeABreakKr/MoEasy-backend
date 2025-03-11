@@ -1,10 +1,12 @@
 import type { Response } from 'express';
 
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '@decorator/public.decorator';
 import { AuthService } from '@service/auth/service/auth.service';
+import AuthGuard from '@root/middleware/auth.guard';
 
+@UseGuards(AuthGuard)
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {

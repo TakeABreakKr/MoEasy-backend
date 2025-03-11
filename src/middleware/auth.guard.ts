@@ -7,6 +7,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 
 @Injectable()
 export default class AuthGuard implements CanActivate {
+  public static readonly ACCESS_TOKEN_HEADER = 'access-token';
   private readonly ACCESS_TOKEN_SECRET_KEY: string;
 
   constructor(
@@ -27,12 +28,12 @@ export default class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const { access_token } = request.headers;
-    if (access_token === undefined) {
+    const accessToken = request.headers[AuthGuard.ACCESS_TOKEN_HEADER];
+    if (accessToken === undefined) {
       throw new HttpException(ErrorMessageType.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
     }
 
-    request.user = this.validateToken(access_token);
+    request.user = this.validateToken(accessToken);
     return true;
   }
 
