@@ -14,7 +14,6 @@ import { FileModule } from '@file/file.module';
 import { ServiceModule } from '@service/service.module';
 import { FileModeEnum } from '@enums/file.mode.enum';
 import { AppController } from '@root/controller/app.controller';
-import AuthGuard from '@root/middleware/auth.guard';
 
 @Module({
   imports: [
@@ -49,7 +48,6 @@ import AuthGuard from '@root/middleware/auth.guard';
       fileMode: FileModeEnum.local,
     }),
   ],
-  providers: [AuthGuard],
   controllers: [AppController],
 })
 export class AppModule {}

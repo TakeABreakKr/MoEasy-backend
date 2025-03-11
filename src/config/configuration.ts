@@ -28,6 +28,7 @@ export default () => ({
   },
   discord: {
     host: 'https://discord.com',
+    cdnHost: 'https://cdn.discordapp.com/',
     token: process.env.DISCORD_TOKEN || '',
     client_id: process.env.DISCORD_CLIENT_ID || '',
     client_secret: process.env.DISCORD_CLIENT_SECRET || '',

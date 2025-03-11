@@ -6,9 +6,10 @@ import { MemberModule } from '@domain/member/member.module';
 import { CategoryModule } from '@domain/category/category.module';
 import { RegionModule } from '@domain/region/region.module';
 import { ActivityModule } from '@domain/activity/activity.module';
+import { UsersModule } from '@domain/user/users.module';
 
 @Module({
-  imports: [MeetingModule, MemberModule, CategoryModule, RegionModule, ActivityModule],
+  imports: [UsersModule, MeetingModule, MemberModule, CategoryModule, RegionModule, ActivityModule],
   controllers: [HomeController],
   providers: [{ provide: 'HomeService', useClass: HomeServiceImpl }],
 })

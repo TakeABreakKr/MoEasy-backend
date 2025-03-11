@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { HomeService } from '@service/home/service/home.service.interface';
 import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
 import { MemberComponent } from '@domain/member/component/member.component.interface';
@@ -22,6 +22,10 @@ import { getRegionEnum, RegionEnumType } from '@enums/region.enum';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
 import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 import { Activity } from '@domain/activity/entity/activity.entity';
+import { HeaderResponse } from '@service/home/dto/response/header.response';
+import { UsersComponent } from '@domain/user/component/users.component.interface';
+import { Users } from '@domain/user/entity/users.entity';
+import { ErrorMessageType } from '@enums/error.message.enum';
 
 @Injectable()
 export class HomeServiceImpl implements HomeService {
@@ -32,6 +36,7 @@ export class HomeServiceImpl implements HomeService {
     @Inject('ActivityComponent') private activityComponent: ActivityComponent,
     @Inject('ParticipantComponent') private participantComponent: ParticipantComponent,
     @Inject('RegionComponent') private regionComponent: RegionComponent,
+    @Inject('UsersComponent') private usersComponent: UsersComponent,
   ) {}
 
   public async getHome(user: AuthUser): Promise<HomeResponse> {
@@ -165,5 +170,16 @@ export class HomeServiceImpl implements HomeService {
 
   private async getMostActivatedRegions(): Promise<HomeMostActivatedRegionDto[]> {
     return this.regionComponent.getMostActivatedRegions();
+  }
+
+  public async getHeader(user: AuthUser): Promise<HeaderResponse> {
+    const userEntity: Users = await this.usersComponent.findById(user.id);
+    if (!userEntity) {
+      throw new BadRequestException(ErrorMessageType.NO_USER);
+    }
+    return {
+      id: user.id,
+      thumbnail: userEntity.thumbnail,
+    };
   }
 }

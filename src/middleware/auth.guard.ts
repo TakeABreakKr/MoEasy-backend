@@ -7,6 +7,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 
 @Injectable()
 export default class AuthGuard implements CanActivate {
+  public static readonly ACCESS_TOKEN_HEADER = 'access-token';
   private readonly ACCESS_TOKEN_SECRET_KEY: string;
 
   constructor(
@@ -18,6 +19,12 @@ export default class AuthGuard implements CanActivate {
   }
 
   public canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const accessToken = request.headers[AuthGuard.ACCESS_TOKEN_HEADER];
+    if (accessToken) {
+      request.user = this.validateToken(accessToken);
+    }
+
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -26,18 +33,19 @@ export default class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    const { access_token } = request.headers;
-    if (access_token === undefined) {
+    if (accessToken === undefined) {
       throw new HttpException(ErrorMessageType.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
     }
 
-    request.user = this.validateToken(access_token);
     return true;
   }
 
   public validateToken(token: string): { id: string } {
     try {
+      if (token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length);
+      }
+
       return this.jwtService.verify(token, { secret: this.ACCESS_TOKEN_SECRET_KEY });
     } catch (error) {
       switch (error.message) {

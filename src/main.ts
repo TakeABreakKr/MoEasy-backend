@@ -26,6 +26,8 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors();
+
   const port = configService.get('port');
   await app.listen(port);
 }
