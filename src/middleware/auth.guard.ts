@@ -42,6 +42,10 @@ export default class AuthGuard implements CanActivate {
 
   public validateToken(token: string): { id: string } {
     try {
+      if (token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length);
+      }
+
       return this.jwtService.verify(token, { secret: this.ACCESS_TOKEN_SECRET_KEY });
     } catch (error) {
       switch (error.message) {

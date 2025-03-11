@@ -32,7 +32,7 @@ export class UsersDaoImpl implements UsersDao {
       avatar: profile.avatar || '',
       email: profile.email,
       explanation: '',
-      thumbnail: this.configService.get<string>('cdnHost') + 'avatars/' + profile.id + '/' + profile.avatar,
+      thumbnail: this.configService.get<string>('discord.cdnHost') + 'avatars/' + profile.id + '/' + profile.avatar,
       settings: {
         allowNotificationYn: false,
       },
