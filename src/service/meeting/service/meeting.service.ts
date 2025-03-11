@@ -94,8 +94,8 @@ export class MeetingServiceImpl implements MeetingService {
     const name: string = request.name || meeting.name;
     const explanation: string = request.explanation || meeting.explanation;
     const limit: number = request.limit || meeting.limit;
-    const publicYn: boolean = request.publicYn || meeting.publicYn;
-    const canJoin = request.canJoin !== null ? request.canJoin : meeting.canJoin;
+    const publicYn: boolean = request.publicYn !== null ? request.publicYn : meeting.publicYn;
+    const canJoin: boolean = request.canJoin !== null ? request.canJoin : meeting.canJoin;
 
     const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map((member) => member.userId);
 
