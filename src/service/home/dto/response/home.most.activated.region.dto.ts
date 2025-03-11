@@ -3,7 +3,7 @@ import { RegionEnum, RegionEnumType } from '@enums/region.enum';
 
 export class HomeMostActivatedRegionDto {
   @ApiProperty({
-    type: Object.keys(RegionEnum),
+    enum: RegionEnum,
     example: RegionEnum.SEOCHO,
   })
   name: RegionEnumType;

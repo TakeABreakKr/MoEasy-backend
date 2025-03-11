@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RegionEnum, RegionEnumType } from '@enums/region.enum';
-import { HomeActivityParticipantDto } from '@service/home/dto/response/home.activity.participant.dto';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 export class HomeClosingTimeActivityDto {
   @ApiProperty()
@@ -34,8 +34,8 @@ export class HomeClosingTimeActivityDto {
   participantLimit: number;
 
   @ApiProperty({
-    type: HomeActivityParticipantDto,
+    type: ActivityParticipantDto,
     isArray: true,
   })
-  participants: HomeActivityParticipantDto[];
+  participants: ActivityParticipantDto[];
 }

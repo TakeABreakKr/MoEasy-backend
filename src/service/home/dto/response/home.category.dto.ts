@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
+import { MeetingCategoryEnum, MeetingCategoryEnumType } from '@enums/meeting.category.enum';
 
 export class HomeCategoryDto {
   @ApiProperty({
-    enum: Object.keys(MeetingCategoryEnum),
+    enum: MeetingCategoryEnum,
     example: MeetingCategoryEnum.CAREER,
   })
-  name: string;
+  name: MeetingCategoryEnumType;
 
   @ApiProperty()
   order: number;

@@ -8,7 +8,10 @@ export class MeetingCreateRequest {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: MeetingCategoryEnum,
+    example: MeetingCategoryEnum.STUDY,
+  })
   @IsEnum(MeetingCategoryEnum)
   category: MeetingCategoryEnumType;
 

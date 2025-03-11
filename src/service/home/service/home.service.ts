@@ -20,7 +20,7 @@ import { HomeUpcomingActivityDto } from '@service/home/dto/response/home.upcomin
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { getRegionEnum, RegionEnumType } from '@enums/region.enum';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
-import { HomeActivityParticipantDto } from '@service/home/dto/response/home.activity.participant.dto';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 import { Activity } from '@domain/activity/entity/activity.entity';
 
 @Injectable()
@@ -69,7 +69,7 @@ export class HomeServiceImpl implements HomeService {
     return Promise.all(
       activities.map(async (activity) => {
         const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meetingId);
-        const participants: HomeActivityParticipantDto[] = await this.participantComponent.getHomeActivityParticipants(
+        const participants: ActivityParticipantDto[] = await this.participantComponent.getHomeActivityParticipants(
           activity.id,
         );
         const address = activity.address;
@@ -95,7 +95,7 @@ export class HomeServiceImpl implements HomeService {
     return Promise.all(
       activities.map(async (activity) => {
         const meeting: Meeting = await this.meetingComponent.findByMeetingId(activity.meetingId);
-        const participants: HomeActivityParticipantDto[] = await this.participantComponent.getHomeActivityParticipants(
+        const participants: ActivityParticipantDto[] = await this.participantComponent.getHomeActivityParticipants(
           activity.id,
         );
         const address = activity.address;
@@ -107,7 +107,7 @@ export class HomeServiceImpl implements HomeService {
           isOnlineYn: activity.onlineYn,
           meetingName: meeting.name,
           thumbnail: meeting.thumbnail,
-          region: region.toString(),
+          region: region,
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,

@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Participant } from '../entity/participant.entity';
 import { Users } from '@domain/user/entity/users.entity';
-import { HomeActivityParticipantDto } from '@domain/activity/component/participant.component.interface';
 import { Member } from '@domain/member/entity/member.entity';
 import { Activity } from '@domain/activity/entity/activity.entity';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 @Injectable()
 export class ParticipantDao {
@@ -42,7 +42,7 @@ export class ParticipantDao {
     });
   }
 
-  async getHomeActivityParticipants(activityId: number): Promise<HomeActivityParticipantDto[]> {
+  async getHomeActivityParticipants(activityId: number): Promise<ActivityParticipantDto[]> {
     return this.participantRepository
       .createQueryBuilder()
       .select('user.thumbnail', 'thumbnail')
@@ -52,6 +52,6 @@ export class ParticipantDao {
       .leftJoin(Activity, 'activity', 'activity.activity_id = participant.activity_id')
       .leftJoin(Member, 'member', 'member.users_id = user.users_id and member.meeting_id = activity.meeting_id')
       .where('participant.activity_id = :activityId', { activityId })
-      .getRawMany<HomeActivityParticipantDto>();
+      .getRawMany<ActivityParticipantDto>();
   }
 }
