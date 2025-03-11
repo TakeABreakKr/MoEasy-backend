@@ -19,6 +19,12 @@ export default class AuthGuard implements CanActivate {
   }
 
   public canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const accessToken = request.headers[AuthGuard.ACCESS_TOKEN_HEADER];
+    if (accessToken) {
+      request.user = this.validateToken(accessToken);
+    }
+
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -27,13 +33,10 @@ export default class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    const accessToken = request.headers[AuthGuard.ACCESS_TOKEN_HEADER];
     if (accessToken === undefined) {
       throw new HttpException(ErrorMessageType.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
     }
 
-    request.user = this.validateToken(accessToken);
     return true;
   }
 
