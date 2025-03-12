@@ -110,7 +110,7 @@ class MockMemberComponent implements MemberComponent {
   private mockUsers: Users[] = [
     Users.createForTest({
       id: 80,
-      discord_id: 'discordIdOne',
+      discordId: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
@@ -120,7 +120,7 @@ class MockMemberComponent implements MemberComponent {
     }),
     Users.createForTest({
       id: 200,
-      discord_id: 'discordIdThree',
+      discordId: 'discordIdThree',
       username: 'parkmoiji2',
       avatar: 'avatar3',
       email: 'parkmoiji2@test.com',
@@ -130,7 +130,7 @@ class MockMemberComponent implements MemberComponent {
     }),
     Users.createForTest({
       id: 15,
-      discord_id: 'discordIdFour',
+      discordId: 'discordIdFour',
       username: 'kimmoiji2',
       avatar: 'avatar4',
       email: 'kimmoiji2@test.com',
@@ -213,7 +213,7 @@ class MockUsersComponent implements UsersComponent {
   private mockUsers: Users[] = [
     Users.createForTest({
       id: 80,
-      discord_id: 'discordIdOne',
+      discordId: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
@@ -223,7 +223,7 @@ class MockUsersComponent implements UsersComponent {
     }),
     Users.createForTest({
       id: 60,
-      discord_id: 'discordIdTwo',
+      discordId: 'discordIdTwo',
       username: 'parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@test.com',
@@ -233,7 +233,7 @@ class MockUsersComponent implements UsersComponent {
     }),
     Users.createForTest({
       id: 200,
-      discord_id: 'discordIdThree',
+      discordId: 'discordIdThree',
       username: 'parkmoiji2',
       avatar: 'avatar3',
       email: 'parkmoiji2@test.com',

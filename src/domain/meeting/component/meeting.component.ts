@@ -25,7 +25,7 @@ export class MeetingComponentImpl implements MeetingComponent {
   }
 
   async update(meeting: Meeting): Promise<void> {
-    return this.meetingDao.update(meeting);
+    this.meetingDao.update(meeting);
   }
 
   async findAll(): Promise<Meeting[]> {

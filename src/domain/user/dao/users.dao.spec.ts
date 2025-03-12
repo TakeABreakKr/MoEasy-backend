@@ -11,7 +11,7 @@ class MockUsersRepository extends Repository<Users> {
   private mockUsers: Users[] = [
     Users.createForTest({
       id: 30,
-      discord_id: 'discordIdOne',
+      discordId: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@example.com',
@@ -21,7 +21,7 @@ class MockUsersRepository extends Repository<Users> {
     }),
     Users.createForTest({
       id: 50,
-      discord_id: 'discordIdTwo',
+      discordId: 'discordIdTwo',
       username: 'Parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@example.com',
@@ -52,8 +52,8 @@ class MockUsersRepository extends Repository<Users> {
       if (typeof where.id === 'number' || typeof where.id === 'string') {
         return users.id === where.id;
       }
-      if (typeof where.discord_id === 'string') {
-        return users.discord_id === where.discord_id;
+      if (typeof where.discordId === 'string') {
+        return users.discordId === where.discordId;
       }
       return false;
     });
@@ -82,7 +82,7 @@ describe('UsersDao', () => {
     const result = await usersDao.findById(userId);
 
     expect(result.id).toBe(userId);
-    expect(result.discord_id).toBe('discordIdOne');
+    expect(result.discordId).toBe('discordIdOne');
     expect(result.username).toBe('kimmoiji');
     expect(result.avatar).toBe('avatar1');
     expect(result.email).toBe('kimmoiji@example.com');
@@ -94,13 +94,13 @@ describe('UsersDao', () => {
     const result = await usersDao.findByIds(userIds);
 
     expect(result[0].id).toBe(30);
-    expect(result[0].discord_id).toBe('discordIdOne');
+    expect(result[0].discordId).toBe('discordIdOne');
     expect(result[0].username).toBe('kimmoiji');
     expect(result[0].avatar).toBe('avatar1');
     expect(result[0].email).toBe('kimmoiji@example.com');
 
     expect(result[1].id).toBe(50);
-    expect(result[1].discord_id).toBe('discordIdTwo');
+    expect(result[1].discordId).toBe('discordIdTwo');
     expect(result[1].username).toBe('Parkmoiji');
     expect(result[1].avatar).toBe('avatar2');
     expect(result[1].email).toBe('Parkmoiji@example.com');
@@ -110,7 +110,7 @@ describe('UsersDao', () => {
     const result = await usersDao.findByDiscordId('discordIdOne');
 
     expect(result.id).toBe(30);
-    expect(result.discord_id).toBe('discordIdOne');
+    expect(result.discordId).toBe('discordIdOne');
     expect(result.username).toBe('kimmoiji');
     expect(result.avatar).toBe('avatar1');
     expect(result.email).toBe('kimmoiji@example.com');
@@ -125,7 +125,7 @@ describe('UsersDao', () => {
     };
     const result = await usersDao.createUsers(profile);
 
-    expect(result.discord_id).toBe('discordIdThree');
+    expect(result.discordId).toBe('discordIdThree');
     expect(result.username).toBe('Parkmoiji');
     expect(result.avatar).toBe('avatar');
     expect(result.email).toBe('Parkmoiji@example.com');

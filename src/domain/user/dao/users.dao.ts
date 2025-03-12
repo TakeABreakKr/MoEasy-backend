@@ -21,13 +21,13 @@ export class UsersDaoImpl implements UsersDao {
     return this.usersRepository.findBy({ id: In(userIds) });
   }
 
-  public async findByDiscordId(discord_id: string): Promise<Users | null> {
-    return this.usersRepository.findOneBy({ discord_id });
+  public async findByDiscordId(discordId: string): Promise<Users | null> {
+    return this.usersRepository.findOneBy({ discordId });
   }
 
   public async createUsers(profile: DiscordProfileDto): Promise<Users> {
     const user: Users = Users.create({
-      discord_id: profile.id,
+      discordId: profile.id,
       username: profile.username,
       avatar: profile.avatar || '',
       email: profile.email,

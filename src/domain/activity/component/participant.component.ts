@@ -9,7 +9,7 @@ export class ParticipantComponentImpl implements ParticipantComponent {
   constructor(@Inject('ParticipantDao') private participantDao: ParticipantDao) {}
 
   public async saveAll(participants: Participant[]): Promise<void> {
-    return this.participantDao.saveAll(participants);
+    this.participantDao.saveAll(participants);
   }
 
   public async findByUserIdAndActivityId(userId: number, activityId: number): Promise<Participant> {
@@ -29,11 +29,11 @@ export class ParticipantComponentImpl implements ParticipantComponent {
   }
 
   public async delete(userId: number, activityId: number): Promise<void> {
-    return this.participantDao.delete(userId, activityId);
+    this.participantDao.delete(userId, activityId);
   }
 
   public async deleteAll(userIds: number[], activityId: number): Promise<void> {
-    return this.participantDao.deleteAll(userIds, activityId);
+    this.participantDao.deleteAll(userIds, activityId);
   }
 
   public async getHomeActivityParticipants(activityId: number): Promise<ActivityParticipantDto[]> {

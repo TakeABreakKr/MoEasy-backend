@@ -52,7 +52,7 @@ class MockUsersComponent implements UsersComponent {
   private mockUsers: Users[] = [
     Users.createForTest({
       id: 200,
-      discord_id: 'discordIdOne',
+      discordId: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
@@ -62,7 +62,7 @@ class MockUsersComponent implements UsersComponent {
     }),
     Users.createForTest({
       id: 512,
-      discord_id: 'discordIdTwo',
+      discordId: 'discordIdTwo',
       username: 'parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@test.com',
@@ -85,7 +85,7 @@ class MockUsersComponent implements UsersComponent {
   async createUsers(): Promise<Users> {
     const users = Users.createForTest({
       id: 300,
-      discord_id: 'discordIdThree',
+      discordId: 'discordIdThree',
       username: 'momo',
       avatar: 'avatar3',
       email: 'moeasy@naver.com',
@@ -96,8 +96,8 @@ class MockUsersComponent implements UsersComponent {
     return users;
   }
 
-  async findByDiscordId(discord_id: string): Promise<Users | null> {
-    const users = this.mockUsers.find((user) => user.discord_id === discord_id);
+  async findByDiscordId(discordId: string): Promise<Users | null> {
+    const users = this.mockUsers.find((user) => user.discordId === discordId);
     return users || null;
   }
 }

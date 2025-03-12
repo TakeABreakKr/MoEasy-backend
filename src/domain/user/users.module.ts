@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from './entity/users.entity';
+import { Users } from '@domain/user/entity/users.entity';
 import { UsersDaoImpl } from './dao/users.dao';
 import { DiscordModule } from '@domain/discord/discord.module';
 import { UsersComponentImpl } from '@domain/user/component/users.component';

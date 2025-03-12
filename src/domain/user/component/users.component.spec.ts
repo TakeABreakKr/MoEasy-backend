@@ -10,7 +10,7 @@ class MockUsersDao implements UsersDao {
   private mockUsers: Users[] = [
     Users.createForTest({
       id: 30,
-      discord_id: 'discordIdOne',
+      discordId: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@example.com',
@@ -20,7 +20,7 @@ class MockUsersDao implements UsersDao {
     }),
     Users.createForTest({
       id: 50,
-      discord_id: 'discordIdTwo',
+      discordId: 'discordIdTwo',
       username: 'Parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@example.com',
@@ -40,8 +40,8 @@ class MockUsersDao implements UsersDao {
     return this.mockUsers.filter((user) => userIds.includes(user.id));
   }
 
-  async findByDiscordId(discord_id: string): Promise<Users | null> {
-    const user = this.mockUsers.find((user) => user.discord_id === discord_id);
+  async findByDiscordId(discordId: string): Promise<Users | null> {
+    const user = this.mockUsers.find((user) => user.discordId === discordId);
 
     return user || null;
   }
@@ -49,7 +49,7 @@ class MockUsersDao implements UsersDao {
   async createUsers(profile: DiscordProfileDto): Promise<Users> {
     const user: Users = Users.createForTest({
       id: 80,
-      discord_id: profile.id,
+      discordId: profile.id,
       username: profile.username,
       avatar: profile.avatar,
       email: profile.email,
@@ -87,7 +87,7 @@ describe('UsersComponent', () => {
     const user = await usersComponent.findByDiscordId('discordIdOne');
 
     expect(user.id).toBe(30);
-    expect(user.discord_id).toBe('discordIdOne');
+    expect(user.discordId).toBe('discordIdOne');
     expect(user.username).toBe('kimmoiji');
     expect(user.avatar).toBe('avatar1');
     expect(user.email).toBe('kimmoiji@example.com');
@@ -103,7 +103,7 @@ describe('UsersComponent', () => {
     const user = await usersComponent.createUsers(profile);
 
     expect(user.id).toBe(80);
-    expect(user.discord_id).toBe('discordIdThree');
+    expect(user.discordId).toBe('discordIdThree');
     expect(user.username).toBe('kimmoiji');
     expect(user.avatar).toBe('avatar3');
     expect(user.email).toBe('kimmoiji@example.com');
@@ -115,7 +115,7 @@ describe('UsersComponent', () => {
     const user = await usersComponent.findById(userId);
 
     expect(user.id).toBe(30);
-    expect(user.discord_id).toBe('discordIdOne');
+    expect(user.discordId).toBe('discordIdOne');
     expect(user.username).toBe('kimmoiji');
     expect(user.avatar).toBe('avatar1');
     expect(user.email).toBe('kimmoiji@example.com');
@@ -127,13 +127,13 @@ describe('UsersComponent', () => {
     const users = await usersComponent.findByIds(userIds);
 
     expect(users[0].id).toBe(30);
-    expect(users[0].discord_id).toBe('discordIdOne');
+    expect(users[0].discordId).toBe('discordIdOne');
     expect(users[0].username).toBe('kimmoiji');
     expect(users[0].avatar).toBe('avatar1');
     expect(users[0].email).toBe('kimmoiji@example.com');
 
     expect(users[1].id).toBe(50);
-    expect(users[1].discord_id).toBe('discordIdTwo');
+    expect(users[1].discordId).toBe('discordIdTwo');
     expect(users[1].username).toBe('Parkmoiji');
     expect(users[1].avatar).toBe('avatar2');
     expect(users[1].email).toBe('Parkmoiji@example.com');
