@@ -2,11 +2,7 @@ import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Activity } from './activity.entity';
 import { Users } from '@domain/user/entity/users.entity';
 import { BaseEntity } from '@domain/common/base.entity';
-
-type CreateParticipantDto = {
-  activityId: number;
-  userId: number;
-};
+import { CreateParticipantDto } from '@domain/activity/dto/create.participant.dto';
 
 @Entity()
 export class Participant extends BaseEntity {

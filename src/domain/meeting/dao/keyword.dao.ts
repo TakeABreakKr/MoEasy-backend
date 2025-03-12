@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Repository } from 'typeorm';
-import { Keyword } from '../entity/keyword.entity';
-import { KeywordDao } from './keyword.dao.interface';
+import { Keyword } from '@domain/meeting/entity/keyword.entity';
+import { KeywordDao } from '@domain/meeting/dao/keyword.dao.interface';
 
 @Injectable()
 export class KeywordDaoImpl implements KeywordDao {

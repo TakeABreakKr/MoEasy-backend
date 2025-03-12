@@ -3,7 +3,7 @@ import { Users } from '@domain/user/entity/users.entity';
 import { Meeting } from '@domain//meeting/entity/meeting.entity';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { BaseEntity } from '@domain/common/base.entity';
-import { CreateMemberDto } from '../dto/create.member.dto';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 
 @Entity()
 export class Member extends BaseEntity {

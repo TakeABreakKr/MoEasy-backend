@@ -1,12 +1,11 @@
 import { FindOperator, FindOptionsWhere, Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-
-import { Users } from '../entity/users.entity';
-import { UsersDao } from './users.dao.interface';
-import { UsersDaoImpl } from './users.dao';
-import { Settings } from '../entity/settings.embedded';
-import { DiscordProfileDto } from '../dto/discord.profile.dto';
+import { Users } from '@domain/user/entity/users.entity';
+import { UsersDao } from '@domain/user/dao/users.dao.interface';
+import { UsersDaoImpl } from '@domain/user/dao/users.dao';
+import { Settings } from '@domain/user/entity/settings.embedded';
+import { DiscordProfileDto } from '@domain/user/dto/discord.profile.dto';
 
 class MockUsersRepository extends Repository<Users> {
   private mockUsers: Users[] = [
@@ -73,6 +72,7 @@ describe('UsersDao', () => {
         { provide: getRepositoryToken(Users), useClass: MockUsersRepository },
       ],
     }).compile();
+
     usersDao = module.get<UsersDao>('UsersDao');
   });
 

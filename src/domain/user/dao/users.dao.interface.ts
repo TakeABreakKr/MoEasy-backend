@@ -1,5 +1,5 @@
 import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
-import { Users } from '../entity/users.entity';
+import { Users } from '@domain/user/entity/users.entity';
 
 export interface UsersDao {
   findById(id: number): Promise<Users | null>;

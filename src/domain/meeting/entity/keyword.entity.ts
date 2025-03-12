@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Meeting } from './meeting.entity';
-import { BaseEntity } from '../../common/base.entity';
+import { Meeting } from '@domain/meeting/entity/meeting.entity';
+import { BaseEntity } from '@domain/common/base.entity';
 
 @Entity()
 export class Keyword extends BaseEntity {

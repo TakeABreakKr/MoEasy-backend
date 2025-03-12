@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MemberService } from './member.service.interface';
-import { MemberServiceImpl } from './member.service';
+import { MemberService } from '@service/member/service/member.service.interface';
+import { MemberServiceImpl } from '@service/member/service/member.service';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Member } from '@domain/member/entity/member.entity';
 import { ErrorMessageType } from '@enums/error.message.enum';

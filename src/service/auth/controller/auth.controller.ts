@@ -1,10 +1,9 @@
-import type { Response } from 'express';
-
+import AuthGuard from '@root/middleware/auth.guard';
 import { Body, Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '@decorator/public.decorator';
 import { AuthService } from '@service/auth/service/auth.service';
-import AuthGuard from '@root/middleware/auth.guard';
+import { AuthCallbackResponse } from '@service/auth/dto/response/auth.callback.response';
 
 @UseGuards(AuthGuard)
 @ApiTags('auth')
@@ -26,7 +25,7 @@ export class AuthController {
 
   @Public()
   @Get('callback')
-  async callback(@Query('code') code: string, @Res() res: Response) {
+  async callback(@Query('code') code: string, @Res() res: AuthCallbackResponse) {
     await this.authService.callback(code, res);
   }
 

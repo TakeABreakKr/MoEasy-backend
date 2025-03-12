@@ -1,9 +1,9 @@
 import { FindManyOptions, Repository } from 'typeorm';
-import { Keyword } from '../entity/keyword.entity';
+import { Keyword } from '@domain/meeting/entity/keyword.entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { KeywordDaoImpl } from './keyword.dao';
+import { KeywordDaoImpl } from '@domain/meeting/dao/keyword.dao';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { KeywordDao } from './keyword.dao.interface';
+import { KeywordDao } from '@domain/meeting/dao/keyword.dao.interface';
 
 class MockKeywordRepository extends Repository<Keyword> {
   public mockKeywords: Keyword[] = [Keyword.create('테스트 키워드', 100), Keyword.create('테스트 키워드', 200)];

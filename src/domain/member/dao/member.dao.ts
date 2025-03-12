@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Member } from '../entity/member.entity';
+import { Member } from '@domain/member/entity/member.entity';
 import { AuthorityEnumType } from '@enums/authority.enum';
-import { MemberDao } from './member.dao.interface';
-import { CreateMemberDto } from '../dto/create.member.dto';
+import { MemberDao } from '@domain/member/dao/member.dao.interface';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 
 type PopularMeetingDto = { meetingId: number; memberCount: number };
 

@@ -2,7 +2,7 @@ import { In, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from '../entity/users.entity';
+import { Users } from '@domain/user/entity/users.entity';
 import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 import { UsersDao } from '@domain/user/dao/users.dao.interface';
 

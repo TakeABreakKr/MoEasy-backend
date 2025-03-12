@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Participant } from '../entity/participant.entity';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { ParticipantDao } from '@domain/activity/dao/participant.dao.interface';
 import { Users } from '@domain/user/entity/users.entity';
 import { Member } from '@domain/member/entity/member.entity';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 @Injectable()
-export class ParticipantDao {
+export class ParticipantDaoImpl implements ParticipantDao {
   constructor(@InjectRepository(Participant) private participantRepository: Repository<Participant>) {}
 
   async saveAll(participants: Participant[]): Promise<void> {

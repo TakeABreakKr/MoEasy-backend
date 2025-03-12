@@ -1,11 +1,11 @@
 import { DeleteResult, FindOperator, FindOptionsWhere, Repository } from 'typeorm';
-import { Member } from '../entity/member.entity';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MemberDaoImpl } from './member.dao';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { MemberDao } from './member.dao.interface';
-import { AuthorityEnum } from '@enums/authority.enum';
 import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
+import { Member } from '@domain/member/entity/member.entity';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MemberDaoImpl } from '@domain/member/dao/member.dao';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { MemberDao } from '@domain/member/dao/member.dao.interface';
+import { AuthorityEnum } from '@enums/authority.enum';
 
 class MockMemberRepository extends Repository<Member> {
   private mockMembers: Member[] = [
@@ -76,6 +76,7 @@ describe('MemberDao', () => {
         { provide: getRepositoryToken(Member), useClass: MockMemberRepository },
       ],
     }).compile();
+
     memberDao = module.get<MemberDao>('MemberDao');
   });
 

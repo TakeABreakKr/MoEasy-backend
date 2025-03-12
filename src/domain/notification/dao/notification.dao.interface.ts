@@ -1,4 +1,4 @@
-import { Notification } from '../entity/notification.entity';
+import { Notification } from '@domain/notification/entity/notification.entity';
 
 export interface NotificationDao {
   getListByUserId(userId: number): Promise<Notification[]>;

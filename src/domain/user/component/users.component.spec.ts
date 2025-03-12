@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersDao } from '../dao/users.dao.interface';
-import { UsersComponent } from './users.component.interface';
-import { UsersComponentImpl } from './users.component';
-import { Users } from '../entity/users.entity';
-import { Settings } from '../entity/settings.embedded';
-import { DiscordProfileDto } from '../dto/discord.profile.dto';
+import { UsersDao } from '@domain/user/dao/users.dao.interface';
+import { UsersComponent } from '@domain/user/component/users.component.interface';
+import { UsersComponentImpl } from '@domain/user/component/users.component';
+import { Users } from '@domain/user/entity/users.entity';
+import { Settings } from '@domain/user/entity/settings.embedded';
+import { DiscordProfileDto } from '@domain/user/dto/discord.profile.dto';
 
 class MockUsersDao implements UsersDao {
   private mockUsers: Users[] = [

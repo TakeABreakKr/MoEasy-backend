@@ -1,9 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { Member } from '@domain/member/entity/member.entity';
-import { BaseEntity } from '@domain/common/base.entity';
-import { Keyword } from './keyword.entity';
-import { CreateMeetingDto } from '../dto/create.meeting.dto';
+import { BaseEntity } from '@domain//common/base.entity';
+import { Keyword } from '@domain/meeting/entity/keyword.entity';
+import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 import * as MeetingCategoryEnum from '@enums/meeting.category.enum';
 
 @Entity()

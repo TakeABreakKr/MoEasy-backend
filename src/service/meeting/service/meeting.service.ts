@@ -8,7 +8,6 @@ import type { MeetingListMeetingDto } from '@service/meeting/dto/response/meetin
 import type { MeetingThumbnailUpdateRequest } from '@service/meeting/dto/request/meeting.thumbnail.update.request';
 import type { Users } from '@domain/user/entity/users.entity';
 import type { MeetingMemberDto } from '@service/meeting/dto/response/meeting.member.dto';
-
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';

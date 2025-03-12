@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
-import { Participant } from '../entity/participant.entity';
-import { ParticipantDao } from '@domain/activity/dao/participant.dao';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { ParticipantDao } from '@domain/activity/dao/participant.dao.interface';
 import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 @Injectable()
 export class ParticipantComponentImpl implements ParticipantComponent {
-  constructor(private participantDao: ParticipantDao) {}
+  constructor(@Inject('ParticipantDao') private participantDao: ParticipantDao) {}
 
   public async saveAll(participants: Participant[]): Promise<void> {
     return this.participantDao.saveAll(participants);

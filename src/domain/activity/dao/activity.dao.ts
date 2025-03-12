@@ -1,16 +1,16 @@
 import { In, Repository } from 'typeorm';
-
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DateTime } from 'luxon';
-import { Activity } from '../entity/activity.entity';
-import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
+import { Activity } from '@domain/activity/entity/activity.entity';
+import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
+import { ActivityDao } from '@domain/activity/dao/activity.dao.interface';
 
 @Injectable()
-export class ActivityDao {
-  private readonly logger = new Logger(ActivityDao.name);
+export class ActivityDaoImpl implements ActivityDao {
+  private readonly logger = new Logger(ActivityDaoImpl.name);
 
   private static readonly CLOSING_TIME_ACTIVITIES_LIMIT: number = 30;
   private static readonly UPCOMING_ACTIVITIES_LIMIT: number = 100;
@@ -31,7 +31,7 @@ export class ActivityDao {
     return activity;
   }
 
-  async update(activity: Activity) {
+  async update(activity: Activity): Promise<void> {
     await this.activityRepository.save(activity);
   }
 
@@ -39,8 +39,8 @@ export class ActivityDao {
     return this.activityRepository.findBy({ meetingId });
   }
 
-  async delete(id: number) {
-    await this.activityRepository.delete({ id });
+  async delete(activityId: number): Promise<void> {
+    await this.activityRepository.delete(activityId);
   }
 
   async getClosingTimeActivities(): Promise<Partial<Activity>[]> {
@@ -64,7 +64,7 @@ export class ActivityDao {
         .andWhere('meeting.publicYn = 1')
         .andWhere('activity.participantLimit > subQuery.participantCount')
         .orderBy('participantLeft', 'ASC')
-        .limit(ActivityDao.CLOSING_TIME_ACTIVITIES_LIMIT)
+        .limit(ActivityDaoImpl.CLOSING_TIME_ACTIVITIES_LIMIT)
         .getMany();
     } catch (e) {
       this.logger.error(e);
@@ -92,7 +92,7 @@ export class ActivityDao {
           .where('activity.startDate > :now', { now })
           .andWhere('activity.startDate < :tenDaysLater', { tenDaysLater })
           .andWhere('activity.activity_id IN (' + subQuery + ')')
-          .limit(ActivityDao.UPCOMING_ACTIVITIES_LIMIT)
+          .limit(ActivityDaoImpl.UPCOMING_ACTIVITIES_LIMIT)
           .getMany();
       }
 
@@ -103,7 +103,7 @@ export class ActivityDao {
         .where('activity.startDate > :now', { now })
         .andWhere('activity.startDate < :tenDaysLater', { tenDaysLater })
         .andWhere('meeting.publicYn = 1')
-        .limit(ActivityDao.UPCOMING_ACTIVITIES_LIMIT)
+        .limit(ActivityDaoImpl.UPCOMING_ACTIVITIES_LIMIT)
         .getMany();
     } catch (e) {
       this.logger.error(e);

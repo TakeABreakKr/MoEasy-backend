@@ -37,9 +37,7 @@ class MockNotificationDao implements NotificationDao {
 
   async getListByNotificationIds(notificationIdList: number[]): Promise<Notification[]> {
     daoAccessLog.push(MockNotificationDao.getListByNotificationIdsLog);
-    return this.notifications.filter((notification: Notification) =>
-      notificationIdList.includes(notification.id),
-    );
+    return this.notifications.filter((notification: Notification) => notificationIdList.includes(notification.id));
   }
 
   //only for test
@@ -63,6 +61,7 @@ describe('NotificationComponent', () => {
         { provide: 'NotificationComponent', useClass: NotificationComponentImpl },
       ],
     }).compile();
+
     notificationComponent = module.get<NotificationComponent>('NotificationComponent');
     notificationDao = module.get<MockNotificationDao>('NotificationDao');
   });
@@ -73,6 +72,7 @@ describe('NotificationComponent', () => {
 
     const result = await notificationComponent.addNotification(content, userId);
     const notifications = await notificationDao.getListByUserId(userId);
+
     expect(notifications.shift()).toStrictEqual(Notification.create(content, userId));
     expect(result).toBe(void 0);
     expect(daoAccessLog).toEqual([MockNotificationDao.saveLog, MockNotificationDao.getListByUserIdLog]);
@@ -114,6 +114,7 @@ describe('NotificationComponent', () => {
     ];
 
     const result = await notificationDao.getListByUserId(userId);
+
     expect(result.length).toBe(2);
     expect(result).toStrictEqual(response);
     expect(daoAccessLog).toEqual([MockNotificationDao.getListByUserIdLog]);

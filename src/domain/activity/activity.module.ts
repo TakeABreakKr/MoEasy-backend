@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Activity } from './entity/activity.entity';
-import { ActivityDao } from './dao/activity.dao';
-import { Participant } from './entity/participant.entity';
-import { ParticipantDao } from './dao/participant.dao';
+import { Activity } from '@domain/activity/entity/activity.entity';
+import { ActivityDaoImpl } from '@domain/activity/dao/activity.dao';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { ParticipantDaoImpl } from '@domain/activity/dao/participant.dao';
 import { ActivityComponentImpl } from '@domain/activity/component/activity.component';
 import { ParticipantComponentImpl } from '@domain/activity/component/participant.component';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Activity, Participant])],
   providers: [
-    ActivityDao,
-    ParticipantDao,
+    { provide: 'ActivityDao', useClass: ActivityDaoImpl },
+    { provide: 'ParticipantDao', useClass: ParticipantDaoImpl },
     { provide: 'ActivityComponent', useClass: ActivityComponentImpl },
     { provide: 'ParticipantComponent', useClass: ParticipantComponentImpl },
   ],

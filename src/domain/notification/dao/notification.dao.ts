@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Notification } from '@domain/notification/entity/notification.entity';
-import { NotificationDao } from './notification.dao.interface';
+import { NotificationDao } from '@domain/notification/dao/notification.dao.interface';
 
 @Injectable()
 export class NotificationDaoImpl implements NotificationDao {
