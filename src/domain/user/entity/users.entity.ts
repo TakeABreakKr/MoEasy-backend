@@ -5,6 +5,7 @@ import { Notification } from '@domain/notification/entity/notification.entity';
 import { BaseEntity } from '@domain/common/base.entity';
 import { UsersCreateDto } from '@domain/user/dto/users.create.dto';
 import { Settings } from './settings.embedded';
+import { MeetingLike } from '@root/domain/meeting/entity/meeting.like.entity';
 
 @Entity()
 export class Users extends BaseEntity {
@@ -44,6 +45,9 @@ export class Users extends BaseEntity {
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Promise<Notification[]>;
+
+  @OneToMany(() => MeetingLike, (meetingLike) => meetingLike.user)
+  meetingLikes: Promise<MeetingLike[]>;
 
   @ManyToMany(() => Users, (users) => users.friends)
   @JoinTable({
