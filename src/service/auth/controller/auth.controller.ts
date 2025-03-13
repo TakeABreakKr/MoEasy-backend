@@ -1,6 +1,5 @@
 import AuthGuard from '@root/middleware/auth.guard';
-import { Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Public } from '@decorator/public.decorator';
 import { AuthService } from '@service/auth/service/auth.service';
@@ -37,7 +36,7 @@ export class AuthController {
   @ApiBody({ type: RefreshTokenRequest })
   @ApiOkResponse({ status: 200, description: 'refresh token succeed', type: RefreshTokenResponse })
   @ApiUnauthorizedResponse({ status: 401, description: 'invalid refresh token' })
-  async refreshAccessToken(@Req() refreshTokenRequest: Request): Promise<RefreshTokenResponse> {
-    return this.authService.refreshAccessToken(refreshTokenRequest.body.refreshToken);
+  async refreshAccessToken(@Body() refreshTokenRequest: RefreshTokenRequest): Promise<RefreshTokenResponse> {
+    return this.authService.refreshAccessToken(refreshTokenRequest.refreshToken);
   }
 }
