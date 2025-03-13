@@ -41,7 +41,7 @@ export class MeetingLike extends BaseEntity {
     const meetingLike = new MeetingLike();
     meetingLike.meetingId = meetingId;
     meetingLike.userId = userId;
-    meetingLike.isLikedYn = false;
+    meetingLike.isLikedYn = true;
     return meetingLike;
   }
 }

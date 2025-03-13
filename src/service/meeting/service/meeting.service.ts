@@ -232,7 +232,6 @@ export class MeetingServiceImpl implements MeetingService {
   @Transactional()
   public async likeMeeting(_meetingId: string, requesterId: number): Promise<void> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
-
     const meeting = await this.meetingComponent.findByMeetingId(meetingId);
 
     if (!meeting) {
@@ -248,6 +247,10 @@ export class MeetingServiceImpl implements MeetingService {
 
     const newState = !meetingLike.isLikedYn;
     await this.meetingLikeComponent.updateLikeStatus(meetingId, requesterId, newState);
-    await this.meetingComponent.decrementLikeCount(meetingId);
+    if (newState) {
+      await this.meetingComponent.incrementLikeCount(meetingId);
+    } else {
+      await this.meetingComponent.decrementLikeCount(meetingId);
+    }
   }
 }
