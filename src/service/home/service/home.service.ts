@@ -134,7 +134,7 @@ export class HomeServiceImpl implements HomeService {
           thumbnail: meeting.thumbnail,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
-          isLikedYn: id ? false : false, // TODO: Implement this after Like system developed
+          isLikedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
         };
       }),
     );
