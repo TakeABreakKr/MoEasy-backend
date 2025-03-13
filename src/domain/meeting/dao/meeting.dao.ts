@@ -38,4 +38,12 @@ export class MeetingDaoImpl implements MeetingDao {
   async delete(id: number): Promise<void> {
     await this.meetingRepository.delete(id);
   }
+
+  async incrementLikeCount(id: number): Promise<void> {
+    await this.meetingRepository.increment({ id }, 'likeCount', 1);
+  }
+
+  async decrementLikeCount(id: number): Promise<void> {
+    await this.meetingRepository.decrement({ id }, 'likeCount', 1);
+  }
 }

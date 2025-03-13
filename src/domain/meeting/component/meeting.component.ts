@@ -8,31 +8,39 @@ import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 export class MeetingComponentImpl implements MeetingComponent {
   constructor(@Inject('MeetingDao') private meetingDao: MeetingDao) {}
 
-  async findByMeetingId(id: number): Promise<Meeting | null> {
+  public async findByMeetingId(id: number): Promise<Meeting | null> {
     return this.meetingDao.findByMeetingId(id);
   }
 
-  async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
+  public async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
     return this.meetingDao.findByMeetingIds(ids);
   }
 
-  async getNewMeetings(): Promise<Meeting[]> {
+  public async getNewMeetings(): Promise<Meeting[]> {
     return this.meetingDao.getNewMeetings();
   }
 
-  async create(createMeetingDto: CreateMeetingDto): Promise<Meeting> {
+  public async create(createMeetingDto: CreateMeetingDto): Promise<Meeting> {
     return this.meetingDao.create(createMeetingDto);
   }
 
-  async update(meeting: Meeting): Promise<void> {
+  public async update(meeting: Meeting): Promise<void> {
     this.meetingDao.update(meeting);
   }
 
-  async findAll(): Promise<Meeting[]> {
+  public async findAll(): Promise<Meeting[]> {
     return this.meetingDao.findAll();
   }
 
-  async delete(id: number): Promise<void> {
+  public async delete(id: number): Promise<void> {
     await this.meetingDao.delete(id);
+  }
+
+  public async incrementLikeCount(id: number): Promise<void> {
+    await this.meetingDao.incrementLikeCount(id);
+  }
+
+  public async decrementLikeCount(id: number): Promise<void> {
+    await this.meetingDao.decrementLikeCount(id);
   }
 }

@@ -61,6 +61,13 @@ class MockMeetingDao implements MeetingDao {
   async getNewMeetings(): Promise<Meeting[]> {
     return this.mockMeetings;
   }
+
+  async incrementLikeCount(): Promise<void> {
+    return;
+  }
+  async decrementLikeCount(): Promise<void> {
+    return;
+  }
 }
 
 describe('MeetingComponent', () => {
