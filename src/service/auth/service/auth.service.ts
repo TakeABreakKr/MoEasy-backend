@@ -11,6 +11,7 @@ import { UsersComponent } from '@domain/user/component/users.component.interface
 import { TokenDto } from '@service/auth/dto/token.dto';
 import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 import { AuthCallbackResponse } from '@service/auth/dto/response/auth.callback.response';
+import { RefreshTokenResponse } from '@service/auth/dto/response/refresh.token.response';
 
 @Injectable()
 export class AuthService {
@@ -72,15 +73,20 @@ export class AuthService {
     return res.redirect(`${host}`);
   }
 
-  public refreshAccessToken(refreshToken: string): string {
-    let user: AuthUser;
+  public async refreshAccessToken(refreshToken: string): Promise<RefreshTokenResponse> {
+    let authUser: AuthUser;
     try {
-      user = this.jwtService.verify(refreshToken, { secret: this.REFRESH_TOKEN_SECRET_KEY });
+      authUser = this.jwtService.verify(refreshToken, { secret: this.REFRESH_TOKEN_SECRET_KEY });
     } catch (e) {
       throw new UnauthorizedException(ErrorMessageType.INVALID_TOKEN);
     }
 
-    return this.generateAccessToken(user);
+    if (!authUser?.id) {
+      throw new BadRequestException(ErrorMessageType.INVALID_TOKEN);
+    }
+
+    const user = await this.usersComponent.findById(authUser.id);
+    return this.createTokens(user);
   }
 
   private async getUser(profile: DiscordProfileDto): Promise<Users> {
