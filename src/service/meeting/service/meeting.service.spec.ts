@@ -83,6 +83,9 @@ class MockMeetingComponent implements MeetingComponent {
   async getNewMeetings(): Promise<Meeting[]> {
     return this.mockMeetings;
   }
+
+  async incrementLikeCount(): Promise<void> {}
+  async decrementLikeCount(): Promise<void> {}
 }
 
 class MockMemberComponent implements MemberComponent {
@@ -209,7 +212,7 @@ class MockUsersComponent implements UsersComponent {
   private mockUsers: Users[] = [
     Users.createForTest({
       id: 200,
-      discord_id: 'discordIdOne',
+      discordId: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
@@ -219,7 +222,7 @@ class MockUsersComponent implements UsersComponent {
     }),
     Users.createForTest({
       id: 512,
-      discord_id: 'discordIdTwo',
+      discordId: 'discordIdTwo',
       username: 'parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@test.com',

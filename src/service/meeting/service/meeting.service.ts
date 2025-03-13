@@ -24,6 +24,7 @@ import { MemberComponent } from '@domain/member/component/member.component.inter
 import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
 import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
+import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interfact';
 
 type lineSeperatorFunctionType = (content: string) => string;
 
@@ -32,6 +33,7 @@ export class MeetingServiceImpl implements MeetingService {
   constructor(
     @Inject('FileService') private fileService: FileService,
     @Inject('MeetingComponent') private meetingComponent: MeetingComponent,
+    @Inject('MeetingLikeComponent') private meetingLikeComponent: MeetingLikeComponent,
     @Inject('MemberComponent') private memberComponent: MemberComponent,
     @Inject('KeywordComponent') private keywordComponent: KeywordComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
@@ -174,6 +176,8 @@ export class MeetingServiceImpl implements MeetingService {
         name: meeting.name,
         explanation: meeting.explanation,
         canJoin: meeting.canJoin,
+        thumbnail: meeting.thumbnail,
+        isLikedYn: userId ? this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
       };
     });
 
@@ -223,5 +227,27 @@ export class MeetingServiceImpl implements MeetingService {
       members: memberDtos,
       canJoin: meeting.canJoin,
     };
+  }
+
+  @Transactional()
+  public async likeMeeting(_meetingId: string, requesterId: number): Promise<void> {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
+
+    const meeting = await this.meetingComponent.findByMeetingId(meetingId);
+
+    if (!meeting) {
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
+    }
+
+    const meetingLike = await this.meetingLikeComponent.findByMeetingIdAndUsers(meetingId, requesterId);
+    if (!meetingLike) {
+      await this.meetingLikeComponent.create(meetingId, requesterId);
+      await this.meetingComponent.incrementLikeCount(meetingId);
+      return;
+    }
+
+    const newState = !meetingLike.isLikedYn;
+    await this.meetingLikeComponent.updateLikeStatus(meetingId, requesterId, newState);
+    await this.meetingComponent.decrementLikeCount(meetingId);
   }
 }

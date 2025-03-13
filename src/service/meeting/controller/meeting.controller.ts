@@ -148,4 +148,18 @@ export class MeetingController {
   async lookAroundMeetingList(): Promise<MeetingListResponse> {
     return this.meetingService.getMeetingList();
   }
+
+  @Post('like')
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
+  @ApiOkResponse({ status: 200, description: 'Meeting like count has been successfully updated.' })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
+  @ApiQuery({
+    name: 'meetingId',
+    type: String,
+    required: true,
+  })
+  async likeMeeting(@Body() meetingId: string, @Token() user: AuthUser): Promise<void> {
+    await this.meetingService.likeMeeting(meetingId, user.id);
+  }
 }

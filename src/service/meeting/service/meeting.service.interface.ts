@@ -17,4 +17,5 @@ export interface MeetingService {
     authorities?: AuthorityEnumType[],
     options?: OrderingOptionEnumType,
   ): Promise<MeetingListResponse>;
+  likeMeeting(meetingId: string, requesterId: number): Promise<void>;
 }

@@ -40,6 +40,8 @@ class MockMeetingService implements MeetingService {
       meetingList: [],
     };
   }
+
+  public async likeMeeting() {}
 }
 
 describe('MeetingController', () => {
