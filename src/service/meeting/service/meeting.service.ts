@@ -25,6 +25,7 @@ import { MeetingComponent } from '@domain/meeting/component/meeting.component.in
 import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interfact';
+import { MeetingLike } from '@root/domain/meeting/entity/meeting.like.entity';
 
 type lineSeperatorFunctionType = (content: string) => string;
 
@@ -167,8 +168,17 @@ export class MeetingServiceImpl implements MeetingService {
     userId?: number,
     authorities?: AuthorityEnumType[],
     options?: OrderingOptionEnumType,
+    onlyLiked?: boolean,
   ): Promise<MeetingListResponse> {
-    const meetings: Meeting[] = await this.meetingComponent.findAll();
+    let meetings: Meeting[];
+
+    if (onlyLiked && userId) {
+      const meetingLikeList = await this.meetingLikeComponent.findAllLikedMeetingsByUserId(userId);
+      meetings = await Promise.all(meetingLikeList.map(async (meetingLike: MeetingLike) => await meetingLike.meeting));
+    } else {
+      meetings = await this.meetingComponent.findAll();
+    }
+
     SortUtils.sort<Meeting>(meetings, options);
     const meetingList: MeetingListMeetingDto[] = meetings.map((meeting) => {
       return {
@@ -195,11 +205,15 @@ export class MeetingServiceImpl implements MeetingService {
       meeting.authority = member.authority;
     }
 
-    return {
-      meetingList: meetingList.filter((meeting) => {
-        return meeting.authority && authorities.includes(meeting.authority);
-      }),
-    };
+    if (authorities && authorities.length > 0) {
+      return {
+        meetingList: meetingList.filter((meeting) => {
+          return meeting.authority && authorities.includes(meeting.authority);
+        }),
+      };
+    } else {
+      return { meetingList };
+    }
   }
 
   private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {

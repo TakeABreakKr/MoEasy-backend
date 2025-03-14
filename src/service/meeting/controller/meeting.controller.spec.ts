@@ -131,7 +131,7 @@ describe('MeetingController', () => {
   });
 
   it('getMeetingListTest', async () => {
-    const result = await meetingController.getMeetingList([AuthorityEnum.MEMBER], OrderingOptionEnum.NAME, user);
+    const result = await meetingController.getMeetingList(user, [AuthorityEnum.MEMBER], OrderingOptionEnum.NAME);
     const response: MeetingListResponse = {
       meetingList: [],
     };

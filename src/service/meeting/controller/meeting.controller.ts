@@ -127,15 +127,20 @@ export class MeetingController {
           enum: [OrderingOptionEnum.LATEST, OrderingOptionEnum.NAME],
           description: 'Option to sort meetingList (LATEST for latest registered, NAME for alphabetical).',
         },
+        onLiked: {
+          type: 'boolean',
+          description: 'If true, return only liked meetings.',
+        },
       },
     },
   })
   async getMeetingList(
-    @Body('authorities') authorities: AuthorityEnumType[],
-    @Body('options') options: OrderingOptionEnumType,
     @Token() user: AuthUser,
+    @Body('authorities') authorities?: AuthorityEnumType[],
+    @Body('options') options?: OrderingOptionEnumType,
+    @Body('onlyLiked') onlyLiked?: boolean,
   ): Promise<MeetingListResponse> {
-    return this.meetingService.getMeetingList(user.id, authorities, options);
+    return this.meetingService.getMeetingList(user.id, authorities, options, onlyLiked);
   }
 
   @Public()
@@ -152,7 +157,6 @@ export class MeetingController {
   @Post('like')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiOkResponse({ status: 200, description: 'Meeting like count has been successfully updated.' })
-  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',
