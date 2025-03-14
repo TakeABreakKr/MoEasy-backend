@@ -29,4 +29,10 @@ export class MeetingLikeDaoImpl implements MeetingLikeDao {
     });
     return meetingLike?.isLikedYn || false;
   }
+
+  async findAllLikedMeetingsByUserId(userId: number): Promise<MeetingLike[]> {
+    return this.meetingLikeRepository.find({
+      where: { user: { id: userId }, isLikedYn: true },
+    });
+  }
 }

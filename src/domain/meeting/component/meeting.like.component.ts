@@ -17,7 +17,11 @@ export class MeetingLikeComponentImpl implements MeetingLikeComponentImpl {
     return this.meetingLikeDao.findByMeetingIdAndUsers(meetingId, userId);
   }
 
-  public async likeStatus(meetingId: number, userId: number): Promise<boolean | null> {
+  public async likeStatus(meetingId: number, userId: number): Promise<boolean> {
     return this.meetingLikeDao.likeStatus(meetingId, userId);
+  }
+
+  public async findAllLikedMeetingsByUserId(userId: number): Promise<MeetingLike[]> {
+    return this.meetingLikeDao.findAllLikedMeetingsByUserId(userId);
   }
 }
