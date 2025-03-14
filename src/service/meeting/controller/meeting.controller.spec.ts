@@ -32,6 +32,7 @@ class MockMeetingService implements MeetingService {
       members: [],
       thumbnail: undefined,
       canJoin: false,
+      isLikedYn: false,
     };
   }
 
@@ -118,7 +119,7 @@ describe('MeetingController', () => {
   });
 
   it('getMeetingTest', async () => {
-    const result = await meetingController.getMeeting(MockMeetingService.meetingId);
+    const result = await meetingController.getMeeting(MockMeetingService.meetingId, user);
     const response: MeetingResponse = {
       name: '',
       explanation: '',
@@ -126,6 +127,7 @@ describe('MeetingController', () => {
       members: [],
       thumbnail: undefined,
       canJoin: false,
+      isLikedYn: false,
     };
     expect(result).toStrictEqual(response);
   });

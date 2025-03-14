@@ -156,12 +156,12 @@ export class MeetingServiceImpl implements MeetingService {
     await this.meetingComponent.delete(meetingId);
   }
 
-  public async getMeeting(_meetingId: string): Promise<MeetingResponse> {
+  public async getMeeting(_meetingId: string, requesterId?: number): Promise<MeetingResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
     const meeting: Meeting | null = await this.meetingComponent.findByMeetingId(meetingId);
     if (!meeting) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
 
-    return this.toGetMeetingResponse(meeting);
+    return this.toGetMeetingResponse(meeting, requesterId);
   }
 
   public async getMeetingList(
@@ -216,7 +216,7 @@ export class MeetingServiceImpl implements MeetingService {
     }
   }
 
-  private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {
+  private async toGetMeetingResponse(meeting: Meeting, requesterId: number): Promise<MeetingResponse> {
     const members: Member[] = await this.memberComponent.findByMeetingId(meeting.id);
     const userIds = members.map((member) => member.userId);
     const users: Users[] = await this.usersComponent.findByIds(userIds);
@@ -240,6 +240,7 @@ export class MeetingServiceImpl implements MeetingService {
       thumbnail: meeting.thumbnail,
       members: memberDtos,
       canJoin: meeting.canJoin,
+      isLikedYn: await this.meetingLikeComponent.likeStatus(meeting.id, requesterId),
     };
   }
 

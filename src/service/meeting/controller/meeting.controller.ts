@@ -98,8 +98,8 @@ export class MeetingController {
     type: String,
     required: true,
   })
-  async getMeeting(@Query('meetingId') meetingId: string): Promise<MeetingResponse> {
-    return this.meetingService.getMeeting(meetingId);
+  async getMeeting(@Query('meetingId') meetingId: string, @Token() user: AuthUser): Promise<MeetingResponse> {
+    return this.meetingService.getMeeting(meetingId, user.id);
   }
 
   @Post('get/list')
