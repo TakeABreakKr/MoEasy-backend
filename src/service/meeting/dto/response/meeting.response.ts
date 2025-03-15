@@ -25,4 +25,7 @@ export class MeetingResponse {
 
   @ApiProperty()
   likedYn: boolean;
+
+  @ApiProperty()
+  likeCount: number;
 }
