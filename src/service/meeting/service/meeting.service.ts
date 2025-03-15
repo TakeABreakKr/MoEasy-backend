@@ -180,16 +180,18 @@ export class MeetingServiceImpl implements MeetingService {
     }
 
     SortUtils.sort<Meeting>(meetings, options);
-    const meetingList: MeetingListMeetingDto[] = meetings.map((meeting) => {
-      return {
-        meetingId: MeetingUtils.transformMeetingIdToString(meeting.id),
-        name: meeting.name,
-        explanation: meeting.explanation,
-        canJoin: meeting.canJoin,
-        thumbnail: meeting.thumbnail,
-        likedYn: userId ? this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
-      };
-    });
+    const meetingList: MeetingListMeetingDto[] = await Promise.all(
+      meetings.map(async (meeting) => {
+        return {
+          meetingId: MeetingUtils.transformMeetingIdToString(meeting.id),
+          name: meeting.name,
+          explanation: meeting.explanation,
+          canJoin: meeting.canJoin,
+          thumbnail: meeting.thumbnail,
+          likedYn: userId ? await this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
+        };
+      }),
+    );
 
     if (!userId) {
       return {
