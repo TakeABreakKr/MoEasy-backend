@@ -9,6 +9,4 @@ export interface MeetingDao {
   update(meeting: Meeting): Promise<void>;
   findAll(): Promise<Meeting[]>;
   delete(id: number): Promise<void>;
-  incrementLikeCount(id: number): Promise<void>;
-  decrementLikeCount(id: number): Promise<void>;
 }

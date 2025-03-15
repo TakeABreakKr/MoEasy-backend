@@ -8,7 +8,7 @@ import type { MeetingListMeetingDto } from '@service/meeting/dto/response/meetin
 import type { MeetingThumbnailUpdateRequest } from '@service/meeting/dto/request/meeting.thumbnail.update.request';
 import type { Users } from '@domain/user/entity/users.entity';
 import type { MeetingMemberDto } from '@service/meeting/dto/response/meeting.member.dto';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingUtils } from '@utils/meeting.utils';
@@ -24,7 +24,7 @@ import { MemberComponent } from '@domain/member/component/member.component.inter
 import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
 import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
-import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interfact';
+import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interface';
 import { MeetingLike } from '@root/domain/meeting/entity/meeting.like.entity';
 
 type lineSeperatorFunctionType = (content: string) => string;
@@ -187,7 +187,7 @@ export class MeetingServiceImpl implements MeetingService {
         explanation: meeting.explanation,
         canJoin: meeting.canJoin,
         thumbnail: meeting.thumbnail,
-        isLikedYn: userId ? this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
+        likedYn: userId ? this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
       };
     });
 
@@ -240,7 +240,7 @@ export class MeetingServiceImpl implements MeetingService {
       thumbnail: meeting.thumbnail,
       members: memberDtos,
       canJoin: meeting.canJoin,
-      isLikedYn: await this.meetingLikeComponent.likeStatus(meeting.id, requesterId),
+      likedYn: await this.meetingLikeComponent.likeStatus(meeting.id, requesterId),
     };
   }
 
@@ -253,19 +253,21 @@ export class MeetingServiceImpl implements MeetingService {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
     }
 
-    const meetingLike = await this.meetingLikeComponent.findByMeetingIdAndUsers(meetingId, requesterId);
-    if (!meetingLike) {
-      await this.meetingLikeComponent.create(meetingId, requesterId);
-      await this.meetingComponent.incrementLikeCount(meetingId);
-      return;
-    }
+    try {
+      const meetingLike = await this.meetingLikeComponent.findByMeetingIdAndUserId(meetingId, requesterId);
+      if (!meetingLike) {
+        await this.meetingLikeComponent.create(meetingId, requesterId);
+        return;
+      }
 
-    const newState = !meetingLike.isLikedYn;
-    await this.meetingLikeComponent.updateLikeStatus(meetingId, requesterId, newState);
-    if (newState) {
-      await this.meetingComponent.incrementLikeCount(meetingId);
-    } else {
-      await this.meetingComponent.decrementLikeCount(meetingId);
+      const newState = !meetingLike.likedYn;
+      await this.meetingLikeComponent.updateLikeStatus(meetingId, requesterId, newState);
+    } catch (error) {
+      if (error.message && error.message.toLowerCase().includes('lock')) {
+        throw new ConflictException(ErrorMessageType.LIKE_CONCURRENT_ERROR);
+      } else {
+        throw new BadRequestException(ErrorMessageType.LIKE_OPERATION_ERROR);
+      }
     }
   }
 }

@@ -26,7 +26,7 @@ import { HeaderResponse } from '@service/home/dto/response/header.response';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { Users } from '@domain/user/entity/users.entity';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interfact';
+import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interface';
 
 @Injectable()
 export class HomeServiceImpl implements HomeService {
@@ -65,7 +65,7 @@ export class HomeServiceImpl implements HomeService {
           thumbnail: meeting.thumbnail,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
-          isLikedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
+          likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
         };
       }),
     );
@@ -134,7 +134,7 @@ export class HomeServiceImpl implements HomeService {
           thumbnail: meeting.thumbnail,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
-          isLikedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
+          likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
         };
       }),
     );

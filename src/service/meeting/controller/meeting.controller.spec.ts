@@ -32,7 +32,7 @@ class MockMeetingService implements MeetingService {
       members: [],
       thumbnail: undefined,
       canJoin: false,
-      isLikedYn: false,
+      likedYn: false,
     };
   }
 
@@ -127,7 +127,7 @@ describe('MeetingController', () => {
       members: [],
       thumbnail: undefined,
       canJoin: false,
-      isLikedYn: false,
+      likedYn: false,
     };
     expect(result).toStrictEqual(response);
   });

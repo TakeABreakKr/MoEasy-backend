@@ -35,12 +35,4 @@ export class MeetingComponentImpl implements MeetingComponent {
   public async delete(id: number): Promise<void> {
     await this.meetingDao.delete(id);
   }
-
-  public async incrementLikeCount(id: number): Promise<void> {
-    await this.meetingDao.incrementLikeCount(id);
-  }
-
-  public async decrementLikeCount(id: number): Promise<void> {
-    await this.meetingDao.decrementLikeCount(id);
-  }
 }

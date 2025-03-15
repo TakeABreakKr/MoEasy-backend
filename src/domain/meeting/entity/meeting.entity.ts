@@ -50,9 +50,6 @@ export class Meeting extends BaseEntity {
   @Column()
   canJoin: boolean;
 
-  @Column()
-  likeCount: number;
-
   @OneToMany(() => Keyword, (keyword) => keyword.meeting)
   keywords: Promise<Keyword[]>;
 

@@ -17,5 +17,5 @@ export class HomePopularMeetingDto {
   memberCount: number;
 
   @ApiProperty()
-  isLikedYn?: boolean;
+  likedYn?: boolean;
 }

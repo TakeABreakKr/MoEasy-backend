@@ -11,14 +11,14 @@ export class MeetingLikeDaoImpl implements MeetingLikeDao {
     await this.meetingLikeRepository.save(meetingLike);
   }
 
-  async updateLikeStatus(meetingId: number, userId: number, isLikedYn: boolean): Promise<void> {
-    await this.meetingLikeRepository.update({ meeting: { id: meetingId }, user: { id: userId } }, { isLikedYn });
+  async updateLikeStatus(meetingId: number, userId: number, likedYn: boolean): Promise<void> {
+    await this.meetingLikeRepository.update({ meeting: { id: meetingId }, user: { id: userId } }, { likedYn });
   }
 
-  async findByMeetingIdAndUsers(meetingId: number, userId: number): Promise<MeetingLike | null> {
-    return this.meetingLikeRepository.findOneBy({
-      meeting: { id: meetingId },
-      user: { id: userId },
+  async findByMeetingIdAndUserId(meetingId: number, userId: number): Promise<MeetingLike | null> {
+    return this.meetingLikeRepository.findOne({
+      where: { meeting: { id: meetingId }, user: { id: userId } },
+      lock: { mode: 'pessimistic_write' },
     });
   }
 
@@ -27,12 +27,16 @@ export class MeetingLikeDaoImpl implements MeetingLikeDao {
       meeting: { id: meetingId },
       user: { id: userId },
     });
-    return meetingLike?.isLikedYn || false;
+    return meetingLike?.likedYn || false;
   }
 
   async findAllLikedMeetingsByUserId(userId: number): Promise<MeetingLike[]> {
     return this.meetingLikeRepository.find({
-      where: { user: { id: userId }, isLikedYn: true },
+      where: { user: { id: userId }, likedYn: true },
     });
+  }
+
+  async getLikeCountByMeetingId(meetingId: number): Promise<number> {
+    return this.meetingLikeRepository.countBy({ meeting: { id: meetingId }, likedYn: true });
   }
 }

@@ -6,15 +6,15 @@ export class MeetingLikeComponentImpl implements MeetingLikeComponentImpl {
   constructor(@Inject('MeetingLikeDao') private meetingLikeDao: MeetingLikeDao) {}
 
   public async create(meetingId: number, userId: number): Promise<void> {
-    this.meetingLikeDao.create(meetingId, userId);
+    await this.meetingLikeDao.create(meetingId, userId);
   }
 
   public async updateLikeStatus(meetingId: number, userId: number, isLikeYn: boolean): Promise<void> {
-    this.meetingLikeDao.updateLikeStatus(meetingId, userId, isLikeYn);
+    await this.meetingLikeDao.updateLikeStatus(meetingId, userId, isLikeYn);
   }
 
-  public async findByMeetingIdAndUsers(meetingId: number, userId: number): Promise<MeetingLike | null> {
-    return this.meetingLikeDao.findByMeetingIdAndUsers(meetingId, userId);
+  public async findByMeetingIdAndUserId(meetingId: number, userId: number): Promise<MeetingLike | null> {
+    return this.meetingLikeDao.findByMeetingIdAndUserId(meetingId, userId);
   }
 
   public async likeStatus(meetingId: number, userId: number): Promise<boolean> {
@@ -23,5 +23,9 @@ export class MeetingLikeComponentImpl implements MeetingLikeComponentImpl {
 
   public async findAllLikedMeetingsByUserId(userId: number): Promise<MeetingLike[]> {
     return this.meetingLikeDao.findAllLikedMeetingsByUserId(userId);
+  }
+
+  public async getLikeCountByMeetingId(meetingId: number): Promise<number> {
+    return this.meetingLikeDao.getLikeCountByMeetingId(meetingId);
   }
 }

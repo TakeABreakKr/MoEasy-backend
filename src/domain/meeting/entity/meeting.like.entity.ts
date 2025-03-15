@@ -1,27 +1,23 @@
 import { BaseEntity } from '@root/domain/common/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Users } from '@root/domain/user/entity/users.entity';
 
 @Entity()
+@Index(['likedYn'])
 export class MeetingLike extends BaseEntity {
-  @PrimaryGeneratedColumn('increment', {
-    name: 'meeting_like_id',
-  })
-  id: number;
-
-  @Column()
-  isLikedYn: boolean;
-
-  @Column({
+  @PrimaryColumn({
     name: 'users_id',
   })
   userId: number;
 
-  @Column({
+  @PrimaryColumn({
     name: 'meeting_id',
   })
   meetingId: number;
+
+  @Column()
+  likedYn: boolean;
 
   @ManyToOne(() => Meeting, (meeting) => meeting.meetingLikes, {
     nullable: false,
@@ -41,7 +37,7 @@ export class MeetingLike extends BaseEntity {
     const meetingLike = new MeetingLike();
     meetingLike.meetingId = meetingId;
     meetingLike.userId = userId;
-    meetingLike.isLikedYn = true;
+    meetingLike.likedYn = true;
     return meetingLike;
   }
 }

@@ -17,5 +17,5 @@ export class HomeNewMeetingDto {
   thumbnail: string;
 
   @ApiProperty()
-  isLikedYn: boolean = false;
+  likedYn: boolean = false;
 }

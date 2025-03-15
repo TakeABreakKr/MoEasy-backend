@@ -127,7 +127,7 @@ export class MeetingController {
           enum: [OrderingOptionEnum.LATEST, OrderingOptionEnum.NAME],
           description: 'Option to sort meetingList (LATEST for latest registered, NAME for alphabetical).',
         },
-        onLiked: {
+        onlyLiked: {
           type: 'boolean',
           description: 'If true, return only liked meetings.',
         },
@@ -163,7 +163,7 @@ export class MeetingController {
     type: String,
     required: true,
   })
-  async likeMeeting(@Body() meetingId: string, @Token() user: AuthUser): Promise<void> {
+  async likeMeeting(@Query() meetingId: string, @Token() user: AuthUser): Promise<void> {
     await this.meetingService.likeMeeting(meetingId, user.id);
   }
 }
