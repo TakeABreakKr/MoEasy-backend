@@ -45,8 +45,12 @@ export class Activity extends BaseEntity {
 
   @Column({
     type: 'tinyint',
+    nullable: false,
   })
   onlineYn: boolean;
+
+  @Column()
+  onlineLink: string;
 
   @Column(() => Address)
   address: Address;
@@ -75,6 +79,10 @@ export class Activity extends BaseEntity {
 
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
+  }
+
+  public getOnlineLink(): string | null {
+    return this.onlineYn ? this.onlineLink : null;
   }
 
   public static create(activityCreateVO: ActivityCreateVO): Activity {

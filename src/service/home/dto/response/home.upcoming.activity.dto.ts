@@ -16,13 +16,16 @@ export class HomeUpcomingActivityDto {
   isOnlineYn: boolean;
 
   @ApiProperty()
+  onlineLink?: string;
+
+  @ApiProperty()
   meetingName: string;
 
   @ApiProperty({
     enum: RegionEnum,
     example: RegionEnum.SEOCHO,
   })
-  region: RegionEnumType;
+  region?: RegionEnumType;
 
   @ApiProperty()
   time: Date;

@@ -13,6 +13,9 @@ export class HomeClosingTimeActivityDto {
   isOnlineYn: boolean;
 
   @ApiProperty()
+  onlineLink?: string;
+
+  @ApiProperty()
   meetingName: string;
 
   @ApiProperty()
@@ -22,7 +25,7 @@ export class HomeClosingTimeActivityDto {
     enum: RegionEnum,
     example: RegionEnum.SEOCHO,
   })
-  region: RegionEnumType;
+  region?: RegionEnumType;
 
   @ApiProperty()
   time: Date;
