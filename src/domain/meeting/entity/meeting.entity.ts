@@ -5,6 +5,7 @@ import { BaseEntity } from '@domain//common/base.entity';
 import { Keyword } from '@domain/meeting/entity/keyword.entity';
 import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 import * as MeetingCategoryEnum from '@enums/meeting.category.enum';
+import { MeetingLike } from '@domain/meeting/entity/meeting.like.entity';
 
 @Entity()
 export class Meeting extends BaseEntity {
@@ -57,6 +58,9 @@ export class Meeting extends BaseEntity {
 
   @OneToMany(() => Member, (member) => member.meeting)
   members: Promise<Member[]>;
+
+  @OneToMany(() => MeetingLike, (meetingLike) => meetingLike.meeting)
+  meetingLikes: Promise<MeetingLike[]>;
 
   getCategory(): MeetingCategoryEnum.MeetingCategoryEnumType {
     return MeetingCategoryEnum.MeetingCategoryEnum[this.category];

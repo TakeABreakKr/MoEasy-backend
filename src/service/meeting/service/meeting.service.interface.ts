@@ -11,10 +11,12 @@ export interface MeetingService {
   updateMeeting(request: MeetingUpdateRequest, requesterId: number): Promise<void>;
   updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requesterId: number): Promise<void>;
   deleteMeeting(meetingId: string, requesterId: number): Promise<void>;
-  getMeeting(meetingId: string): Promise<MeetingResponse>;
+  getMeeting(meetingId: string, requesterId?: number): Promise<MeetingResponse>;
   getMeetingList(
     userId?: number,
     authorities?: AuthorityEnumType[],
     options?: OrderingOptionEnumType,
+    onLiked?: boolean,
   ): Promise<MeetingListResponse>;
+  likeMeeting(meetingId: string, requesterId: number): Promise<void>;
 }

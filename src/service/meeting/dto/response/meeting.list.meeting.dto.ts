@@ -18,4 +18,7 @@ export class MeetingListMeetingDto {
 
   @ApiProperty()
   canJoin: boolean;
+
+  @ApiProperty()
+  likedYn: boolean;
 }

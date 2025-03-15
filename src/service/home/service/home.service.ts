@@ -26,6 +26,7 @@ import { HeaderResponse } from '@service/home/dto/response/header.response';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { Users } from '@domain/user/entity/users.entity';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interface';
 
 @Injectable()
 export class HomeServiceImpl implements HomeService {
@@ -37,6 +38,7 @@ export class HomeServiceImpl implements HomeService {
     @Inject('ParticipantComponent') private participantComponent: ParticipantComponent,
     @Inject('RegionComponent') private regionComponent: RegionComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
+    @Inject('MeetingLikeComponent') private meetingLikeComponent: MeetingLikeComponent,
   ) {}
 
   public async getHome(user: AuthUser): Promise<HomeResponse> {
@@ -63,7 +65,7 @@ export class HomeServiceImpl implements HomeService {
           thumbnail: meeting.thumbnail,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
-          isLikedYn: id ? false : false, // TODO: Implement this after Like system developed
+          likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
         };
       }),
     );
@@ -134,7 +136,7 @@ export class HomeServiceImpl implements HomeService {
           thumbnail: meeting.thumbnail,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
-          isLikedYn: id ? false : false, // TODO: Implement this after Like system developed
+          likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
         };
       }),
     );

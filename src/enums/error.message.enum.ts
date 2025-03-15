@@ -25,6 +25,9 @@ export const ErrorMessageType = {
   TOKEN_ISSUANCE_FAILED: '토큰 발급에 실패했습니다.',
 
   SERVER_ERROR: '서버 내 예상하지 못한 에러가 발생했습니다.',
+
+  LIKE_CONCURRENT_ERROR: '이미 처리 중인 좋아요 요청이 있습니다.',
+  LIKE_OPERATION_ERROR: '좋아요 처리 중 오류가 발생했습니다.',
 } as const;
 
 export type ErrorMessageEnumType = (typeof ErrorMessageType)[keyof typeof ErrorMessageType];

@@ -83,6 +83,9 @@ class MockMeetingComponent implements MeetingComponent {
   async getNewMeetings(): Promise<Meeting[]> {
     return this.mockMeetings;
   }
+
+  async incrementLikeCount(): Promise<void> {}
+  async decrementLikeCount(): Promise<void> {}
 }
 
 class MockMemberComponent implements MemberComponent {
@@ -444,7 +447,7 @@ describe('MeetingService', () => {
 
   describe('getMeetingTest', () => {
     it('getMeetingTest - SUCCESS', async () => {
-      const result = await meetingService.getMeeting('50');
+      const result = await meetingService.getMeeting('50', 200);
 
       expect(result.name).toBe('모임 이름1');
       expect(result.explanation).toBe('모임 설명1');
@@ -459,7 +462,7 @@ describe('MeetingService', () => {
     });
 
     it('getMeetingTest - NOT_FOUND_MEETING', async () => {
-      await expect(meetingService.getMeeting('999')).rejects.toThrow(ErrorMessageType.NOT_FOUND_MEETING);
+      await expect(meetingService.getMeeting('999', 200)).rejects.toThrow(ErrorMessageType.NOT_FOUND_MEETING);
     });
   });
 

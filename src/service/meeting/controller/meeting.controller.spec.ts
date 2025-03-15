@@ -32,6 +32,8 @@ class MockMeetingService implements MeetingService {
       members: [],
       thumbnail: undefined,
       canJoin: false,
+      likedYn: false,
+      likeCount: 0,
     };
   }
 
@@ -40,6 +42,8 @@ class MockMeetingService implements MeetingService {
       meetingList: [],
     };
   }
+
+  public async likeMeeting() {}
 }
 
 describe('MeetingController', () => {
@@ -116,7 +120,7 @@ describe('MeetingController', () => {
   });
 
   it('getMeetingTest', async () => {
-    const result = await meetingController.getMeeting(MockMeetingService.meetingId);
+    const result = await meetingController.getMeeting(MockMeetingService.meetingId, user);
     const response: MeetingResponse = {
       name: '',
       explanation: '',
@@ -124,12 +128,14 @@ describe('MeetingController', () => {
       members: [],
       thumbnail: undefined,
       canJoin: false,
+      likedYn: false,
+      likeCount: 0,
     };
     expect(result).toStrictEqual(response);
   });
 
   it('getMeetingListTest', async () => {
-    const result = await meetingController.getMeetingList([AuthorityEnum.MEMBER], OrderingOptionEnum.NAME, user);
+    const result = await meetingController.getMeetingList(user, [AuthorityEnum.MEMBER], OrderingOptionEnum.NAME);
     const response: MeetingListResponse = {
       meetingList: [],
     };

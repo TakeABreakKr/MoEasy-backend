@@ -8,7 +8,7 @@ import type { MeetingListMeetingDto } from '@service/meeting/dto/response/meetin
 import type { MeetingThumbnailUpdateRequest } from '@service/meeting/dto/request/meeting.thumbnail.update.request';
 import type { Users } from '@domain/user/entity/users.entity';
 import type { MeetingMemberDto } from '@service/meeting/dto/response/meeting.member.dto';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { MeetingUtils } from '@utils/meeting.utils';
@@ -24,6 +24,8 @@ import { MemberComponent } from '@domain/member/component/member.component.inter
 import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
 import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
+import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interface';
+import { MeetingLike } from '@root/domain/meeting/entity/meeting.like.entity';
 
 type lineSeperatorFunctionType = (content: string) => string;
 
@@ -32,6 +34,7 @@ export class MeetingServiceImpl implements MeetingService {
   constructor(
     @Inject('FileService') private fileService: FileService,
     @Inject('MeetingComponent') private meetingComponent: MeetingComponent,
+    @Inject('MeetingLikeComponent') private meetingLikeComponent: MeetingLikeComponent,
     @Inject('MemberComponent') private memberComponent: MemberComponent,
     @Inject('KeywordComponent') private keywordComponent: KeywordComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
@@ -153,29 +156,42 @@ export class MeetingServiceImpl implements MeetingService {
     await this.meetingComponent.delete(meetingId);
   }
 
-  public async getMeeting(_meetingId: string): Promise<MeetingResponse> {
+  public async getMeeting(_meetingId: string, requesterId?: number): Promise<MeetingResponse> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
     const meeting: Meeting | null = await this.meetingComponent.findByMeetingId(meetingId);
     if (!meeting) throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
 
-    return this.toGetMeetingResponse(meeting);
+    return this.toGetMeetingResponse(meeting, requesterId);
   }
 
   public async getMeetingList(
     userId?: number,
     authorities?: AuthorityEnumType[],
     options?: OrderingOptionEnumType,
+    onlyLiked?: boolean,
   ): Promise<MeetingListResponse> {
-    const meetings: Meeting[] = await this.meetingComponent.findAll();
+    let meetings: Meeting[];
+
+    if (onlyLiked && userId) {
+      const meetingLikeList = await this.meetingLikeComponent.findAllLikedMeetingsByUserId(userId);
+      meetings = await Promise.all(meetingLikeList.map(async (meetingLike: MeetingLike) => await meetingLike.meeting));
+    } else {
+      meetings = await this.meetingComponent.findAll();
+    }
+
     SortUtils.sort<Meeting>(meetings, options);
-    const meetingList: MeetingListMeetingDto[] = meetings.map((meeting) => {
-      return {
-        meetingId: MeetingUtils.transformMeetingIdToString(meeting.id),
-        name: meeting.name,
-        explanation: meeting.explanation,
-        canJoin: meeting.canJoin,
-      };
-    });
+    const meetingList: MeetingListMeetingDto[] = await Promise.all(
+      meetings.map(async (meeting) => {
+        return {
+          meetingId: MeetingUtils.transformMeetingIdToString(meeting.id),
+          name: meeting.name,
+          explanation: meeting.explanation,
+          canJoin: meeting.canJoin,
+          thumbnail: meeting.thumbnail,
+          likedYn: userId ? await this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
+        };
+      }),
+    );
 
     if (!userId) {
       return {
@@ -191,14 +207,18 @@ export class MeetingServiceImpl implements MeetingService {
       meeting.authority = member.authority;
     }
 
-    return {
-      meetingList: meetingList.filter((meeting) => {
-        return meeting.authority && authorities.includes(meeting.authority);
-      }),
-    };
+    if (authorities && authorities.length > 0) {
+      return {
+        meetingList: meetingList.filter((meeting) => {
+          return meeting.authority && authorities.includes(meeting.authority);
+        }),
+      };
+    } else {
+      return { meetingList };
+    }
   }
 
-  private async toGetMeetingResponse(meeting: Meeting): Promise<MeetingResponse> {
+  private async toGetMeetingResponse(meeting: Meeting, requesterId: number): Promise<MeetingResponse> {
     const members: Member[] = await this.memberComponent.findByMeetingId(meeting.id);
     const userIds = members.map((member) => member.userId);
     const users: Users[] = await this.usersComponent.findByIds(userIds);
@@ -222,6 +242,35 @@ export class MeetingServiceImpl implements MeetingService {
       thumbnail: meeting.thumbnail,
       members: memberDtos,
       canJoin: meeting.canJoin,
+      likedYn: await this.meetingLikeComponent.likeStatus(meeting.id, requesterId),
+      likeCount: await this.meetingLikeComponent.getLikeCountByMeetingId(meeting.id),
     };
+  }
+
+  @Transactional()
+  public async likeMeeting(_meetingId: string, requesterId: number): Promise<void> {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
+    const meeting = await this.meetingComponent.findByMeetingId(meetingId);
+
+    if (!meeting) {
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_MEETING);
+    }
+
+    try {
+      const meetingLike = await this.meetingLikeComponent.findByMeetingIdAndUserId(meetingId, requesterId);
+      if (!meetingLike) {
+        await this.meetingLikeComponent.create(meetingId, requesterId);
+        return;
+      }
+
+      const newState = !meetingLike.likedYn;
+      await this.meetingLikeComponent.updateLikeStatus(meetingId, requesterId, newState);
+    } catch (error) {
+      if (error.message && error.message.toLowerCase().includes('lock')) {
+        throw new ConflictException(ErrorMessageType.LIKE_CONCURRENT_ERROR);
+      } else {
+        throw new BadRequestException(ErrorMessageType.LIKE_OPERATION_ERROR);
+      }
+    }
   }
 }
