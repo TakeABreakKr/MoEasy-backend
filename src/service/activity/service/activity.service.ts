@@ -23,6 +23,7 @@ import { MeetingComponent } from '@domain/meeting/component/meeting.component.in
 import { MemberComponent } from '@domain/member/component/member.component.interface';
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
+import { getRegionEnum, RegionEnumType } from '@root/enums/region.enum';
 
 @Injectable()
 export class ActivityServiceImpl implements ActivityService {
@@ -154,13 +155,32 @@ export class ActivityServiceImpl implements ActivityService {
     });
 
     SortUtils.sort<Activity>(filteredActivities, options);
-    const activityList: ActivityListDto[] = filteredActivities.map((activity) => {
-      return {
-        ...activity,
-        meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
-        address: activity.address.toAddressDto(),
-      };
-    });
+
+    const activityList: ActivityListDto[] = await Promise.all(
+      filteredActivities.map(async (activity) => {
+        const baseInfo = {
+          activityId: activity.id,
+          name: activity.name,
+          startDate: activity.startDate,
+          onlineYn: activity.onlineYn,
+          explanation: activity.explanation,
+          onlineLink: activity.getOnlineLink(),
+          participantCount: await this.participantComponent.getParticipantCount(activity.id),
+          participantLimit: activity.participantLimit,
+          meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
+          daysUntilStart: await this.activityComponent.getDaysUntilStart(activity.startDate),
+        };
+
+        if (!activity.onlineYn) {
+          const address = activity.address;
+          const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
+          return {
+            ...baseInfo,
+            region,
+          };
+        }
+      }),
+    );
 
     const meetings = await this.memberComponent.findByUserId(requesterId);
     const meetingIds = meetings.map((meeting) => meeting.meetingId);

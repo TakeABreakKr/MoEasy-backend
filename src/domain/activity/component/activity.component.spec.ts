@@ -71,6 +71,10 @@ class MockActivityDao implements ActivityDao {
   async getUpcomingActivities(): Promise<Activity[]> {
     return [];
   }
+
+  async getDaysUntilStart(): Promise<number> {
+    return 0;
+  }
 }
 
 describe('ActivityComponent', () => {

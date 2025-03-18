@@ -334,6 +334,10 @@ class MockActivityComponent implements ActivityComponent {
   async getUpcomingActivities(): Promise<Activity[]> {
     return [];
   }
+
+  async getDaysUntilStart(): Promise<number> {
+    return 0;
+  }
 }
 
 class MockParticipantComponent implements ParticipantComponent {
@@ -586,7 +590,6 @@ describe('ActivityServiceTest', () => {
 
       expect(result.activityList[0].name).toBe('moeasy1');
       expect(result.activityList[0].explanation).toBe('모임설명1');
-      expect(result.activityList[0].announcement).toBe('공지사항1');
       expect(result.activityList[0].onlineYn).toBe(true);
       expect(result.activityList[0].meetingId).toBe('64');
       expect(result.meetings[0].name).toBe('모임 이름1');
@@ -594,7 +597,6 @@ describe('ActivityServiceTest', () => {
 
       expect(result.activityList[1].name).toBe('moeasy4');
       expect(result.activityList[1].explanation).toBe('모임설명4');
-      expect(result.activityList[1].announcement).toBe('공지사항4');
       expect(result.activityList[1].onlineYn).toBe(false);
       expect(result.activityList[1].meetingId).toBe('64');
       expect(result.meetings[1].name).toBe('모임 이름2');

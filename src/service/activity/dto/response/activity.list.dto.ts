@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AddressDto } from '@service/activity/dto/request/activity.address.dto';
+import { RegionEnum, RegionEnumType } from '@root/enums/region.enum';
 
 export class ActivityListDto {
   @ApiProperty()
@@ -18,14 +18,20 @@ export class ActivityListDto {
   startDate: Date;
 
   @ApiProperty()
-  endDate: Date;
+  participantCount: number;
 
   @ApiProperty()
-  address: AddressDto;
+  participantLimit: number;
 
   @ApiProperty()
-  announcement: string;
+  daysUntilStart: number;
 
   @ApiProperty()
-  detailAddress: string;
+  onlineLink?: string;
+
+  @ApiProperty({
+    enum: RegionEnum,
+    example: RegionEnum.SEOCHO,
+  })
+  region?: RegionEnumType;
 }

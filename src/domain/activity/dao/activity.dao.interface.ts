@@ -8,6 +8,7 @@ export interface ActivityDao {
   update(activity: Activity): Promise<void>;
   findByMeetingId(meeting_id: number): Promise<Activity[]>;
   delete(activity_id: number): Promise<void>;
+  getDaysUntilStart(startDate: Date): Promise<number>;
   getClosingTimeActivities(): Promise<Partial<Activity>[]>;
   getUpcomingActivities(id?: number): Promise<Activity[]>;
 }
