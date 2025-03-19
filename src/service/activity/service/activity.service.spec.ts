@@ -244,7 +244,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: true,
       address: Address.createForTest(),
       detailAddress: '평택',
-      participantLimit: 10,
+      participantLimit: 20,
     }),
     Activity.createForTest(101, {
       meetingId: '64',
@@ -257,7 +257,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '인천',
-      participantLimit: 10,
+      participantLimit: 20,
     }),
     Activity.createForTest(200, {
       meetingId: 'C8',
@@ -270,7 +270,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '수원',
-      participantLimit: 10,
+      participantLimit: 20,
     }),
     Activity.createForTest(300, {
       meetingId: 'C8',
@@ -283,7 +283,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '시흥',
-      participantLimit: 10,
+      participantLimit: 20,
     }),
   ];
 
@@ -472,6 +472,7 @@ describe('ActivityServiceTest', () => {
         detailAddress: '평택',
         participants: [10, 20, 30],
         participantLimit: 10,
+        onlineLink: 'https://www.naver.com',
       };
 
       const requesterId = 200;
@@ -504,6 +505,7 @@ describe('ActivityServiceTest', () => {
         detailAddress: '시흥에서 수정',
         participants: [10, 20],
         participantLimit: 10,
+        onlineLink: 'https://www.naver.com',
       };
 
       const requesterId = 200;
@@ -550,6 +552,7 @@ describe('ActivityServiceTest', () => {
         detailAddress: '평택에서 수정',
         participants: [10, 20, 30],
         participantLimit: 10,
+        onlineLink: 'https://www.naver.com',
       };
 
       const requesterId = 10;

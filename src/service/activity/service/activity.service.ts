@@ -42,8 +42,16 @@ export class ActivityServiceImpl implements ActivityService {
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const activity: Activity = await this.activityComponent.create({
-      ...req,
-      address: req.address.toAddress(),
+      name: req.name,
+      explanation: req.explanation,
+      startDate: req.startDate,
+      endDate: req.endDate,
+      reminder: req.reminder,
+      announcement: req.announcement,
+      participantLimit: req.participantLimit,
+      onlineLink: req?.onlineLink,
+      address: req.address?.toAddress(),
+      detailAddress: req?.detailAddress,
       meetingId: req.meetingId,
       onlineYn: req.onlineYn,
     });
@@ -74,8 +82,17 @@ export class ActivityServiceImpl implements ActivityService {
     }
 
     activity.update({
-      ...req,
-      address: req.address.toAddress(),
+      name: req.name,
+      explanation: req.explanation,
+      startDate: req.startDate,
+      endDate: req.endDate,
+      reminder: req.reminder,
+      announcement: req.announcement,
+      participantLimit: req.participantLimit,
+      onlineLink: req?.onlineLink,
+      address: req.address?.toAddress(),
+      detailAddress: req?.detailAddress,
+      onlineYn: req.onlineYn,
     });
 
     const currentParticipants: number[] = (await this.participantComponent.findByActivityId(req.activityId)).map(

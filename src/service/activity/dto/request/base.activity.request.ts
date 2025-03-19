@@ -1,5 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMaxSize, IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 import { ReminderEnumType } from '@enums/reminder.enum';
 import { AddressDto } from '@service/activity/dto/request/activity.address.dto';
 
@@ -44,15 +54,24 @@ export abstract class ActivityRequest {
   @IsNotEmpty()
   onlineYn: boolean;
 
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @ValidateIf((request: ActivityRequest) => request.onlineYn === true)
+  @IsNotEmpty()
+  onlineLink: string;
+
   @ApiProperty({
     type: AddressDto,
   })
   @IsOptional()
+  @ValidateIf((request: ActivityRequest) => request.onlineYn === false)
   address: AddressDto;
 
   @ApiProperty()
   @IsOptional()
   @IsString()
+  @ValidateIf((request: ActivityRequest) => request.onlineYn === false)
   detailAddress: string;
 
   @ApiProperty()

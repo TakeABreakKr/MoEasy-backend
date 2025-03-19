@@ -10,7 +10,8 @@ export interface ActivityCreateVO {
   reminder: ReminderEnumType[];
   announcement: string;
   onlineYn: boolean;
-  address: Address;
-  detailAddress: string;
+  address?: Address;
+  detailAddress?: string;
+  onlineLink?: string;
   participantLimit: number;
 }
