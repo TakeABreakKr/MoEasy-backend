@@ -23,7 +23,10 @@ import { MeetingComponent } from '@domain/meeting/component/meeting.component.in
 import { MemberComponent } from '@domain/member/component/member.component.interface';
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
-import { getRegionEnum, RegionEnumType } from '@root/enums/region.enum';
+import { getRegionEnum, RegionEnumType } from '@enums/region.enum';
+import { Users } from '@domain/user/entity/users.entity';
+import { UsersComponent } from '@domain/user/component/users.component.interface';
+import { ActivityMemberDto } from '@service/activity/dto/response/activity.member.dto';
 
 @Injectable()
 export class ActivityServiceImpl implements ActivityService {
@@ -34,6 +37,7 @@ export class ActivityServiceImpl implements ActivityService {
     @Inject('ParticipantComponent') private participantComponent: ParticipantComponent,
     @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
     @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
+    @Inject('UsersComponent') private usersComponent: UsersComponent,
   ) {}
 
   @Transactional()
@@ -126,15 +130,45 @@ export class ActivityServiceImpl implements ActivityService {
     const activity: Activity | null = await this.activityComponent.findByActivityId(activityId);
     if (!activity) throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
 
-    return {
+    const members: Participant[] = await this.participantComponent.findByActivityId(activity.id);
+    const userIds = members.map((member) => member.userId);
+    const users: Users[] = await this.usersComponent.findByIds(userIds);
+    const userMap = new Map<number, Users>();
+    users.forEach((user) => {
+      userMap.set(user.id, user);
+    });
+
+    const memberDtos: ActivityMemberDto[] = members.map((member): ActivityMemberDto => {
+      const user: Users = userMap.get(member.userId);
+      return {
+        username: user.username,
+        authority: member.authority,
+      };
+    });
+
+    const baseInfo = {
+      activityId: activity.id,
       name: activity.name,
-      explanation: activity.explanation,
       startDate: activity.startDate,
-      endDate: activity.endDate,
-      announcement: activity.announcement,
       onlineYn: activity.onlineYn,
-      address: activity.address.toAddressDto(),
+      explanation: activity.explanation,
+      onlineLink: activity.getOnlineLink(),
+      participantCount: await this.participantComponent.getParticipantCount(activity.id),
+      participantLimit: activity.participantLimit,
+      meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
+      daysUntilStart: await this.activityComponent.getDaysUntilStart(activity.startDate),
+      announcement: activity.announcement,
+      members: memberDtos,
     };
+
+    if (!activity.onlineYn) {
+      const address = activity.address;
+      const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
+      return {
+        ...baseInfo,
+        region,
+      };
+    }
   }
 
   public async getActivityList(
@@ -180,7 +214,6 @@ export class ActivityServiceImpl implements ActivityService {
           name: activity.name,
           startDate: activity.startDate,
           onlineYn: activity.onlineYn,
-          explanation: activity.explanation,
           onlineLink: activity.getOnlineLink(),
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,

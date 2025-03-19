@@ -9,9 +9,6 @@ export class ActivityListDto {
   name: string;
 
   @ApiProperty()
-  explanation: string;
-
-  @ApiProperty()
   onlineYn: boolean;
 
   @ApiProperty()

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AddressDto } from '@service/activity/dto/request/activity.address.dto';
+import { ActivityMemberDto } from './activity.member.dto';
 
 export class ActivityResponse {
   @ApiProperty()
@@ -12,14 +12,17 @@ export class ActivityResponse {
   startDate: Date;
 
   @ApiProperty()
-  endDate: Date;
-
-  @ApiProperty()
   announcement: string;
 
   @ApiProperty()
   onlineYn: boolean;
 
   @ApiProperty()
-  address: AddressDto;
+  region: string;
+
+  @ApiProperty({
+    type: ActivityMemberDto,
+    isArray: true,
+  })
+  members: ActivityMemberDto[];
 }

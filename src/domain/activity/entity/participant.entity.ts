@@ -1,8 +1,9 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { Users } from '@domain/user/entity/users.entity';
 import { BaseEntity } from '@domain/common/base.entity';
 import { CreateParticipantDto } from '@domain/activity/dto/create.participant.dto';
+import { AuthorityEnum, AuthorityEnumType } from '@root/enums/authority.enum';
 
 @Entity()
 export class Participant extends BaseEntity {
@@ -15,6 +16,13 @@ export class Participant extends BaseEntity {
     name: 'users_id',
   })
   userId: number;
+
+  @Column({
+    type: 'enum',
+    enum: AuthorityEnum,
+    default: AuthorityEnum.WAITING,
+  })
+  authority: AuthorityEnumType;
 
   @ManyToOne(() => Activity, (activity) => activity.id, {
     nullable: false,
