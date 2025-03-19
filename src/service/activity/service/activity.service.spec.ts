@@ -19,6 +19,8 @@ import { ErrorMessageType } from '@root/enums/error.message.enum';
 import { ActivityStatusEnum } from '@root/enums/activityStatusEnum';
 import { OrderingOptionEnum } from '@root/enums/ordering.option.enum';
 import { Address } from '@root/domain/activity/entity/address.embedded';
+import { MeetingCategoryEnum } from '@root/enums/meeting.category.enum';
+import { ActivityParticipantDto } from '@root/domain/activity/dto/activity.participant.dto';
 
 const componentAccessLog: string[] = [];
 
@@ -32,40 +34,44 @@ class MockMeetingComponent implements MeetingComponent {
 
   private mockMeetings: Meeting[] = [
     Meeting.createForTest({
-      meeting_id: 80,
+      meetingId: 80,
       name: '모임 이름1',
       explanation: '모임 설명1',
       limit: 10,
       thumbnail: 'testThumbnail1.jpg',
       canJoin: false,
+      category: MeetingCategoryEnum.GAME,
+      publicYn: true,
     }),
     Meeting.createForTest({
-      meeting_id: 200,
+      meetingId: 200,
       name: '모임 이름2',
       explanation: '모임 설명2',
       limit: 10,
       thumbnail: 'testThumbnail2.jpg',
       canJoin: true,
+      category: MeetingCategoryEnum.GAME,
+      publicYn: true,
     }),
   ];
 
   async findByMeetingId(id: number): Promise<Meeting | null> {
     componentAccessLog.push(MockMeetingComponent.findByMeetingIdLog);
 
-    const meeting = this.mockMeetings.find((meeting) => meeting.meeting_id === id);
+    const meeting = this.mockMeetings.find((meeting) => meeting.id === id);
     return meeting;
   }
 
   async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
     componentAccessLog.push(MockMeetingComponent.findByMeetingIdsLog);
 
-    return this.mockMeetings.filter((meeting) => ids.includes(meeting.meeting_id));
+    return this.mockMeetings.filter((meeting) => ids.includes(meeting.id));
   }
 
   async create(createMeetingDto: CreateMeetingDto): Promise<Meeting> {
     componentAccessLog.push(MockMeetingComponent.createLog);
 
-    const meeting = Meeting.createForTest({ ...createMeetingDto, meeting_id: 3 });
+    const meeting = Meeting.createForTest({ ...createMeetingDto, meetingId: 3 });
 
     this.mockMeetings.push(meeting);
     return meeting;
@@ -84,7 +90,11 @@ class MockMeetingComponent implements MeetingComponent {
   async delete(id: number): Promise<void> {
     componentAccessLog.push(MockMeetingComponent.deleteLog);
 
-    this.mockMeetings = this.mockMeetings.filter((meeting) => meeting.meeting_id !== id);
+    this.mockMeetings = this.mockMeetings.filter((meeting) => meeting.id !== id);
+  }
+
+  async getNewMeetings(): Promise<Meeting[]> {
+    return this.mockMeetings;
   }
 }
 
@@ -101,52 +111,52 @@ class MockMemberComponent implements MemberComponent {
   private mockMembers: Member[] = [
     Member.create({
       meetingId: 80,
-      usersId: 200,
+      userId: 200,
       authority: AuthorityEnum.MANAGER,
       applicationMessage: '꼭 가입하고 싶습니다.',
     }),
     Member.create({
       meetingId: 200,
-      usersId: 30,
+      userId: 30,
       authority: AuthorityEnum.OWNER,
       applicationMessage: '꼭 가입하고 싶습니다.',
     }),
     Member.create({
       meetingId: 200,
-      usersId: 20,
+      userId: 20,
       authority: AuthorityEnum.OWNER,
       applicationMessage: '꼭 가입하고 싶습니다.',
     }),
     Member.create({
       meetingId: 200,
-      usersId: 200,
+      userId: 200,
       authority: AuthorityEnum.MEMBER,
     }),
   ];
 
-  async findByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<Member | null> {
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
     componentAccessLog.push(MockMemberComponent.findByUsersAndMeetingIdLog);
 
-    const member = this.mockMembers.find((member) => member.users_id === users_id && member.meeting_id === meeting_id);
+    const member = this.mockMembers.find((member) => member.userId === userId && member.meetingId === meetingId);
     return member || null;
   }
 
-  async findByUsersAndAuthorities(users_id: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
+  async findByUsersAndAuthorities(userId: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
     componentAccessLog.push(MockMemberComponent.findByUsersAndAuthoritiesLog);
 
-    return this.mockMembers.filter((member) => member.users_id === users_id && authorities.includes(member.authority));
+    return this.mockMembers.filter((member) => member.userId === userId && authorities.includes(member.authority));
   }
 
-  async findByUserId(users_id: number): Promise<Member[]> {
+  async findByUserId(userId: number): Promise<Member[]> {
     componentAccessLog.push(MockMemberComponent.findByUserIdLog);
 
-    return this.mockMembers.filter((member) => member.users_id === users_id);
+    return this.mockMembers.filter((member) => member.userId === userId);
   }
 
-  async findByMeetingId(meeting_id: number): Promise<Member[]> {
+  async findByMeetingId(meetingId: number): Promise<Member[]> {
     componentAccessLog.push(MockMemberComponent.findByMeetingIdLog);
 
-    return this.mockMembers.filter((member) => member.meeting_id === meeting_id);
+    return this.mockMembers.filter((member) => member.meetingId === meetingId);
   }
 
   async create(createMemberDto: CreateMemberDto): Promise<Member> {
@@ -163,11 +173,11 @@ class MockMemberComponent implements MemberComponent {
     member.authority = authority;
   }
 
-  async deleteByUsersAndMeetingId(users_id: number, meeting_id: number): Promise<void> {
+  async deleteByUsersAndMeetingId(userId: number, meeting_id: number): Promise<void> {
     componentAccessLog.push(MockMemberComponent.deleteByUsersAndMeetingIdLog);
 
     this.mockMembers = this.mockMembers.filter(
-      (member) => !(member.users_id === users_id && member.meeting_id === meeting_id),
+      (member) => !(member.userId === userId && member.meetingId === meeting_id),
     );
   }
 
@@ -177,6 +187,14 @@ class MockMemberComponent implements MemberComponent {
     members.forEach((member) => {
       this.mockMembers.push(member);
     });
+  }
+
+  async getMemberCount(meetingId: number): Promise<number> {
+    return this.mockMembers.filter((member) => member.meetingId === meetingId).length;
+  }
+
+  async getMostPopularMeetingIds(): Promise<number[]> {
+    return this.mockMembers.map((member) => member.meetingId);
   }
 }
 
@@ -226,6 +244,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: true,
       address: Address.createForTest(),
       detailAddress: '평택',
+      participantLimit: 10,
     }),
     Activity.createForTest(101, {
       meetingId: '64',
@@ -238,6 +257,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '인천',
+      participantLimit: 10,
     }),
     Activity.createForTest(200, {
       meetingId: 'C8',
@@ -250,6 +270,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '수원',
+      participantLimit: 10,
     }),
     Activity.createForTest(300, {
       meetingId: 'C8',
@@ -262,6 +283,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '시흥',
+      participantLimit: 10,
     }),
   ];
 
@@ -277,32 +299,40 @@ class MockActivityComponent implements ActivityComponent {
   async update(activity: Activity): Promise<void> {
     componentAccessLog.push(MockActivityComponent.updateLog);
 
-    const index = this.mockActivitys.findIndex((item) => item.activity_id === activity.activity_id);
+    const index = this.mockActivitys.findIndex((item) => item.id === activity.id);
     this.mockActivitys[index] = activity;
   }
 
-  async findByActivityId(activity_id: number): Promise<Activity | null> {
+  async findByActivityId(activityId: number): Promise<Activity | null> {
     componentAccessLog.push(MockActivityComponent.findByActivityIdLog);
 
-    return this.mockActivitys.find((activity: Activity) => activity.activity_id === activity_id) || null;
+    return this.mockActivitys.find((activity: Activity) => activity.id === activityId) || null;
   }
 
-  async findByMeetingId(meeting_id: number): Promise<Activity[]> {
+  async findByMeetingId(meetingId: number): Promise<Activity[]> {
     componentAccessLog.push(MockActivityComponent.findByMeetingIdLog);
 
-    return this.mockActivitys.filter((activity: Activity) => activity.meeting_id === meeting_id);
+    return this.mockActivitys.filter((activity: Activity) => activity.meetingId === meetingId);
   }
 
-  async findAllByActivityIds(activity_ids: number[]): Promise<Activity[]> {
+  async findAllByActivityIds(activityIds: number[]): Promise<Activity[]> {
     componentAccessLog.push(MockActivityComponent.findAllByActivityIdsLog);
 
-    return this.mockActivitys.filter((activity: Activity) => activity_ids.includes(activity.activity_id));
+    return this.mockActivitys.filter((activity: Activity) => activityIds.includes(activity.id));
   }
 
-  async delete(activity_id: number): Promise<void> {
+  async delete(activityId: number): Promise<void> {
     componentAccessLog.push(MockActivityComponent.deleteLog);
 
-    this.mockActivitys = this.mockActivitys.filter((activity: Activity) => activity.activity_id !== activity_id);
+    this.mockActivitys = this.mockActivitys.filter((activity: Activity) => activity.id !== activityId);
+  }
+
+  async getClosingTimeActivities(): Promise<Partial<Activity>[]> {
+    return [];
+  }
+
+  async getUpcomingActivities(): Promise<Activity[]> {
+    return [];
   }
 }
 
@@ -315,12 +345,12 @@ class MockParticipantComponent implements ParticipantComponent {
   public static deleteAllLog = 'ParticipantComponent.deleteAll called';
 
   private mockParticipants: Participant[] = [
-    Participant.create({ users_id: 200, activity_id: 100 }),
-    Participant.create({ users_id: 30, activity_id: 100 }),
-    Participant.create({ users_id: 200, activity_id: 200 }),
-    Participant.create({ users_id: 30, activity_id: 200 }),
-    Participant.create({ users_id: 20, activity_id: 300 }),
-    Participant.create({ users_id: 70, activity_id: 300 }),
+    Participant.create({ userId: 200, activityId: 100 }),
+    Participant.create({ userId: 30, activityId: 100 }),
+    Participant.create({ userId: 200, activityId: 200 }),
+    Participant.create({ userId: 30, activityId: 200 }),
+    Participant.create({ userId: 20, activityId: 300 }),
+    Participant.create({ userId: 70, activityId: 300 }),
   ];
 
   async saveAll(participants: Participant[]): Promise<void> {
@@ -329,33 +359,33 @@ class MockParticipantComponent implements ParticipantComponent {
     this.mockParticipants.push(...participants);
   }
 
-  async findByUserIdAndActivityId(user_id: number, activity_id: number): Promise<Participant | null> {
+  async findByUserIdAndActivityId(userId: number, activityId: number): Promise<Participant | null> {
     componentAccessLog.push(MockParticipantComponent.findByUserIdAndActivityIdLog);
 
     return (
       this.mockParticipants.find(
-        (participant: Participant) => participant.activity_id === activity_id && participant.users_id === user_id,
+        (participant: Participant) => participant.activityId === activityId && participant.userId === userId,
       ) || null
     );
   }
 
-  async findByActivityId(activity_id: number): Promise<Participant[]> {
+  async findByActivityId(activityId: number): Promise<Participant[]> {
     componentAccessLog.push(MockParticipantComponent.findByActivityIdLog);
 
-    return this.mockParticipants.filter((participant: Participant) => participant.activity_id === activity_id);
+    return this.mockParticipants.filter((participant: Participant) => participant.activityId === activityId);
   }
 
-  async findAllByUserId(user_id: number): Promise<Participant[] | null> {
+  async findAllByUserId(userId: number): Promise<Participant[] | null> {
     componentAccessLog.push(MockParticipantComponent.findAllByUserIdLog);
 
-    return this.mockParticipants.filter((participant: Participant) => participant.users_id === user_id) || null;
+    return this.mockParticipants.filter((participant: Participant) => participant.userId === userId) || null;
   }
 
   async delete(userId: number, activityId: number): Promise<void> {
     componentAccessLog.push(MockParticipantComponent.deleteLog);
 
     this.mockParticipants = this.mockParticipants.filter(
-      (participant: Participant) => !(participant.users_id === userId && participant.activity_id === activityId),
+      (participant: Participant) => !(participant.userId === userId && participant.activityId === activityId),
     );
   }
 
@@ -363,8 +393,16 @@ class MockParticipantComponent implements ParticipantComponent {
     componentAccessLog.push(MockParticipantComponent.deleteAllLog);
 
     this.mockParticipants = this.mockParticipants.filter(
-      (participant) => !(participant.activity_id === activity_id && userIds.includes(participant.users_id)),
+      (participant) => !(participant.activityId === activity_id && userIds.includes(participant.userId)),
     );
+  }
+
+  async getHomeActivityParticipants(): Promise<ActivityParticipantDto[]> {
+    return [];
+  }
+
+  async getParticipantCount(activityId: number): Promise<number> {
+    return this.mockParticipants.filter((participant) => participant.activityId === activityId).length;
   }
 }
 
@@ -418,7 +456,7 @@ describe('ActivityServiceTest', () => {
   describe('createActivityTest', () => {
     it('createActivityTest - SUCCESS', async () => {
       const activityCreateRequest = {
-        meeting_id: '64',
+        meetingId: '64',
         name: 'moeasy1',
         explanation: '모임설명1',
         startDate: new Date(),
@@ -429,6 +467,7 @@ describe('ActivityServiceTest', () => {
         address: Address.createTestDto(),
         detailAddress: '평택',
         participants: [10, 20, 30],
+        participantLimit: 10,
       };
 
       const requesterId = 200;
@@ -449,7 +488,7 @@ describe('ActivityServiceTest', () => {
       const activityId = 300;
       const activityUpdateRequest = {
         activityId: activityId,
-        meeting_id: 'C8',
+        meetingId: 'C8',
         name: 'moeasy3 수정',
         explanation: '모임설명3 수정',
         startDate: new Date(),
@@ -460,6 +499,7 @@ describe('ActivityServiceTest', () => {
         address: Address.createTestDto(),
         detailAddress: '시흥에서 수정',
         participants: [10, 20],
+        participantLimit: 10,
       };
 
       const requesterId = 200;
@@ -467,10 +507,10 @@ describe('ActivityServiceTest', () => {
 
       const result = await activityComponent.findByActivityId(activityId);
       const participants = await participantComponent.findByActivityId(activityId);
-      const participant = participants.map((participant) => participant.users_id);
+      const participant = participants.map((participant) => participant.userId);
 
-      expect(result.activity_id).toBe(300);
-      expect(result.meeting_id).toBe(200);
+      expect(result.id).toBe(300);
+      expect(result.meetingId).toBe(200);
       expect(result.name).toBe('moeasy3 수정');
       expect(result.explanation).toBe('모임설명3 수정');
       expect(result.announcement).toBe('공지사항3 수정');
@@ -494,7 +534,7 @@ describe('ActivityServiceTest', () => {
     it('updateActivityTest - NOT_FOUND_ACTIVITY', async () => {
       const activityUpdateRequest = {
         activityId: 999,
-        meeting_id: '64',
+        meetingId: '64',
         name: 'moeasy1 수정',
         explanation: '모임설명1 수정',
         startDate: new Date(),
@@ -505,6 +545,7 @@ describe('ActivityServiceTest', () => {
         address: Address.createTestDto(),
         detailAddress: '평택에서 수정',
         participants: [10, 20, 30],
+        participantLimit: 10,
       };
 
       const requesterId = 10;

@@ -1,10 +1,11 @@
 import { SettingsCreateDto } from '@domain/user/dto/settings.create.dto';
 
 export interface UsersCreateDto {
-  discord_id: string;
+  discordId: string;
   username: string;
   avatar: string;
   email: string;
   explanation: string;
+  thumbnail: string;
   settings: SettingsCreateDto;
 }

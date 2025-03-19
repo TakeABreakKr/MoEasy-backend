@@ -6,30 +6,34 @@ import { CreateParticipantDto } from '@domain/activity/dto/create.participant.dt
 
 @Entity()
 export class Participant extends BaseEntity {
-  @PrimaryColumn()
-  activity_id: number;
+  @PrimaryColumn({
+    name: 'activity_id',
+  })
+  activityId: number;
 
-  @PrimaryColumn()
-  users_id: number;
+  @PrimaryColumn({
+    name: 'users_id',
+  })
+  userId: number;
 
-  @ManyToOne(() => Activity, (activity) => activity.activity_id, {
+  @ManyToOne(() => Activity, (activity) => activity.id, {
     nullable: false,
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'activity_id' })
   activity: Promise<Activity>;
 
-  @ManyToOne(() => Users, (users) => users.users_id, {
+  @ManyToOne(() => Users, (users) => users.id, {
     nullable: false,
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'users_id' })
   user: Promise<Users>;
 
-  static create({ activity_id, users_id }: CreateParticipantDto): Participant {
+  static create({ activityId, userId }: CreateParticipantDto): Participant {
     const participant = new Participant();
-    participant.activity_id = activity_id;
-    participant.users_id = users_id;
+    participant.activityId = activityId;
+    participant.userId = userId;
     return participant;
   }
 

@@ -51,27 +51,29 @@ class MockJwtService {
 class MockUsersComponent implements UsersComponent {
   private mockUsers: Users[] = [
     Users.createForTest({
-      users_id: 200,
-      discord_id: 'discordIdOne',
+      id: 200,
+      discordId: 'discordIdOne',
       username: 'kimmoiji',
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
       settings: { allowNotificationYn: true },
+      thumbnail: 'thumbnail',
     }),
     Users.createForTest({
-      users_id: 512,
-      discord_id: 'discordIdTwo',
+      id: 512,
+      discordId: 'discordIdTwo',
       username: 'parkmoiji',
       avatar: 'avatar2',
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
       settings: { allowNotificationYn: true },
+      thumbnail: 'thumbnail',
     }),
   ];
 
-  async findById(user_id: number): Promise<Users | null> {
-    const user = this.mockUsers.find((user) => user.users_id === user_id);
+  async findById(userId: number): Promise<Users | null> {
+    const user = this.mockUsers.find((user) => user.id === userId);
     return user || null;
   }
 
@@ -82,19 +84,20 @@ class MockUsersComponent implements UsersComponent {
 
   async createUsers(): Promise<Users> {
     const users = Users.createForTest({
-      users_id: 300,
-      discord_id: 'discordIdThree',
+      id: 300,
+      discordId: 'discordIdThree',
       username: 'momo',
       avatar: 'avatar3',
       email: 'moeasy@naver.com',
       explanation: 'explanation3',
       settings: { allowNotificationYn: true },
+      thumbnail: 'thumbnail',
     });
     return users;
   }
 
-  async findByDiscordId(discord_id: string): Promise<Users | null> {
-    const users = this.mockUsers.find((user) => user.discord_id === discord_id);
+  async findByDiscordId(discordId: string): Promise<Users | null> {
+    const users = this.mockUsers.find((user) => user.discordId === discordId);
     return users || null;
   }
 }

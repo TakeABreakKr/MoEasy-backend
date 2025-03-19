@@ -9,35 +9,44 @@ import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 export class MemberComponentImpl implements MemberComponent {
   constructor(@Inject('MemberDao') private memberDao: MemberDao) {}
 
-  public async saveAll(members: Member[]): Promise<void> {
+  async saveAll(members: Member[]): Promise<void> {
     await this.memberDao.saveAll(members);
   }
 
-  public async findByMeetingId(meetingId: number): Promise<Member[]> {
+  async findByMeetingId(meetingId: number): Promise<Member[]> {
     return this.memberDao.findByMeetingId(meetingId);
   }
 
-  public async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
-    return this.memberDao.findByUsersAndMeetingId(usersId, meetingId);
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
+    return this.memberDao.findByUsersAndMeetingId(userId, meetingId);
   }
 
-  public async findByUserId(usersId: number): Promise<Member[]> {
-    return this.memberDao.findByUserId(usersId);
+  async findByUserId(userId: number): Promise<Member[]> {
+    return this.memberDao.findByUserId(userId);
   }
 
-  public async findByUsersAndAuthorities(usersId: number, authority: AuthorityEnumType[]): Promise<Member[]> {
-    return this.memberDao.findByUsersAndAuthorities(usersId, authority);
+  async getMostPopularMeetingIds(): Promise<number[]> {
+    const popularMeetingCount = 30;
+    return this.memberDao.getMostPopularMeetingIds(popularMeetingCount);
   }
 
-  public async create(createMemberDto: CreateMemberDto): Promise<Member> {
+  async getMemberCount(meetingId: number): Promise<number> {
+    return this.memberDao.getMemberCountByMeetingId(meetingId);
+  }
+
+  async findByUsersAndAuthorities(userId: number, authority: AuthorityEnumType[]): Promise<Member[]> {
+    return this.memberDao.findByUsersAndAuthorities(userId, authority);
+  }
+
+  async create(createMemberDto: CreateMemberDto): Promise<Member> {
     return this.memberDao.create(createMemberDto);
   }
 
-  public async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
+  async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
     await this.memberDao.updateAuthority(member, authority);
   }
 
-  public async deleteByUsersAndMeetingId(usersId: number, meetingId: number): Promise<void> {
-    await this.memberDao.deleteByUsersAndMeetingId(usersId, meetingId);
+  async deleteByUsersAndMeetingId(userId: number, meetingId: number): Promise<void> {
+    await this.memberDao.deleteByUsersAndMeetingId(userId, meetingId);
   }
 }

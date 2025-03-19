@@ -30,13 +30,13 @@ class MockNotificationRepository extends Repository<Notification> {
   }
 
   private getMockNotificationsByUserId(option: FindOptionsWhere<Notification>): Notification[] {
-    if (option.users_id === MockNotificationRepository.userIdList[0]) {
+    if (option.userId === MockNotificationRepository.userIdList[0]) {
       return [MockNotificationRepository.notifications[0]];
     }
-    if (option.users_id === MockNotificationRepository.userIdList[1]) {
+    if (option.userId === MockNotificationRepository.userIdList[1]) {
       return MockNotificationRepository.notifications.slice(1);
     }
-    if (option.notification_id) return MockNotificationRepository.notifications;
+    if (option.id) return MockNotificationRepository.notifications;
     return [];
   }
 }
@@ -52,6 +52,7 @@ describe('NotificationDao', () => {
         { provide: getRepositoryToken(Notification), useClass: MockNotificationRepository },
       ],
     }).compile();
+
     notificationDao = module.get<NotificationDao>('NotificationDao');
   });
 
@@ -59,28 +60,33 @@ describe('NotificationDao', () => {
     const userId: number = 10;
     const result = await notificationDao.getListByUserId(userId);
     const expected = [MockNotificationRepository.notifications[0]];
+
     expect(result).toStrictEqual(expected);
   });
 
   it('getListByUserId - case : not found', async () => {
     const userId: number = 12345;
     const result = await notificationDao.getListByUserId(userId);
+
     expect(result).toStrictEqual([]);
   });
 
   it('save', async () => {
     const result = await notificationDao.save(MockNotificationRepository.notifications[0]);
+
     expect(result).toBe(void 0);
   });
 
   it('saveAll', async () => {
     const result = await notificationDao.saveAll(MockNotificationRepository.notifications);
+
     expect(result).toBe(void 0);
   });
 
   it('getListByNotificationIds', async () => {
     const result = await notificationDao.getListByNotificationIds(MockNotificationRepository.notificationIds);
     const expected: Notification[] = MockNotificationRepository.notifications;
+
     expect(result).toStrictEqual(expected);
   });
 });

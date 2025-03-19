@@ -20,6 +20,7 @@ class MockActivityRepository extends Repository<Activity> {
       onlineYn: true,
       address: Address.createForTest(),
       detailAddress: '평택',
+      participantLimit: 10,
     }),
     Activity.createForTest(200, {
       meetingId: 'C8',
@@ -32,13 +33,14 @@ class MockActivityRepository extends Repository<Activity> {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '수원',
+      participantLimit: 10,
     }),
   ];
 
   async save(entities: Activity | Activity[]): Promise<Activity[]> {
     const toSave = Array.isArray(entities) ? entities : [entities];
     for (const entity of toSave) {
-      const index = this.mockActivities.findIndex((activity) => activity.activity_id === entity.activity_id);
+      const index = this.mockActivities.findIndex((activity) => activity.id === entity.id);
       if (index !== -1) {
         this.mockActivities[index] = entity;
       } else {
@@ -53,7 +55,7 @@ class MockActivityRepository extends Repository<Activity> {
     const initialLength = this.mockActivities.length;
 
     this.mockActivities = this.mockActivities.filter((activity) => {
-      return activity.activity_id !== id;
+      return activity.id !== id;
     });
 
     return {
@@ -67,12 +69,12 @@ class MockActivityRepository extends Repository<Activity> {
   }
 
   async findBy(where: FindOptionsWhere<Activity>): Promise<Activity[]> {
-    if (where.meeting_id) {
-      return this.mockActivities.filter((activity) => activity.meeting_id === where.meeting_id);
+    if (where.id) {
+      return this.mockActivities.filter((activity) => activity.id === where.id);
     }
-    if (where.activity_id instanceof FindOperator && Array.isArray(where.activity_id.value)) {
-      const ids = where.activity_id.value;
-      return this.mockActivities.filter((activity) => ids.includes(activity.activity_id));
+    if (where.id instanceof FindOperator && Array.isArray(where.id.value)) {
+      const ids = where.id.value;
+      return this.mockActivities.filter((activity) => ids.includes(activity.id));
     }
 
     return [];
@@ -80,7 +82,7 @@ class MockActivityRepository extends Repository<Activity> {
 
   async findOneBy(where: FindOptionsWhere<Activity>): Promise<Activity | null> {
     const activity = this.mockActivities.find((activity) => {
-      return activity.activity_id === where.activity_id;
+      return activity.id === where.id;
     });
 
     return activity || null;
@@ -105,7 +107,7 @@ describe('ActivityDao', () => {
     const activityId = 100;
     const result = await activityDao.findByActivityId(activityId);
 
-    expect(result.activity_id).toBe(activityId);
+    expect(result.id).toBe(activityId);
     expect(result.name).toBe('moeasy1');
     expect(result.explanation).toBe('모임설명1');
     expect(result.announcement).toBe('공지사항1');
@@ -118,8 +120,8 @@ describe('ActivityDao', () => {
     const activityIds = [100, 200];
     const results = await activityDao.findAllByActivityIds(activityIds);
 
-    expect(results[0].activity_id).toBe(activityIds[0]);
-    expect(results[0].meeting_id).toBe(100);
+    expect(results[0].id).toBe(activityIds[0]);
+    expect(results[0].meetingId).toBe(100);
     expect(results[0].name).toBe('moeasy1');
     expect(results[0].explanation).toBe('모임설명1');
     expect(results[0].detailAddress).toBe('평택');
@@ -127,8 +129,8 @@ describe('ActivityDao', () => {
     expect(results[0].onlineYn).toBe(true);
     expect(results[0].address.address).toBe('address_test');
 
-    expect(results[1].activity_id).toBe(activityIds[1]);
-    expect(results[1].meeting_id).toBe(200);
+    expect(results[1].id).toBe(activityIds[1]);
+    expect(results[1].meetingId).toBe(200);
     expect(results[1].name).toBe('moeasy2');
     expect(results[1].explanation).toBe('모임설명2');
     expect(results[1].detailAddress).toBe('수원');
@@ -149,10 +151,11 @@ describe('ActivityDao', () => {
       onlineYn: true,
       address: Address.createForTest(),
       detailAddress: '서울',
+      participantLimit: 10,
     };
     const result = await activityDao.create(createActivityDto);
 
-    expect(result.meeting_id).toBe(1024);
+    expect(result.id).toBe(1024);
     expect(result.name).toBe('moeasy4');
     expect(result.explanation).toBe('모임설명4');
     expect(result.detailAddress).toBe('서울');
@@ -173,12 +176,13 @@ describe('ActivityDao', () => {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '평택에서 변경',
+      participantLimit: 10,
     });
 
     await activityDao.update(activity);
     const updatedActivity = await activityDao.findByActivityId(100);
 
-    expect(updatedActivity.activity_id).toBe(100);
+    expect(updatedActivity.id).toBe(100);
     expect(updatedActivity.name).toBe('moeasy1 변경');
     expect(updatedActivity.explanation).toBe('모임설명1 변경');
     expect(updatedActivity.announcement).toBe('공지사항1 변경');
@@ -191,7 +195,7 @@ describe('ActivityDao', () => {
     const meetingId = 200;
     const results = await activityDao.findByMeetingId(meetingId);
 
-    expect(results[0].activity_id).toBe(200);
+    expect(results[0].meetingId).toBe(200);
     expect(results[0].name).toBe('moeasy2');
     expect(results[0].explanation).toBe('모임설명2');
     expect(results[0].detailAddress).toBe('수원');
@@ -206,7 +210,7 @@ describe('ActivityDao', () => {
     const beforeDelete = await activityDao.findByActivityId(activityId);
 
     expect(beforeDelete).toBeDefined();
-    expect(beforeDelete.activity_id).toBe(activityId);
+    expect(beforeDelete.id).toBe(activityId);
 
     await activityDao.delete(activityId);
 

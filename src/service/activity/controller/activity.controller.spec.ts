@@ -47,7 +47,7 @@ describe('ActivityController', () => {
   };
 
   const activityCreateRequest: ActivityCreateRequest = {
-    meeting_id: 'OOOOOOO1',
+    meetingId: 'OOOOOOO1',
     name: 'activity name',
     explanation: 'this is activity',
     startDate: new Date(),
@@ -58,6 +58,7 @@ describe('ActivityController', () => {
     detailAddress: null,
     onlineYn: true,
     participants: [],
+    participantLimit: 10,
   };
 
   beforeEach(async () => {

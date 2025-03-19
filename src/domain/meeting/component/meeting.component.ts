@@ -16,12 +16,16 @@ export class MeetingComponentImpl implements MeetingComponent {
     return this.meetingDao.findByMeetingIds(ids);
   }
 
+  public async getNewMeetings(): Promise<Meeting[]> {
+    return this.meetingDao.getNewMeetings();
+  }
+
   public async create(createMeetingDto: CreateMeetingDto): Promise<Meeting> {
     return this.meetingDao.create(createMeetingDto);
   }
 
   public async update(meeting: Meeting): Promise<void> {
-    return this.meetingDao.update(meeting);
+    this.meetingDao.update(meeting);
   }
 
   public async findAll(): Promise<Meeting[]> {

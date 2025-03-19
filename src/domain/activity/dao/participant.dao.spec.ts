@@ -7,18 +7,18 @@ import { ParticipantDao } from '@domain/activity/dao/participant.dao.interface';
 
 class MockParticipantRepository extends Repository<Participant> {
   public mockParticipants: Participant[] = [
-    Participant.create({ users_id: 10, activity_id: 100 }),
-    Participant.create({ users_id: 10, activity_id: 400 }),
-    Participant.create({ users_id: 30, activity_id: 200 }),
-    Participant.create({ users_id: 20, activity_id: 300 }),
-    Participant.create({ users_id: 50, activity_id: 300 }),
+    Participant.create({ userId: 10, activityId: 100 }),
+    Participant.create({ userId: 10, activityId: 400 }),
+    Participant.create({ userId: 30, activityId: 200 }),
+    Participant.create({ userId: 20, activityId: 300 }),
+    Participant.create({ userId: 50, activityId: 300 }),
   ];
 
   async save(entities: Participant | Participant[]): Promise<Participant[]> {
     const toSave = Array.isArray(entities) ? entities : [entities];
     for (const entity of toSave) {
       const index = this.mockParticipants.findIndex(
-        (participant) => participant.users_id === entity.users_id && participant.activity_id === entity.activity_id,
+        (participant) => participant.userId === entity.userId && participant.activityId === entity.activityId,
       );
 
       if (index !== -1) {
@@ -34,17 +34,17 @@ class MockParticipantRepository extends Repository<Participant> {
   async delete(where: FindOptionsWhere<Participant>): Promise<DeleteResult> {
     const initialLength = this.mockParticipants.length;
 
-    if (where.users_id && where.activity_id) {
+    if (where.userId && where.activityId) {
       this.mockParticipants = this.mockParticipants.filter(
-        (participant) => !(participant.users_id === where.users_id && participant.activity_id === where.activity_id),
+        (participant) => !(participant.userId === where.userId && participant.activityId === where.activityId),
       );
     }
 
-    if (where.users_id instanceof FindOperator && where.activity_id) {
-      if (Array.isArray(where.users_id.value)) {
-        const userIds = where.users_id.value;
+    if (where.userId instanceof FindOperator && where.activityId) {
+      if (Array.isArray(where.userId.value)) {
+        const userIds = where.userId.value;
         this.mockParticipants = this.mockParticipants.filter(
-          (participant) => !(userIds.includes(participant.users_id) && participant.activity_id === where.activity_id),
+          (participant) => !(userIds.includes(participant.userId) && participant.activityId === where.activityId),
         );
       }
     }
@@ -60,27 +60,27 @@ class MockParticipantRepository extends Repository<Participant> {
   }
 
   async findBy(where: FindOptionsWhere<Participant>): Promise<Participant[]> {
-    if (where.users_id) {
-      return this.mockParticipants.filter((participant) => participant.users_id === where.users_id);
+    if (where.userId) {
+      return this.mockParticipants.filter((participant) => participant.userId === where.userId);
     }
 
-    if (where.activity_id) {
-      return this.mockParticipants.filter((participant) => participant.activity_id === where.activity_id);
+    if (where.activityId) {
+      return this.mockParticipants.filter((participant) => participant.activityId === where.activityId);
     }
 
     return [];
   }
 
   async findOneBy(where: FindOptionsWhere<Participant>): Promise<Participant | null> {
-    if (where.users_id && where.activity_id)
+    if (where.userId && where.activityId)
       return (
         this.mockParticipants.find(
-          (participant) => participant.users_id === where.users_id && participant.activity_id === where.activity_id,
+          (participant) => participant.userId === where.userId && participant.activityId === where.activityId,
         ) || null
       );
 
-    if (where.activity_id)
-      return this.mockParticipants.find((participant) => participant.activity_id === where.activity_id) || null;
+    if (where.activityId)
+      return this.mockParticipants.find((participant) => participant.activityId === where.activityId) || null;
 
     return null;
   }
@@ -112,8 +112,8 @@ describe('participantDaoTest', () => {
     const userId2 = 800;
     const activityId2 = 800;
     const mockParticipants: Participant[] = [
-      Participant.create({ users_id: userId1, activity_id: activityId1 }),
-      Participant.create({ users_id: userId2, activity_id: activityId2 }),
+      Participant.create({ userId: userId1, activityId: activityId1 }),
+      Participant.create({ userId: userId2, activityId: activityId2 }),
     ];
 
     await participantDao.saveAll(mockParticipants);
@@ -121,10 +121,10 @@ describe('participantDaoTest', () => {
     const result1 = await participantDao.findByUserIdAndActivityId(userId1, activityId1);
     const result2 = await participantDao.findByUserIdAndActivityId(userId2, activityId2);
 
-    expect(result1.activity_id).toBe(activityId1);
-    expect(result1.users_id).toBe(userId1);
-    expect(result2.activity_id).toBe(activityId2);
-    expect(result2.users_id).toBe(userId2);
+    expect(result1.activityId).toBe(activityId1);
+    expect(result1.userId).toBe(userId1);
+    expect(result2.activityId).toBe(activityId2);
+    expect(result2.userId).toBe(userId2);
   });
 
   it('findByUserIdAndActivityIdTest', async () => {
@@ -132,28 +132,28 @@ describe('participantDaoTest', () => {
     const activityId = 100;
     const result = await participantDao.findByUserIdAndActivityId(userId, activityId);
 
-    expect(result.activity_id).toBe(100);
-    expect(result.users_id).toBe(10);
+    expect(result.activityId).toBe(100);
+    expect(result.userId).toBe(10);
   });
 
   it('findByActivityIdTest', async () => {
     const activityId = 300;
     const result = await participantDao.findByActivityId(activityId);
 
-    expect(result[0].activity_id).toBe(activityId);
-    expect(result[0].users_id).toBe(20);
-    expect(result[1].activity_id).toBe(activityId);
-    expect(result[1].users_id).toBe(50);
+    expect(result[0].activityId).toBe(activityId);
+    expect(result[0].userId).toBe(20);
+    expect(result[1].activityId).toBe(activityId);
+    expect(result[1].userId).toBe(50);
   });
 
   it('findAllByUserIdTest', async () => {
     const userId = 10;
     const results = await participantDao.findAllByUserId(userId);
 
-    expect(results[0].activity_id).toBe(100);
-    expect(results[0].users_id).toBe(10);
-    expect(results[1].activity_id).toBe(400);
-    expect(results[1].users_id).toBe(10);
+    expect(results[0].activityId).toBe(100);
+    expect(results[0].userId).toBe(10);
+    expect(results[1].activityId).toBe(400);
+    expect(results[1].userId).toBe(10);
   });
 
   it('deleteTest', async () => {
@@ -163,7 +163,7 @@ describe('participantDaoTest', () => {
     const beforeDelete = await participantDao.findByUserIdAndActivityId(userId, activityId);
 
     expect(beforeDelete).toBeDefined();
-    expect(beforeDelete.activity_id).toBe(activityId);
+    expect(beforeDelete.activityId).toBe(activityId);
 
     await participantDao.delete(userId, activityId);
 
@@ -178,7 +178,7 @@ describe('participantDaoTest', () => {
     const beforeDelete = await participantDao.findByActivityId(activityId);
 
     expect(beforeDelete).toBeDefined();
-    expect(beforeDelete[0].activity_id).toBe(activityId);
+    expect(beforeDelete[0].activityId).toBe(activityId);
 
     await participantDao.deleteAll(userIds, activityId);
 

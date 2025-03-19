@@ -1,10 +1,13 @@
 import { Participant } from '@domain/activity/entity/participant.entity';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 export interface ParticipantDao {
   saveAll(participants: Participant[]): Promise<void>;
-  findByUserIdAndActivityId(user_id: number, activity_id: number): Promise<Participant | null>;
-  findByActivityId(activity_id: number): Promise<Participant[]>;
-  findAllByUserId(user_id: number): Promise<Participant[]>;
-  delete(user_id: number, activity_id: number): Promise<void>;
-  deleteAll(userIds: number[], activity_id: number): Promise<void>;
+  findByUserIdAndActivityId(userId: number, activityId: number): Promise<Participant | null>;
+  findByActivityId(activityId: number): Promise<Participant[]>;
+  findAllByUserId(userId: number): Promise<Participant[]>;
+  delete(userId: number, activityId: number): Promise<void>;
+  deleteAll(userIds: number[], activityId: number): Promise<void>;
+  getHomeActivityParticipants(activityId: number): Promise<ActivityParticipantDto[]>;
+  getParticipantCount(activityId: number): Promise<number>;
 }

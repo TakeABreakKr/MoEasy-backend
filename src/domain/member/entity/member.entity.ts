@@ -7,11 +7,15 @@ import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 
 @Entity()
 export class Member extends BaseEntity {
-  @PrimaryColumn()
-  users_id: number;
+  @PrimaryColumn({
+    name: 'users_id',
+  })
+  userId: number;
 
-  @PrimaryColumn()
-  meeting_id: number;
+  @PrimaryColumn({
+    name: 'meeting_id',
+  })
+  meetingId: number;
 
   @ManyToOne(() => Users, (user) => user.members, {
     nullable: false,
@@ -39,10 +43,10 @@ export class Member extends BaseEntity {
   })
   applicationMessage: string;
 
-  static create({ meetingId, usersId, authority, applicationMessage }: CreateMemberDto): Member {
+  static create({ meetingId, userId, authority, applicationMessage }: CreateMemberDto): Member {
     const member = new Member();
-    member.meeting_id = meetingId;
-    member.users_id = usersId;
+    member.meetingId = meetingId;
+    member.userId = userId;
     if (authority) {
       member.authority = authority;
     }

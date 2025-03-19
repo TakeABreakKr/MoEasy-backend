@@ -4,15 +4,20 @@ import { Participant } from '@domain/activity/entity/participant.entity';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { BaseEntity } from '@domain/common/base.entity';
 import { UsersCreateDto } from '@domain/user/dto/users.create.dto';
-import { Settings } from './settings.embedded';
+import { Settings } from '@domain/user/entity/settings.embedded';
+import { MeetingLike } from '@domain/meeting/entity/meeting.like.entity';
 
 @Entity()
 export class Users extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  users_id: number;
+  @PrimaryGeneratedColumn('increment', {
+    name: 'users_id',
+  })
+  id: number;
 
-  @Column()
-  discord_id: string;
+  @Column({
+    name: 'discord_id',
+  })
+  discordId: string;
 
   @Column()
   username: string;
@@ -26,6 +31,9 @@ export class Users extends BaseEntity {
   @Column()
   explanation: string;
 
+  @Column()
+  thumbnail: string;
+
   @Column(() => Settings)
   settings: Settings;
 
@@ -38,6 +46,9 @@ export class Users extends BaseEntity {
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Promise<Notification[]>;
 
+  @OneToMany(() => MeetingLike, (meetingLike) => meetingLike.user)
+  meetingLikes: Promise<MeetingLike[]>;
+
   @ManyToMany(() => Users, (users) => users.friends)
   @JoinTable({
     name: 'friend',
@@ -46,19 +57,20 @@ export class Users extends BaseEntity {
 
   static create(usersCreateDto: UsersCreateDto): Users {
     const users = new Users();
-    users.discord_id = usersCreateDto.discord_id;
+    users.discordId = usersCreateDto.discordId;
     users.username = usersCreateDto.username;
     users.avatar = usersCreateDto.avatar;
     users.email = usersCreateDto.email;
     users.explanation = usersCreateDto.explanation;
+    users.thumbnail = usersCreateDto.thumbnail;
     users.settings = Settings.create(usersCreateDto.settings);
     return users;
   }
 
   // use only for test
-  static createForTest({ users_id, ...props }: UsersCreateDto & { users_id: number }): Users {
+  static createForTest({ id, ...props }: UsersCreateDto & { id: number }): Users {
     const users = Users.create(props);
-    users.users_id = users_id;
+    users.id = id;
     return users;
   }
 }

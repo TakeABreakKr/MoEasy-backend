@@ -11,7 +11,7 @@ import { ActivityListDto } from '@service/activity/dto/response/activity.list.dt
 import { SortUtils } from '@utils/sort.utils';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
-import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activityStatusEnum';
+import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
 import { AuthorityEnum } from '@enums/authority.enum';
@@ -36,36 +36,36 @@ export class ActivityServiceImpl implements ActivityService {
   ) {}
 
   @Transactional()
-  public async createActivity(req: ActivityCreateRequest, requester_id: number): Promise<string> {
-    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
-    await this.authorityComponent.validateAuthority(requester_id, meetingId);
+  public async createActivity(req: ActivityCreateRequest, requesterId: number): Promise<string> {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const activity: Activity = await this.activityComponent.create({
       ...req,
       address: req.address.toAddress(),
-      meetingId: req.meeting_id,
+      meetingId: req.meetingId,
       onlineYn: req.onlineYn,
     });
 
     const participants: Participant[] = req.participants.map((participant) => {
       return Participant.create({
-        activity_id: activity.activity_id,
-        users_id: participant,
+        activityId: activity.id,
+        userId: participant,
       });
     });
     await this.participantComponent.saveAll(participants);
 
     const content = activity.name + ' 일정이 생성되었습니다.';
-    const userIdList: number[] = participants.map((participant) => participant.users_id);
+    const userIdList: number[] = participants.map((participant) => participant.userId);
     await this.notificationComponent.addNotifications(content, userIdList);
 
-    return activity.activity_id.toString();
+    return activity.id.toString();
   }
 
   @Transactional()
-  public async updateActivity(req: ActivityUpdateRequest, requester_id: number): Promise<void> {
-    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meeting_id);
-    await this.authorityComponent.validateAuthority(requester_id, meetingId);
+  public async updateActivity(req: ActivityUpdateRequest, requesterId: number): Promise<void> {
+    const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const activity: Activity | null = await this.activityComponent.findByActivityId(req.activityId);
     if (!activity) {
@@ -78,7 +78,7 @@ export class ActivityServiceImpl implements ActivityService {
     });
 
     const currentParticipants: number[] = (await this.participantComponent.findByActivityId(req.activityId)).map(
-      (participant) => participant.users_id,
+      (participant) => participant.userId,
     );
     const participantsToDelete: number[] = currentParticipants.filter((participant) => {
       return !req.participants.includes(participant);
@@ -91,14 +91,14 @@ export class ActivityServiceImpl implements ActivityService {
       })
       .map((participant) => {
         return Participant.create({
-          activity_id: activity.activity_id,
-          users_id: participant,
+          activityId: activity.id,
+          userId: participant,
         });
       });
     await this.participantComponent.saveAll(participants);
 
     const content = activity.name + ' 일정이 수정되었습니다.';
-    const userIdList: number[] = participants.map((participant) => participant.users_id);
+    const userIdList: number[] = participants.map((participant) => participant.userId);
     await this.notificationComponent.addNotifications(content, userIdList);
 
     await this.activityComponent.update(activity);
@@ -120,19 +120,19 @@ export class ActivityServiceImpl implements ActivityService {
   }
 
   public async getActivityList(
-    requester_id: number,
+    requesterId: number,
     status: ActivityStatusEnumType[],
     options: OrderingOptionEnumType,
-    meeting_id?: string,
+    _meetingId?: string,
   ): Promise<ActivityListResponse> {
-    let activities: Activity[] = [];
+    let activities: Activity[];
 
-    if (!meeting_id) {
-      const participants = await this.participantComponent.findAllByUserId(requester_id);
-      const activityIds: number[] = participants.map((participant) => participant.activity_id);
+    if (!_meetingId) {
+      const participants = await this.participantComponent.findAllByUserId(requesterId);
+      const activityIds: number[] = participants.map((participant) => participant.activityId);
       activities = await this.activityComponent.findAllByActivityIds(activityIds);
     } else {
-      const meetingId: number = MeetingUtils.transformMeetingIdToInteger(meeting_id);
+      const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
 
       activities = await this.activityComponent.findByMeetingId(meetingId);
     }
@@ -157,13 +157,13 @@ export class ActivityServiceImpl implements ActivityService {
     const activityList: ActivityListDto[] = filteredActivities.map((activity) => {
       return {
         ...activity,
-        meetingId: MeetingUtils.transformMeetingIdToString(activity.meeting_id),
+        meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
         address: activity.address.toAddressDto(),
       };
     });
 
-    const meetings = await this.memberComponent.findByUserId(requester_id);
-    const meetingIds = meetings.map((meeting) => meeting.meeting_id);
+    const meetings = await this.memberComponent.findByUserId(requesterId);
+    const meetingIds = meetings.map((meeting) => meeting.meetingId);
     const meetingList = await this.meetingComponent.findByMeetingIds(meetingIds);
     const meetingListDtos: ActivityListMeetingListDto[] = meetingList.map((meeting) => {
       return {
@@ -179,31 +179,29 @@ export class ActivityServiceImpl implements ActivityService {
   }
 
   @Transactional()
-  public async withdraw(requester_id: number, req: ActivityWithdrawRequest): Promise<void> {
+  public async withdraw(requesterId: number, req: ActivityWithdrawRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-    const requester = await this.memberComponent.findByUsersAndMeetingId(requester_id, meetingId);
-
+    const requester = await this.memberComponent.findByUsersAndMeetingId(requesterId, meetingId);
     if (requester.authority === AuthorityEnum.OWNER) {
       throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_ACCESS);
     }
 
     const participant: Participant | null = await this.participantComponent.findByUserIdAndActivityId(
-      requester_id,
+      requesterId,
       req.activityId,
     );
-
     if (!participant) {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_PARTICIPANT);
     }
 
-    await this.participantComponent.delete(requester_id, req.activityId);
+    await this.participantComponent.delete(requesterId, req.activityId);
   }
 
   @Transactional()
-  public async delete(requester_id: number, req: ActivityDeleteRequest): Promise<void> {
+  public async delete(requesterId: number, req: ActivityDeleteRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
 
-    await this.authorityComponent.validateAuthority(requester_id, meetingId);
+    await this.authorityComponent.validateAuthority(requesterId, meetingId);
     await this.activityComponent.delete(req.activityId);
   }
 }

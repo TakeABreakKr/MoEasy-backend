@@ -1,9 +1,9 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotificationService } from './notification.service.interface';
-import { NotificationCheckRequest } from '../dto/request/notification.check.request';
-import { NotificationResponse } from '../dto/response/notification.response';
-import { NotificationServiceImpl } from './notification.service';
+import { NotificationService } from '@service/notification/service/notification.service.interface';
+import { NotificationCheckRequest } from '@service/notification/dto/request/notification.check.request';
+import { NotificationResponse } from '@service/notification/dto/response/notification.response';
+import { NotificationServiceImpl } from '@service/notification/service/notification.service';
 import { Notification } from '@domain/notification/entity/notification.entity';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 
@@ -45,7 +45,7 @@ class MockNotificationComponent implements NotificationComponent {
     componentAccessLog.push(MockNotificationComponent.getListByNotificationIdsLog);
 
     return MockNotificationComponent.notification.filter((notification) =>
-      notificationIdList.includes(notification.notification_id),
+      notificationIdList.includes(notification.id),
     );
   }
 }

@@ -79,7 +79,7 @@ describe('MemberControllerTest', () => {
 
   it('updateAuthorityTest', async () => {
     const request: MemberAuthorityUpdateRequest = {
-      usersId: 2,
+      userId: 2,
       meetingId: meetingId,
       isManager: false,
     };

@@ -9,6 +9,7 @@ import { MeetingService } from '@service/meeting/service/meeting.service.interfa
 import { AuthUser } from '@decorator/token.decorator';
 import { AuthorityEnum } from '@enums/authority.enum';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
+import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
 
 class MockMeetingService implements MeetingService {
   public static meetingId: string = 'OOOOOOO1';
@@ -31,6 +32,8 @@ class MockMeetingService implements MeetingService {
       members: [],
       thumbnail: undefined,
       canJoin: false,
+      likedYn: false,
+      likeCount: 0,
     };
   }
 
@@ -39,6 +42,8 @@ class MockMeetingService implements MeetingService {
       meetingList: [],
     };
   }
+
+  public async likeMeeting() {}
 }
 
 describe('MeetingController', () => {
@@ -79,6 +84,8 @@ describe('MeetingController', () => {
       limit: 1,
       members: [],
       canJoin: false,
+      category: MeetingCategoryEnum.PET,
+      publicYn: true,
     };
 
     const result = await meetingController.createMeeting(request, user);
@@ -87,11 +94,12 @@ describe('MeetingController', () => {
 
   it('updateMeetingTest', async () => {
     const request: MeetingUpdateRequest = {
-      meeting_id: '',
+      meetingId: '',
       name: '',
       explanation: '',
       limit: 1,
       canJoin: false,
+      publicYn: true,
     };
     const result = await meetingController.updateMeeting(request, user);
     expect(result).toBe(void 0);
@@ -112,7 +120,7 @@ describe('MeetingController', () => {
   });
 
   it('getMeetingTest', async () => {
-    const result = await meetingController.getMeeting(MockMeetingService.meetingId);
+    const result = await meetingController.getMeeting(MockMeetingService.meetingId, user);
     const response: MeetingResponse = {
       name: '',
       explanation: '',
@@ -120,12 +128,14 @@ describe('MeetingController', () => {
       members: [],
       thumbnail: undefined,
       canJoin: false,
+      likedYn: false,
+      likeCount: 0,
     };
     expect(result).toStrictEqual(response);
   });
 
   it('getMeetingListTest', async () => {
-    const result = await meetingController.getMeetingList([AuthorityEnum.MEMBER], OrderingOptionEnum.NAME, user);
+    const result = await meetingController.getMeetingList(user, [AuthorityEnum.MEMBER], OrderingOptionEnum.NAME);
     const response: MeetingListResponse = {
       meetingList: [],
     };

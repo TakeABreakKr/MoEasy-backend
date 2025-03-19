@@ -7,14 +7,16 @@ import { MeetingListResponse } from '@service/meeting/dto/response/meeting.list.
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 
 export interface MeetingService {
-  createMeeting(req: MeetingCreateRequest, requester_id: number): Promise<string>;
-  updateMeeting(request: MeetingUpdateRequest, requester_id: number): Promise<void>;
-  updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requester_id: number): Promise<void>;
-  deleteMeeting(meeting_id: string, requester_id: number): Promise<void>;
-  getMeeting(meeting_id: string): Promise<MeetingResponse>;
+  createMeeting(req: MeetingCreateRequest, requesterId: number): Promise<string>;
+  updateMeeting(request: MeetingUpdateRequest, requesterId: number): Promise<void>;
+  updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requesterId: number): Promise<void>;
+  deleteMeeting(meetingId: string, requesterId: number): Promise<void>;
+  getMeeting(meetingId: string, requesterId?: number): Promise<MeetingResponse>;
   getMeetingList(
     userId?: number,
     authorities?: AuthorityEnumType[],
     options?: OrderingOptionEnumType,
+    onLiked?: boolean,
   ): Promise<MeetingListResponse>;
+  likeMeeting(meetingId: string, requesterId: number): Promise<void>;
 }

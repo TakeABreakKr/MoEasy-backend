@@ -15,12 +15,12 @@ class MockMemberDao implements MemberDao {
     this.mockMember = [
       Member.create({
         meetingId: 1,
-        usersId: 1,
+        userId: 1,
         authority: AuthorityEnum.OWNER,
       }),
       Member.create({
         meetingId: 3,
-        usersId: 3,
+        userId: 3,
         authority: AuthorityEnum.MEMBER,
       }),
     ];
@@ -30,9 +30,9 @@ class MockMemberDao implements MemberDao {
     return Member.create(dto);
   }
 
-  async findByUsersAndMeetingId(usersId: number, meetingId: number): Promise<Member | null> {
+  async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
     const member: Member = this.mockMember.find(
-      (member: Member) => member.users_id === usersId && member.meeting_id === meetingId,
+      (member: Member) => member.userId === userId && member.meetingId === meetingId,
     );
     return member ? member : null;
   }
@@ -53,6 +53,14 @@ class MockMemberDao implements MemberDao {
 
   async findByMeetingId(): Promise<Member[]> {
     return [];
+  }
+
+  async getMemberCountByMeetingId(meetingId: number): Promise<number> {
+    return this.mockMember.filter((member: Member) => member.meetingId === meetingId).length;
+  }
+
+  async getMostPopularMeetingIds(popularMeetingCount: number): Promise<number[]> {
+    return this.mockMember.slice(0, popularMeetingCount).map((member: Member) => member.meetingId);
   }
 }
 

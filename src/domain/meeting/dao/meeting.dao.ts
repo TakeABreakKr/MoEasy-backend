@@ -10,11 +10,15 @@ export class MeetingDaoImpl implements MeetingDao {
   constructor(@InjectRepository(Meeting) private meetingRepository: Repository<Meeting>) {}
 
   async findByMeetingId(id: number): Promise<Meeting | null> {
-    return this.meetingRepository.findOneBy({ meeting_id: id });
+    return this.meetingRepository.findOneBy({ id });
   }
 
   async findByMeetingIds(ids: number[]): Promise<Meeting[]> {
-    return this.meetingRepository.findBy({ meeting_id: In(ids) });
+    return this.meetingRepository.findBy({ id: In(ids) });
+  }
+
+  async getNewMeetings(): Promise<Meeting[]> {
+    return this.meetingRepository.find({ order: { createdAt: 'DESC' }, take: 30 });
   }
 
   async create(props: CreateMeetingDto): Promise<Meeting> {

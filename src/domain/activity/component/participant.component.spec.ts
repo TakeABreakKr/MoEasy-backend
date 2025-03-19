@@ -3,14 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { ParticipantComponentImpl } from '@domain/activity/component/participant.component';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 class MockParticipantDao implements ParticipantDao {
   public mockParticipants: Participant[] = [
-    Participant.create({ users_id: 10, activity_id: 100 }),
-    Participant.create({ users_id: 10, activity_id: 400 }),
-    Participant.create({ users_id: 30, activity_id: 200 }),
-    Participant.create({ users_id: 20, activity_id: 300 }),
-    Participant.create({ users_id: 50, activity_id: 300 }),
+    Participant.create({ userId: 10, activityId: 100 }),
+    Participant.create({ userId: 10, activityId: 400 }),
+    Participant.create({ userId: 30, activityId: 200 }),
+    Participant.create({ userId: 20, activityId: 300 }),
+    Participant.create({ userId: 50, activityId: 300 }),
   ];
 
   async saveAll(participants: Participant[]): Promise<void> {
@@ -19,33 +20,40 @@ class MockParticipantDao implements ParticipantDao {
     });
   }
 
-  async findByUserIdAndActivityId(users_id: number, activity_id: number): Promise<Participant | null> {
+  async findByUserIdAndActivityId(userId: number, activity_id: number): Promise<Participant | null> {
     return (
       this.mockParticipants.find(
-        (participant: Participant) => participant.activity_id === activity_id && participant.users_id === users_id,
+        (participant: Participant) => participant.activityId === activity_id && participant.userId === userId,
       ) || null
     );
   }
 
   async findByActivityId(activity_id: number): Promise<Participant[]> {
-    return this.mockParticipants.filter((participant: Participant) => participant.activity_id === activity_id) || null;
+    return this.mockParticipants.filter((participant: Participant) => participant.activityId === activity_id) || null;
   }
 
-  async findAllByUserId(users_id: number): Promise<Participant[] | null> {
-    return this.mockParticipants.filter((participant: Participant) => participant.users_id === users_id);
+  async findAllByUserId(userId: number): Promise<Participant[] | null> {
+    return this.mockParticipants.filter((participant: Participant) => participant.userId === userId);
   }
 
   async delete(usersId: number, activityId: number): Promise<void> {
     this.mockParticipants = this.mockParticipants.filter(
-      (participant: Participant) => !(participant.users_id === usersId && participant.activity_id === activityId),
+      (participant: Participant) => !(participant.userId === usersId && participant.activityId === activityId),
     );
   }
 
   async deleteAll(usersIds: number[], activity_id: number): Promise<void> {
     this.mockParticipants = this.mockParticipants.filter(
-      (participant: Participant) =>
-        !(usersIds.includes(participant.users_id) && participant.activity_id === activity_id),
+      (participant: Participant) => !(usersIds.includes(participant.userId) && participant.activityId === activity_id),
     );
+  }
+
+  async getParticipantCount(activityId: number): Promise<number> {
+    return this.mockParticipants.filter((participant: Participant) => participant.activityId === activityId).length;
+  }
+
+  async getHomeActivityParticipants(): Promise<ActivityParticipantDto[]> {
+    return;
   }
 }
 
@@ -75,8 +83,8 @@ describe('ParticipantComponent', () => {
     const userId2 = 900;
     const activityId2 = 900;
     const mockParticipants: Participant[] = [
-      Participant.create({ users_id: userId1, activity_id: activityId1 }),
-      Participant.create({ users_id: userId2, activity_id: activityId2 }),
+      Participant.create({ userId: userId1, activityId: activityId1 }),
+      Participant.create({ userId: userId2, activityId: activityId2 }),
     ];
 
     await participantComponent.saveAll(mockParticipants);
@@ -84,10 +92,10 @@ describe('ParticipantComponent', () => {
     const result1 = await participantComponent.findByUserIdAndActivityId(userId1, activityId1);
     const result2 = await participantComponent.findByUserIdAndActivityId(userId2, activityId2);
 
-    expect(result1.activity_id).toBe(activityId1);
-    expect(result1.users_id).toBe(userId1);
-    expect(result2.activity_id).toBe(activityId2);
-    expect(result2.users_id).toBe(userId2);
+    expect(result1.activityId).toBe(activityId1);
+    expect(result1.userId).toBe(userId1);
+    expect(result2.activityId).toBe(activityId2);
+    expect(result2.userId).toBe(userId2);
   });
 
   it('findByUserIdAndActivityIdTest', async () => {
@@ -95,28 +103,28 @@ describe('ParticipantComponent', () => {
     const activityId = 100;
     const result = await participantComponent.findByUserIdAndActivityId(userId, activityId);
 
-    expect(result.activity_id).toBe(100);
-    expect(result.users_id).toBe(10);
+    expect(result.activityId).toBe(100);
+    expect(result.userId).toBe(10);
   });
 
   it('findByActivityIdTest', async () => {
     const activityId = 300;
     const result = await participantComponent.findByActivityId(activityId);
 
-    expect(result[0].activity_id).toBe(activityId);
-    expect(result[0].users_id).toBe(20);
-    expect(result[1].activity_id).toBe(activityId);
-    expect(result[1].users_id).toBe(50);
+    expect(result[0].activityId).toBe(activityId);
+    expect(result[0].userId).toBe(20);
+    expect(result[1].activityId).toBe(activityId);
+    expect(result[1].userId).toBe(50);
   });
 
   it('findAllByUserIdTest', async () => {
     const userId = 10;
     const results = await participantComponent.findAllByUserId(userId);
 
-    expect(results[0].activity_id).toBe(100);
-    expect(results[0].users_id).toBe(10);
-    expect(results[1].activity_id).toBe(400);
-    expect(results[1].users_id).toBe(10);
+    expect(results[0].activityId).toBe(100);
+    expect(results[0].userId).toBe(10);
+    expect(results[1].activityId).toBe(400);
+    expect(results[1].userId).toBe(10);
   });
 
   it('deleteTest', async () => {
@@ -126,7 +134,7 @@ describe('ParticipantComponent', () => {
     const beforeDelete = await participantComponent.findByUserIdAndActivityId(userId, activityId);
 
     expect(beforeDelete).toBeDefined();
-    expect(beforeDelete.activity_id).toBe(activityId);
+    expect(beforeDelete.activityId).toBe(activityId);
 
     await participantComponent.delete(userId, activityId);
 
@@ -141,10 +149,10 @@ describe('ParticipantComponent', () => {
     const beforeDelete = await participantComponent.findByActivityId(activityId);
 
     expect(beforeDelete).toBeDefined();
-    expect(beforeDelete[0].activity_id).toBe(activityId);
-    expect(beforeDelete[0].users_id).toBe(userIds[0]);
-    expect(beforeDelete[1].activity_id).toBe(activityId);
-    expect(beforeDelete[1].users_id).toBe(userIds[1]);
+    expect(beforeDelete[0].activityId).toBe(activityId);
+    expect(beforeDelete[0].userId).toBe(userIds[0]);
+    expect(beforeDelete[1].activityId).toBe(activityId);
+    expect(beforeDelete[1].userId).toBe(userIds[1]);
 
     await participantComponent.deleteAll(userIds, activityId);
 

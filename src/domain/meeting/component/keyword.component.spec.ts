@@ -8,7 +8,7 @@ class MockKeywordDao implements KeywordDao {
   public mockKeywords: Keyword[] = [Keyword.create('테스트 키워드 1', 100), Keyword.create('테스트 키워드 2', 200)];
 
   async countByMeetingId(meetingId: number): Promise<number> {
-    return this.mockKeywords.filter((keyword) => keyword.meeting_id === meetingId).length;
+    return this.mockKeywords.filter((keyword) => keyword.meetingId === meetingId).length;
   }
 
   async saveAll(keywords: Keyword[]): Promise<void> {
@@ -32,6 +32,7 @@ describe('KeywordComponent', () => {
         },
       ],
     }).compile();
+
     keywordComponent = module.get<KeywordComponent>('KeywordComponent');
   });
 

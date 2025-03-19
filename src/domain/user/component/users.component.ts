@@ -8,8 +8,8 @@ import { UsersComponent } from '@domain/user/component/users.component.interface
 export class UsersComponentImpl implements UsersComponent {
   constructor(@Inject('UsersDao') private usersDao: UsersDao) {}
 
-  public async findByDiscordId(discord_id: string): Promise<Users | null> {
-    return this.usersDao.findByDiscordId(discord_id);
+  public async findByDiscordId(discordId: string): Promise<Users | null> {
+    return this.usersDao.findByDiscordId(discordId);
   }
 
   public async createUsers(profile: DiscordProfileDto): Promise<Users> {
@@ -20,7 +20,7 @@ export class UsersComponentImpl implements UsersComponent {
     return this.usersDao.findById(id);
   }
 
-  public async findByIds(usersIds: number[]): Promise<Users[]> {
-    return this.usersDao.findByIds(usersIds);
+  public async findByIds(userIds: number[]): Promise<Users[]> {
+    return this.usersDao.findByIds(userIds);
   }
 }

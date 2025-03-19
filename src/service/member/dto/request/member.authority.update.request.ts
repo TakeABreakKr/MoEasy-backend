@@ -4,7 +4,7 @@ import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 export class MemberAuthorityUpdateRequest {
   @ApiProperty()
   @IsNotEmpty()
-  usersId: number;
+  userId: number;
 
   @ApiProperty()
   @IsString()

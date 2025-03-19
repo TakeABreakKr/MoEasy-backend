@@ -22,4 +22,10 @@ export class MeetingResponse {
 
   @ApiProperty()
   canJoin: boolean;
+
+  @ApiProperty()
+  likedYn: boolean;
+
+  @ApiProperty()
+  likeCount: number;
 }
