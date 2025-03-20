@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import AuthGuard from './auth.guard';
 import { HttpStatus, Type } from '@nestjs/common';
-import { ErrorMessageType } from '@root/enums/error.message.enum';
-import { IS_PUBLIC_KEY } from '@root/decorator/public.decorator';
+import { ErrorMessageType } from '@enums/error.message.enum';
+import { IS_PUBLIC_KEY } from '@decorator/public.decorator';
 
 const TEST_CONFIG = {
   'auth.ACCESS_TOKEN_SECRET_KEY': 'test-secret-key',
