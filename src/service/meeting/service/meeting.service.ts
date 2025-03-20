@@ -148,12 +148,16 @@ export class MeetingServiceImpl implements MeetingService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
 
+    const members = await this.memberComponent.findByMeetingId(meetingId);
+    if (members.length > 0) {
+      throw new BadRequestException(ErrorMessageType.MEETING_NOT_EMPTY);
+    }
+
+    await this.meetingComponent.delete(meetingId);
     const meeting = await this.meetingComponent.findByMeetingId(meetingId);
     const content = meeting.name + ' 모임이 삭제되었습니다.';
     const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map((member) => member.userId);
     await this.notificationComponent.addNotifications(content, userIdList);
-
-    await this.meetingComponent.delete(meetingId);
   }
 
   public async getMeeting(_meetingId: string, requesterId?: number): Promise<MeetingResponse> {
@@ -246,6 +250,7 @@ export class MeetingServiceImpl implements MeetingService {
       canJoin: meeting.canJoin,
       likedYn: await this.meetingLikeComponent.likeStatus(meeting.id, requesterId),
       likeCount: await this.meetingLikeComponent.getLikeCountByMeetingId(meeting.id),
+      isLastMember: (await this.memberComponent.getMemberCount(meeting.id)) === 1,
     };
   }
 

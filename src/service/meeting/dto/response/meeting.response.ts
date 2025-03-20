@@ -34,4 +34,7 @@ export class MeetingResponse {
 
   @ApiProperty()
   likeCount: number;
+
+  @ApiProperty()
+  isLastMember: boolean;
 }

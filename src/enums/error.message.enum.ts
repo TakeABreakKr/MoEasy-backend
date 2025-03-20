@@ -28,6 +28,8 @@ export const ErrorMessageType = {
 
   LIKE_CONCURRENT_ERROR: '이미 처리 중인 좋아요 요청이 있습니다.',
   LIKE_OPERATION_ERROR: '좋아요 처리 중 오류가 발생했습니다.',
+
+  MEETING_NOT_EMPTY: '모임에 멤버가 존재하여 삭제할 수 없습니다.',
 } as const;
 
 export type ErrorMessageEnumType = (typeof ErrorMessageType)[keyof typeof ErrorMessageType];

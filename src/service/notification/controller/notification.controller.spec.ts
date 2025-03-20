@@ -1,7 +1,7 @@
 import { NotificationService } from '@service/notification/service/notification.service.interface';
 import { NotificationResponse } from '@service/notification/dto/response/notification.response';
 import { NotificationCheckRequest } from '@service/notification/dto/request/notification.check.request';
-import { NotificationController } from './notification.controller';
+import { NotificationController } from '@service/notification/controller/notification.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthUser } from '@decorator/token.decorator';
 
