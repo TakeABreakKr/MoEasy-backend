@@ -6,7 +6,7 @@ import { HomeResponse } from '@service/home/dto/response/home.response';
 import { HomeCachedResponse } from '@service/home/dto/response/home.cached.response';
 import { HeaderResponse } from '@service/home/dto/response/header.response';
 import { Public } from '@decorator/public.decorator';
-import AuthGuard from '@root/middleware/auth.guard';
+import AuthGuard from '@root/middleware/auth/auth.guard';
 
 @UseGuards(AuthGuard)
 @ApiTags('home')

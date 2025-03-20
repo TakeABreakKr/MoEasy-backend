@@ -3,7 +3,7 @@ import * as path from 'path';
 import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import AuthGuard from '@root/middleware/auth.guard';
+import AuthGuard from '@root/middleware/auth/auth.guard';
 
 export function setupSwagger(app: INestApplication) {
   const configService: ConfigService = app.get(ConfigService);

@@ -19,7 +19,7 @@ import { MemberJoinRequest } from '@service/member/dto/request/member.join.reque
 import { MemberJoinManageRequest } from '@service/member/dto/request/member.join.manage.request';
 import { MemberDeleteRequest } from '@service/member/dto/request/member.delete.request';
 import { MemberWaitingListResponse } from '@service/member/dto/response/member.waiting.list.response';
-import AuthGuard from '@root/middleware/auth.guard';
+import AuthGuard from '@root/middleware/auth/auth.guard';
 
 @UseGuards(AuthGuard)
 @ApiTags('member')

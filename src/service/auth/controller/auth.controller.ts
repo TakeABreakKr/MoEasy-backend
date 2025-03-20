@@ -1,4 +1,4 @@
-import AuthGuard from '@root/middleware/auth.guard';
+import AuthGuard from '@root/middleware/auth/auth.guard';
 import { Body, Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Public } from '@decorator/public.decorator';

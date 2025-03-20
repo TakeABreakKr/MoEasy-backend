@@ -21,7 +21,7 @@ import { ErrorMessageType } from '@enums/error.message.enum';
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { Public } from '@decorator/public.decorator';
 import { AuthUser, Token } from '@decorator/token.decorator';
-import AuthGuard from '@root/middleware/auth.guard';
+import AuthGuard from '@root/middleware/auth/auth.guard';
 
 @UseGuards(AuthGuard)
 @ApiTags('meeting')

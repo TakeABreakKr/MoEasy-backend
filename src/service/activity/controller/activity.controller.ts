@@ -20,7 +20,7 @@ import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.stat
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
 import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
-import AuthGuard from '@root/middleware/auth.guard';
+import AuthGuard from '@root/middleware/auth/auth.guard';
 
 @UseGuards(AuthGuard)
 @ApiTags('activity')

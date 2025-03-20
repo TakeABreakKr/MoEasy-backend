@@ -5,7 +5,7 @@ import { AuthUser, Token } from '@decorator/token.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { NotificationResponse } from '@service/notification/dto/response/notification.response';
 import { NotificationCheckRequest } from '@service/notification/dto/request/notification.check.request';
-import AuthGuard from '@root/middleware/auth.guard';
+import AuthGuard from '@root/middleware/auth/auth.guard';
 
 @UseGuards(AuthGuard)
 @ApiTags('notification')
