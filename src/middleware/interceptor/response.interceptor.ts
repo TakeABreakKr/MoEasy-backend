@@ -6,9 +6,12 @@ import { CommonResponse } from '@root/middleware/common.response';
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
   public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const response = context.switchToHttp().getResponse();
+    const statusCode = response.statusCode || HttpStatus.OK;
+    const message = response.message || 'success';
     return next.handle().pipe(
       map((data) => {
-        return new CommonResponse(HttpStatus.OK, 'success', data);
+        return new CommonResponse(statusCode, message, data);
       }),
     );
   }

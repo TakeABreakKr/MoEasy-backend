@@ -133,7 +133,7 @@ export class MemberController {
     description: 'data required for member approval',
     type: MemberJoinManageRequest,
   })
-  async manageMemberJoin(req: MemberJoinManageRequest, @Token() user: AuthUser) {
+  async manageMemberJoin(@Body() req: MemberJoinManageRequest, @Token() user: AuthUser) {
     await this.memberService.manageMemberJoin(user.id, req);
   }
 }
