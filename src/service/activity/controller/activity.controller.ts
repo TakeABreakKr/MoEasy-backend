@@ -4,10 +4,11 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiOkResponse,
+  ApiExtraModels,
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { ActivityCreateRequest } from '@service/activity/dto/request/activity.create.request';
 import { ActivityService } from '@service/activity/service/activity.service.interface';
@@ -21,6 +22,7 @@ import { ActivityResponse } from '@service/activity/dto/response/activity.respon
 import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 import AuthGuard from '@root/middleware/auth/auth.guard';
+import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
 
 @UseGuards(AuthGuard)
 @ApiTags('activity')
@@ -30,7 +32,7 @@ export class ActivityController {
 
   @Post('create')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({ status: 200, description: 'Activity Entity has been created.' })
+  @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
   @ApiBody({
@@ -43,7 +45,7 @@ export class ActivityController {
 
   @Post('update')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({ status: 200, description: 'Activity has been updated.' })
+  @ApiCommonResponse()
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('application/json')
@@ -57,10 +59,9 @@ export class ActivityController {
 
   @Get('get')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({
-    status: 200,
-    description: 'activity entity retrieved successfully',
-    type: ActivityResponse,
+  @ApiExtraModels(ActivityResponse)
+  @ApiCommonResponse({
+    $ref: getSchemaPath(ActivityResponse),
   })
   @ApiBadRequestResponse({
     status: 400,
@@ -73,11 +74,8 @@ export class ActivityController {
 
   @Get('get/list')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({
-    status: 200,
-    description: 'Activity list retrieved',
-    type: ActivityListResponse,
-  })
+  @ApiExtraModels(ActivityListResponse)
+  @ApiCommonResponse({ $ref: getSchemaPath(ActivityListResponse) })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiQuery({
@@ -106,7 +104,7 @@ export class ActivityController {
 
   @Post('withdraw')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({ status: 200, description: 'withdraw successfully' })
+  @ApiCommonResponse()
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBody({
@@ -119,7 +117,7 @@ export class ActivityController {
 
   @Post('delete')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({ status: 200, description: 'activity deleted successfully' })
+  @ApiCommonResponse()
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBody({

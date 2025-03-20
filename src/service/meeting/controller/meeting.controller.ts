@@ -3,10 +3,11 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiOkResponse,
+  ApiExtraModels,
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { Body, Controller, Get, Inject, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -22,6 +23,7 @@ import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.opti
 import { Public } from '@decorator/public.decorator';
 import { AuthUser, Token } from '@decorator/token.decorator';
 import AuthGuard from '@root/middleware/auth/auth.guard';
+import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
 
 @UseGuards(AuthGuard)
 @ApiTags('meeting')
@@ -32,7 +34,7 @@ export class MeetingController {
   @Post('create')
   @UseInterceptors(FileInterceptor('thumbnail'))
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully created.' })
+  @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -45,7 +47,7 @@ export class MeetingController {
 
   @Post('update')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
+  @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiConsumes('application/json')
@@ -60,7 +62,7 @@ export class MeetingController {
   @Post('update/thumbnail')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @UseInterceptors(FileInterceptor('thumbnail'))
-  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully modified.' })
+  @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiConsumes('multipart/form-data')
@@ -74,7 +76,7 @@ export class MeetingController {
 
   @Get('delete')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({ status: 200, description: 'Meeting Entity has been successfully deleted.' })
+  @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
@@ -87,11 +89,8 @@ export class MeetingController {
   }
 
   @Get('get')
-  @ApiOkResponse({
-    status: 200,
-    description: 'Meeting retrieved successfully',
-    type: MeetingResponse,
-  })
+  @ApiExtraModels(MeetingResponse)
+  @ApiCommonResponse({ $ref: getSchemaPath(MeetingResponse) })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',
@@ -104,11 +103,8 @@ export class MeetingController {
 
   @Post('get/list')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({
-    status: 200,
-    description: 'Meeting list retrieved successfully.',
-    type: MeetingListResponse,
-  })
+  @ApiExtraModels(MeetingListResponse)
+  @ApiCommonResponse({ $ref: getSchemaPath(MeetingListResponse) })
   @ApiBody({
     description: 'Filter meetings by authority and sort by options.',
     schema: {
@@ -145,18 +141,15 @@ export class MeetingController {
 
   @Public()
   @Get('lookAround')
-  @ApiOkResponse({
-    status: 200,
-    description: 'Meeting list retrieved successfully',
-    type: MeetingListResponse,
-  })
+  @ApiExtraModels(MeetingListResponse)
+  @ApiCommonResponse({ $ref: getSchemaPath(MeetingListResponse) })
   async lookAroundMeetingList(): Promise<MeetingListResponse> {
     return this.meetingService.getMeetingList();
   }
 
   @Post('like')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @ApiOkResponse({ status: 200, description: 'Meeting like count has been successfully updated.' })
+  @ApiCommonResponse()
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })
   @ApiQuery({
     name: 'meetingId',
