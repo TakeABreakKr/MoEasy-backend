@@ -1,6 +1,5 @@
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
-
 export interface ActivityDao {
   findByActivityId(activity_id: number): Promise<Activity | null>;
   findAllByActivityIds(activity_ids: number[]): Promise<Activity[]>;

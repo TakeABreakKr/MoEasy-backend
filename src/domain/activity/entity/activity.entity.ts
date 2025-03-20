@@ -75,7 +75,7 @@ export class Activity extends BaseEntity {
   meeting: Promise<Meeting>;
 
   @OneToMany(() => Participant, (participant) => participant.activity)
-  participants: Promise<Participant>;
+  participants: Promise<Participant[]>;
 
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
@@ -98,7 +98,7 @@ export class Activity extends BaseEntity {
     activity.detailAddress = activityCreateVO.detailAddress;
     activity.participantLimit = activityCreateVO.participantLimit;
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
-
+    activity.onlineLink = activityCreateVO.onlineLink;
     return activity;
   }
 
@@ -113,6 +113,7 @@ export class Activity extends BaseEntity {
     this.address = activityUpdateVO.address;
     this.detailAddress = activityUpdateVO.detailAddress;
     this.participantLimit = activityUpdateVO.participantLimit;
+    this.onlineLink = activityUpdateVO.onlineLink;
   }
 
   //only for test

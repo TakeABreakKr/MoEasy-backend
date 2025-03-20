@@ -5,22 +5,22 @@ import { MeetingComponent } from '@domain/meeting/component/meeting.component.in
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 import { AuthorityEnum, AuthorityEnumType } from '@root/enums/authority.enum';
-import { Member } from '@root/domain/member/entity/member.entity';
-import { CreateMemberDto } from '@root/domain/member/dto/create.member.dto';
-import { MemberComponent } from '@root/domain/member/component/member.component.interface';
-import { AuthorityComponent } from '@root/domain/member/component/authority.component.interface';
+import { Member } from '@domain/member/entity/member.entity';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
+import { MemberComponent } from '@domain/member/component/member.component.interface';
+import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
-import { ActivityComponent } from '@root/domain/activity/component/activity.component.interface';
+import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { ParticipantComponent } from '@root/domain/activity/component/participant.component.interface';
-import { Activity } from '@root/domain/activity/entity/activity.entity';
-import { ActivityCreateVO } from '@root/domain/activity/vo/activity.create.vo';
-import { Participant } from '@root/domain/activity/entity/participant.entity';
-import { ErrorMessageType } from '@root/enums/error.message.enum';
-import { ActivityStatusEnum } from '@root/enums/activityStatusEnum';
-import { OrderingOptionEnum } from '@root/enums/ordering.option.enum';
-import { Address } from '@root/domain/activity/entity/address.embedded';
-import { MeetingCategoryEnum } from '@root/enums/meeting.category.enum';
-import { ActivityParticipantDto } from '@root/domain/activity/dto/activity.participant.dto';
+import { Activity } from '@domain/activity/entity/activity.entity';
+import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { ErrorMessageType } from '@enums/error.message.enum';
+import { ActivityStatusEnum } from '@enums/activityStatusEnum';
+import { OrderingOptionEnum } from '@enums/ordering.option.enum';
+import { Address } from '@domain/activity/entity/address.embedded';
+import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 const componentAccessLog: string[] = [];
 
@@ -568,7 +568,6 @@ describe('ActivityServiceTest', () => {
       const result = await activityService.getActivity(activityId);
 
       expect(result.name).toBe('moeasy2');
-      expect(result.explanation).toBe('모임설명2');
       expect(result.announcement).toBe('공지사항2');
       expect(result.onlineYn).toBe(false);
 

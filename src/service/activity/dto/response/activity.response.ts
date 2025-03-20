@@ -1,12 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ActivityMemberDto } from './activity.member.dto';
+import { ActivityMemberDto } from '@service/activity/dto/response/activity.member.dto';
 
 export class ActivityResponse {
   @ApiProperty()
   name: string;
-
-  @ApiProperty()
-  explanation: string;
 
   @ApiProperty()
   startDate: Date;

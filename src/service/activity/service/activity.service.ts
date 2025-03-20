@@ -151,7 +151,6 @@ export class ActivityServiceImpl implements ActivityService {
       name: activity.name,
       startDate: activity.startDate,
       onlineYn: activity.onlineYn,
-      explanation: activity.explanation,
       onlineLink: activity.getOnlineLink(),
       participantCount: await this.participantComponent.getParticipantCount(activity.id),
       participantLimit: activity.participantLimit,

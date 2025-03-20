@@ -24,8 +24,8 @@ import { MemberComponent } from '@domain/member/component/member.component.inter
 import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
 import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
-import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interface';
-import { MeetingLike } from '@root/domain/meeting/entity/meeting.like.entity';
+import { MeetingLikeComponent } from '@domain/meeting/component/meeting.like.component.interface';
+import { MeetingLike } from '@domain/meeting/entity/meeting.like.entity';
 
 type lineSeperatorFunctionType = (content: string) => string;
 
