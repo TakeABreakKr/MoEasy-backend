@@ -23,6 +23,9 @@ export class Activity extends BaseEntity {
   @Column()
   explanation: string;
 
+  @Column()
+  thumbnail: string;
+
   @Column({
     type: 'datetime',
     nullable: false,
@@ -88,7 +91,6 @@ export class Activity extends BaseEntity {
   public static create(activityCreateVO: ActivityCreateVO): Activity {
     const activity = new Activity();
     activity.name = activityCreateVO.name;
-    activity.explanation = activityCreateVO.explanation;
     activity.startDate = activityCreateVO.startDate;
     activity.endDate = activityCreateVO.endDate;
     activity.reminder = ActivityUtils.reminderListToMask(activityCreateVO.reminder);
@@ -99,12 +101,12 @@ export class Activity extends BaseEntity {
     activity.participantLimit = activityCreateVO.participantLimit;
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
     activity.onlineLink = activityCreateVO.onlineLink;
+    activity.thumbnail = activityCreateVO.thumbnail;
     return activity;
   }
 
   update(activityUpdateVO: ActivityUpdateVO) {
     this.name = activityUpdateVO.name;
-    this.explanation = activityUpdateVO.explanation;
     this.startDate = activityUpdateVO.startDate;
     this.endDate = activityUpdateVO.endDate;
     this.reminder = ActivityUtils.reminderListToMask(activityUpdateVO.reminder);

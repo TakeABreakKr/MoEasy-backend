@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RegionEnum, RegionEnumType } from '@root/enums/region.enum';
+import { RegionEnum, RegionEnumType } from '@enums/region.enum';
 
 export class ActivityListDto {
   @ApiProperty()
@@ -7,6 +7,12 @@ export class ActivityListDto {
 
   @ApiProperty()
   name: string;
+
+  @ApiProperty()
+  explanation: string;
+
+  @ApiProperty()
+  thumbnail: string;
 
   @ApiProperty()
   onlineYn: boolean;

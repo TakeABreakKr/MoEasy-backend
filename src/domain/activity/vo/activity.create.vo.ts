@@ -14,4 +14,5 @@ export interface ActivityCreateVO {
   detailAddress?: string;
   onlineLink?: string;
   participantLimit: number;
+  thumbnail: string;
 }

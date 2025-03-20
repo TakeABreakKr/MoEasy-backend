@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MemberService } from '@service/member/service/member.service.interface';
 import { MemberSearchResponse } from '@service/member/dto/response/member.search.response';
-import { MemberController } from './member.controller';
+import { MemberController } from '@service/member/controller/member.controller';
 import { MemberWaitingListResponse } from '@service/member/dto/response/member.waiting.list.response';
 import { MemberResponse } from '@service/member/dto/response/member.response';
 import { AuthUser } from '@decorator/token.decorator';

@@ -29,6 +29,11 @@ export abstract class ActivityRequest {
   explanation: string;
 
   @ApiProperty()
+  @IsOptional()
+  @IsString()
+  thumbnail: string;
+
+  @ApiProperty()
   @IsDate()
   @IsNotEmpty()
   startDate: Date;

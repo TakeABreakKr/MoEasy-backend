@@ -48,6 +48,7 @@ export class ActivityServiceImpl implements ActivityService {
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
       explanation: req.explanation,
+      thumbnail: req.thumbnail,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -88,6 +89,7 @@ export class ActivityServiceImpl implements ActivityService {
     activity.update({
       name: req.name,
       explanation: req.explanation,
+      thumbnail: req.thumbnail,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -149,12 +151,13 @@ export class ActivityServiceImpl implements ActivityService {
     const baseInfo = {
       activityId: activity.id,
       name: activity.name,
+      explanation: activity.explanation,
+      thumbnail: activity.thumbnail,
       startDate: activity.startDate,
       onlineYn: activity.onlineYn,
       onlineLink: activity.getOnlineLink(),
       participantCount: await this.participantComponent.getParticipantCount(activity.id),
       participantLimit: activity.participantLimit,
-      meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
       daysUntilStart: await this.activityComponent.getDaysUntilStart(activity.startDate),
       announcement: activity.announcement,
       members: memberDtos,
@@ -211,6 +214,8 @@ export class ActivityServiceImpl implements ActivityService {
         const baseInfo = {
           activityId: activity.id,
           name: activity.name,
+          explanation: activity.explanation,
+          thumbnail: activity.thumbnail,
           startDate: activity.startDate,
           onlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
