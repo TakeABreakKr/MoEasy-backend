@@ -116,6 +116,7 @@ export class Activity extends BaseEntity {
     this.detailAddress = activityUpdateVO.detailAddress;
     this.participantLimit = activityUpdateVO.participantLimit;
     this.onlineLink = activityUpdateVO.onlineLink;
+    this.thumbnail = activityUpdateVO.thumbnail;
   }
 
   //only for test

@@ -27,6 +27,7 @@ import { getRegionEnum, RegionEnumType } from '@enums/region.enum';
 import { Users } from '@domain/user/entity/users.entity';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { ActivityMemberDto } from '@service/activity/dto/response/activity.member.dto';
+import { Member } from '@domain/member/entity/member.entity';
 
 @Injectable()
 export class ActivityServiceImpl implements ActivityService {
@@ -132,16 +133,24 @@ export class ActivityServiceImpl implements ActivityService {
     const activity: Activity | null = await this.activityComponent.findByActivityId(activityId);
     if (!activity) throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
 
-    const members: Participant[] = await this.participantComponent.findByActivityId(activity.id);
-    const userIds = members.map((member) => member.userId);
+    const participants: Participant[] = await this.participantComponent.findByActivityId(activity.id);
+    const userIds = participants.map((participant) => participant.userId);
     const users: Users[] = await this.usersComponent.findByIds(userIds);
     const userMap = new Map<number, Users>();
     users.forEach((user) => {
       userMap.set(user.id, user);
     });
 
-    const memberDtos: ActivityMemberDto[] = members.map((member): ActivityMemberDto => {
-      const user: Users = userMap.get(member.userId);
+    const members: Member[] = await this.memberComponent.findByUserIdsAndMeetingId(userIds, activity.meetingId);
+    const memberMap = new Map<number, Member>();
+    members.forEach((member) => {
+      memberMap.set(member.userId, member);
+    });
+
+    const memberDtos: ActivityMemberDto[] = participants.map((participant): ActivityMemberDto => {
+      const user: Users = userMap.get(participant.userId);
+      const member: Member = memberMap.get(participant.userId);
+
       return {
         username: user.username,
         authority: member.authority,
@@ -171,6 +180,8 @@ export class ActivityServiceImpl implements ActivityService {
         region,
       };
     }
+
+    return baseInfo;
   }
 
   public async getActivityList(
@@ -233,6 +244,8 @@ export class ActivityServiceImpl implements ActivityService {
             region,
           };
         }
+
+        return baseInfo;
       }),
     );
 

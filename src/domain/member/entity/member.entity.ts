@@ -47,9 +47,8 @@ export class Member extends BaseEntity {
     const member = new Member();
     member.meetingId = meetingId;
     member.userId = userId;
-    if (authority) {
-      member.authority = authority;
-    }
+    member.authority = authority;
+
     if (applicationMessage) {
       member.applicationMessage = applicationMessage;
     }

@@ -75,7 +75,7 @@ class MockActivityDao implements ActivityDao {
   }
 
   async getDaysUntilStart(): Promise<number> {
-    return 0;
+    return;
   }
 }
 

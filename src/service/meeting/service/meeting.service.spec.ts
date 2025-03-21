@@ -116,6 +116,10 @@ class MockMemberComponent implements MemberComponent {
     return member || null;
   }
 
+  async findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]> {
+    return this.mockMembers.filter((member) => userIds.includes(member.userId) && member.meetingId === meetingId);
+  }
+
   async findByUsersAndAuthorities(userId: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
     return this.mockMembers.filter((member) => member.userId === userId && authorities.includes(member.authority));
   }

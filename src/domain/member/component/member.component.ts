@@ -21,6 +21,10 @@ export class MemberComponentImpl implements MemberComponent {
     return this.memberDao.findByUsersAndMeetingId(userId, meetingId);
   }
 
+  async findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]> {
+    return this.memberDao.findByUserIdsAndMeetingId(userIds, meetingId);
+  }
+
   async findByUserId(userId: number): Promise<Member[]> {
     return this.memberDao.findByUserId(userId);
   }
