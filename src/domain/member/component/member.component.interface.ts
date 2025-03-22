@@ -6,6 +6,7 @@ export interface MemberComponent {
   saveAll(members: Member[]): Promise<void>;
   findByMeetingId(meetingId: number): Promise<Member[]>;
   findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null>;
+  findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]>;
   findByUserId(userId: number): Promise<Member[]>;
   getMemberCount(meetingId: number): Promise<number>;
   getMostPopularMeetingIds(): Promise<number[]>;

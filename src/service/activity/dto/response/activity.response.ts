@@ -1,18 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AddressDto } from '@service/activity/dto/request/activity.address.dto';
+import { RegionEnum, RegionEnumType } from '@root/enums/region.enum';
+import { ActivityMemberDto } from '@service/activity/dto/response/activity.member.dto';
 
 export class ActivityResponse {
   @ApiProperty()
   name: string;
 
   @ApiProperty()
-  explanation: string;
-
-  @ApiProperty()
   startDate: Date;
-
-  @ApiProperty()
-  endDate: Date;
 
   @ApiProperty()
   announcement: string;
@@ -20,6 +15,27 @@ export class ActivityResponse {
   @ApiProperty()
   onlineYn: boolean;
 
+  @ApiProperty({
+    enum: RegionEnum,
+    example: RegionEnum.SEOCHO,
+  })
+  region?: RegionEnumType;
+
   @ApiProperty()
-  address: AddressDto;
+  thumbnail: string;
+
+  @ApiProperty()
+  participantLimit: number;
+
+  @ApiProperty()
+  participantCount: number;
+
+  @ApiProperty()
+  onlineLink?: string;
+
+  @ApiProperty({
+    type: ActivityMemberDto,
+    isArray: true,
+  })
+  members: ActivityMemberDto[];
 }

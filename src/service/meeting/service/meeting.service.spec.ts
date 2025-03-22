@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MeetingServiceImpl } from './meeting.service';
-import { MeetingService } from './meeting.service.interface';
+import { MeetingServiceImpl } from '@service/meeting/service/meeting.service';
+import { MeetingService } from '@service/meeting/service/meeting.service.interface';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Member } from '@domain/member/entity/member.entity';
 import { ErrorMessageType } from '@enums/error.message.enum';
@@ -12,10 +12,10 @@ import { NotificationComponent } from '@domain/notification/component/notificati
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { Users } from '@domain/user/entity/users.entity';
 import { Notification } from '@domain/notification/entity/notification.entity';
-import { MemberComponent } from '@root/domain/member/component/member.component.interface';
-import { MeetingComponent } from '@root/domain/meeting/component/meeting.component.interface';
-import { KeywordComponent } from '@root/domain/meeting/component/keyword.component.interface';
-import { CreateMemberDto } from '@root/domain/member/dto/create.member.dto';
+import { MemberComponent } from '@domain/member/component/member.component.interface';
+import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
+import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
 import { MeetingUpdateRequest } from '@service/meeting/dto/request/meeting.update.request';
 
@@ -114,6 +114,10 @@ class MockMemberComponent implements MemberComponent {
 
     const member = this.mockMembers.find((member) => member.userId === userId && member.meetingId === meetingId);
     return member || null;
+  }
+
+  async findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]> {
+    return this.mockMembers.filter((member) => userIds.includes(member.userId) && member.meetingId === meetingId);
   }
 
   async findByUsersAndAuthorities(userId: number, authorities: AuthorityEnumType[]): Promise<Member[]> {

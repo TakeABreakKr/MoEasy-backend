@@ -5,6 +5,7 @@ import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 export interface MemberDao {
   saveAll(members: Member[]): Promise<void>;
   findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null>;
+  findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]>;
   findByMeetingId(meetingId: number): Promise<Member[]>;
   findByUsersAndAuthorities(userId: number, authority: AuthorityEnumType[]): Promise<Member[]>;
   findByUserId(userId: number): Promise<Member[]>;

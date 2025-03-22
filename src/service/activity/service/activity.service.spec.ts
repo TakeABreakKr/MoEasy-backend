@@ -5,22 +5,22 @@ import { MeetingComponent } from '@domain/meeting/component/meeting.component.in
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 import { AuthorityEnum, AuthorityEnumType } from '@root/enums/authority.enum';
-import { Member } from '@root/domain/member/entity/member.entity';
-import { CreateMemberDto } from '@root/domain/member/dto/create.member.dto';
-import { MemberComponent } from '@root/domain/member/component/member.component.interface';
-import { AuthorityComponent } from '@root/domain/member/component/authority.component.interface';
+import { Member } from '@domain/member/entity/member.entity';
+import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
+import { MemberComponent } from '@domain/member/component/member.component.interface';
+import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
-import { ActivityComponent } from '@root/domain/activity/component/activity.component.interface';
+import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { ParticipantComponent } from '@root/domain/activity/component/participant.component.interface';
-import { Activity } from '@root/domain/activity/entity/activity.entity';
-import { ActivityCreateVO } from '@root/domain/activity/vo/activity.create.vo';
-import { Participant } from '@root/domain/activity/entity/participant.entity';
-import { ErrorMessageType } from '@root/enums/error.message.enum';
-import { ActivityStatusEnum } from '@root/enums/activityStatusEnum';
-import { OrderingOptionEnum } from '@root/enums/ordering.option.enum';
-import { Address } from '@root/domain/activity/entity/address.embedded';
-import { MeetingCategoryEnum } from '@root/enums/meeting.category.enum';
-import { ActivityParticipantDto } from '@root/domain/activity/dto/activity.participant.dto';
+import { Activity } from '@domain/activity/entity/activity.entity';
+import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
+import { Participant } from '@domain/activity/entity/participant.entity';
+import { ErrorMessageType } from '@enums/error.message.enum';
+import { ActivityStatusEnum } from '@enums/activityStatusEnum';
+import { OrderingOptionEnum } from '@enums/ordering.option.enum';
+import { Address } from '@domain/activity/entity/address.embedded';
+import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
+import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 const componentAccessLog: string[] = [];
 
@@ -141,6 +141,10 @@ class MockMemberComponent implements MemberComponent {
     return member || null;
   }
 
+  async findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]> {
+    return this.mockMembers.filter((member) => userIds.includes(member.userId) && member.meetingId === meetingId);
+  }
+
   async findByUsersAndAuthorities(userId: number, authorities: AuthorityEnumType[]): Promise<Member[]> {
     componentAccessLog.push(MockMemberComponent.findByUsersAndAuthoritiesLog);
 
@@ -236,7 +240,7 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(100, {
       meetingId: '64',
       name: 'moeasy1',
-      explanation: '모임설명1',
+      thumbnail: 'testThumbnail1.jpg',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -244,12 +248,12 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: true,
       address: Address.createForTest(),
       detailAddress: '평택',
-      participantLimit: 10,
+      participantLimit: 20,
     }),
     Activity.createForTest(101, {
       meetingId: '64',
       name: 'moeasy4',
-      explanation: '모임설명4',
+      thumbnail: 'testThumbnail4.jpg',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -257,12 +261,12 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '인천',
-      participantLimit: 10,
+      participantLimit: 20,
     }),
     Activity.createForTest(200, {
       meetingId: 'C8',
       name: 'moeasy2',
-      explanation: '모임설명2',
+      thumbnail: 'testThumbnail2.jpg',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -270,12 +274,12 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '수원',
-      participantLimit: 10,
+      participantLimit: 20,
     }),
     Activity.createForTest(300, {
       meetingId: 'C8',
       name: 'moeasy3',
-      explanation: '모임설명3',
+      thumbnail: 'testThumbnail3.jpg',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -283,7 +287,7 @@ class MockActivityComponent implements ActivityComponent {
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '시흥',
-      participantLimit: 10,
+      participantLimit: 20,
     }),
   ];
 
@@ -333,6 +337,10 @@ class MockActivityComponent implements ActivityComponent {
 
   async getUpcomingActivities(): Promise<Activity[]> {
     return [];
+  }
+
+  async getDaysUntilStart(): Promise<number> {
+    return 0;
   }
 }
 
@@ -459,6 +467,7 @@ describe('ActivityServiceTest', () => {
         meetingId: '64',
         name: 'moeasy1',
         explanation: '모임설명1',
+        thumbnail: 'testThumbnail1.jpg',
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
@@ -468,6 +477,7 @@ describe('ActivityServiceTest', () => {
         detailAddress: '평택',
         participants: [10, 20, 30],
         participantLimit: 10,
+        onlineLink: 'https://www.naver.com',
       };
 
       const requesterId = 200;
@@ -491,6 +501,7 @@ describe('ActivityServiceTest', () => {
         meetingId: 'C8',
         name: 'moeasy3 수정',
         explanation: '모임설명3 수정',
+        thumbnail: 'testThumbnail3.jpg',
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
@@ -500,6 +511,7 @@ describe('ActivityServiceTest', () => {
         detailAddress: '시흥에서 수정',
         participants: [10, 20],
         participantLimit: 10,
+        onlineLink: 'https://www.naver.com',
       };
 
       const requesterId = 200;
@@ -512,7 +524,6 @@ describe('ActivityServiceTest', () => {
       expect(result.id).toBe(300);
       expect(result.meetingId).toBe(200);
       expect(result.name).toBe('moeasy3 수정');
-      expect(result.explanation).toBe('모임설명3 수정');
       expect(result.announcement).toBe('공지사항3 수정');
       expect(result.onlineYn).toBe(false);
       expect(result.detailAddress).toBe('시흥에서 수정');
@@ -537,6 +548,7 @@ describe('ActivityServiceTest', () => {
         meetingId: '64',
         name: 'moeasy1 수정',
         explanation: '모임설명1 수정',
+        thumbnail: 'testThumbnail1.jpg',
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
@@ -546,6 +558,7 @@ describe('ActivityServiceTest', () => {
         detailAddress: '평택에서 수정',
         participants: [10, 20, 30],
         participantLimit: 10,
+        onlineLink: 'https://www.naver.com',
       };
 
       const requesterId = 10;
@@ -561,7 +574,6 @@ describe('ActivityServiceTest', () => {
       const result = await activityService.getActivity(activityId);
 
       expect(result.name).toBe('moeasy2');
-      expect(result.explanation).toBe('모임설명2');
       expect(result.announcement).toBe('공지사항2');
       expect(result.onlineYn).toBe(false);
 
@@ -585,16 +597,12 @@ describe('ActivityServiceTest', () => {
       );
 
       expect(result.activityList[0].name).toBe('moeasy1');
-      expect(result.activityList[0].explanation).toBe('모임설명1');
-      expect(result.activityList[0].announcement).toBe('공지사항1');
       expect(result.activityList[0].onlineYn).toBe(true);
       expect(result.activityList[0].meetingId).toBe('64');
       expect(result.meetings[0].name).toBe('모임 이름1');
       expect(result.meetings[0].thumbnail).toBe('testThumbnail1.jpg');
 
       expect(result.activityList[1].name).toBe('moeasy4');
-      expect(result.activityList[1].explanation).toBe('모임설명4');
-      expect(result.activityList[1].announcement).toBe('공지사항4');
       expect(result.activityList[1].onlineYn).toBe(false);
       expect(result.activityList[1].meetingId).toBe('64');
       expect(result.meetings[1].name).toBe('모임 이름2');
