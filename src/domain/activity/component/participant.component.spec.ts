@@ -62,6 +62,12 @@ class MockParticipantDao implements ParticipantDao {
 
     return participant;
   }
+
+  async existsParticipant(userId: number, activityId: number): Promise<boolean> {
+    return !!this.mockParticipants.find(
+      (participant: Participant) => participant.userId === userId && participant.activityId === activityId,
+    );
+  }
 }
 
 describe('ParticipantComponent', () => {

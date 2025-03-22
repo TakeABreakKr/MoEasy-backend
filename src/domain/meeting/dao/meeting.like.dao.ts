@@ -23,11 +23,13 @@ export class MeetingLikeDaoImpl implements MeetingLikeDao {
   }
 
   async likeStatus(meetingId: number, userId: number): Promise<boolean> {
-    const meetingLike = await this.meetingLikeRepository.findOneBy({
+    const count = await this.meetingLikeRepository.countBy({
       meeting: { id: meetingId },
       user: { id: userId },
+      likedYn: true,
     });
-    return meetingLike?.likedYn || false;
+
+    return count > 0;
   }
 
   async findAllLikedMeetingsByUserId(userId: number): Promise<MeetingLike[]> {

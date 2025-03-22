@@ -33,6 +33,9 @@ export class ActivityResponse {
   @ApiProperty()
   onlineLink?: string;
 
+  @ApiProperty()
+  isJoined: boolean;
+
   @ApiProperty({
     type: ActivityMemberDto,
     isArray: true,

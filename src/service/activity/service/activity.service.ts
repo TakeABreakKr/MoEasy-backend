@@ -127,7 +127,7 @@ export class ActivityServiceImpl implements ActivityService {
     await this.activityComponent.update(activity);
   }
 
-  public async getActivity(activityId: number): Promise<ActivityResponse> {
+  public async getActivity(activityId: number, requesterId: number): Promise<ActivityResponse> {
     const activity: Activity | null = await this.activityComponent.findByActivityId(activityId);
     if (!activity) throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
 
@@ -166,6 +166,7 @@ export class ActivityServiceImpl implements ActivityService {
       participantLimit: activity.participantLimit,
       announcement: activity.announcement,
       members: memberDtos,
+      isJoined: await this.participantComponent.existsParticipant(requesterId, activity.id),
     };
 
     if (!activity.onlineYn) {
@@ -227,6 +228,7 @@ export class ActivityServiceImpl implements ActivityService {
           onlineLink: activity.getOnlineLink(),
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,
+          isJoined: await this.participantComponent.existsParticipant(requesterId, activity.id),
           meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
         };
 

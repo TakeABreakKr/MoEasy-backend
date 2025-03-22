@@ -26,6 +26,11 @@ export class ParticipantDaoImpl implements ParticipantDao {
     return this.participantRepository.findOneBy({ activityId, userId });
   }
 
+  async existsParticipant(userId: number, activityId: number): Promise<boolean> {
+    const count = await this.participantRepository.countBy({ activityId, userId });
+    return count > 0;
+  }
+
   async findByActivityId(activityId: number): Promise<Participant[]> {
     return this.participantRepository.findBy({ activityId });
   }

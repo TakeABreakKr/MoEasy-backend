@@ -27,6 +27,7 @@ class MockActivityService implements ActivityService {
       participantCount: 10,
       onlineLink: 'onlineLink',
       members: [],
+      isJoined: false,
     };
   }
   async getActivityList(): Promise<ActivityListResponse> {
@@ -93,7 +94,7 @@ describe('ActivityController', () => {
 
   it('getActivityTest', async () => {
     const activityId = 1;
-    const result = await activityController.getActivity(activityId);
+    const result = await activityController.getActivity(activityId, user);
 
     const response: ActivityResponse = {
       name: 'activity name',
@@ -105,6 +106,7 @@ describe('ActivityController', () => {
       participantCount: 10,
       onlineLink: 'onlineLink',
       members: [],
+      isJoined: false,
     };
     expect(result).toStrictEqual(response);
   });
@@ -123,7 +125,7 @@ describe('ActivityController', () => {
       meetingId: 'OOOOOOO1',
       activityId: 1,
     };
-    const result = await activityController.withdraw(req, user);
+    const result = await activityController.cancelActivity(req, user);
     expect(result).toBe(void 0);
   });
 

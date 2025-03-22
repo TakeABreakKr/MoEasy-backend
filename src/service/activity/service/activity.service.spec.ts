@@ -419,6 +419,12 @@ class MockParticipantComponent implements ParticipantComponent {
 
     return participant;
   }
+
+  async existsParticipant(userId: number, activityId: number): Promise<boolean> {
+    return !!this.mockParticipants.find(
+      (participant: Participant) => participant.userId === userId && participant.activityId === activityId,
+    );
+  }
 }
 
 jest.mock('typeorm-transactional', () => ({ Transactional: () => () => {} }));
@@ -578,7 +584,8 @@ describe('ActivityServiceTest', () => {
   describe('getActivityTest', () => {
     it('getActivityTest - SUCCESS', async () => {
       const activityId = 200;
-      const result = await activityService.getActivity(activityId);
+      const requesterId = 200;
+      const result = await activityService.getActivity(activityId, requesterId);
 
       expect(result.name).toBe('moeasy2');
       expect(result.announcement).toBe('공지사항2');
@@ -588,7 +595,7 @@ describe('ActivityServiceTest', () => {
     });
 
     it('getActivityTest - NOT_FOUND_ACTIVITY', async () => {
-      await expect(activityService.getActivity(999)).rejects.toThrow(ErrorMessageType.NOT_FOUND_ACTIVITY);
+      await expect(activityService.getActivity(999, 999)).rejects.toThrow(ErrorMessageType.NOT_FOUND_ACTIVITY);
     });
   });
 

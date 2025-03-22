@@ -68,8 +68,8 @@ export class ActivityController {
     description: ErrorMessageType.NOT_FOUND_ACTIVITY,
   })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  async getActivity(@Query('activityId') activityId: number): Promise<ActivityResponse> {
-    return this.activityService.getActivity(activityId);
+  async getActivity(@Query('activityId') activityId: number, @Token() user: AuthUser): Promise<ActivityResponse> {
+    return this.activityService.getActivity(activityId, user.id);
   }
 
   @Get('get/list')
@@ -108,10 +108,10 @@ export class ActivityController {
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBody({
-    description: 'data to withdraw activity.',
+    description: 'data to cancel activity.',
     type: ActivityParticipantRequest,
   })
-  async withdraw(@Body() req: ActivityParticipantRequest, @Token() user: AuthUser): Promise<void> {
+  async cancelActivity(@Body() req: ActivityParticipantRequest, @Token() user: AuthUser): Promise<void> {
     await this.activityService.cancelActivity(user.id, req);
   }
 

@@ -10,7 +10,7 @@ import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.de
 export interface ActivityService {
   createActivity(req: ActivityCreateRequest, requesterId: number): Promise<string>;
   updateActivity(req: ActivityUpdateRequest, requesterId: number): Promise<void>;
-  getActivity(activityId: number): Promise<ActivityResponse>;
+  getActivity(activityId: number, requesterId: number): Promise<ActivityResponse>;
   getActivityList(
     requesterId: number,
     status: ActivityStatusEnumType[],

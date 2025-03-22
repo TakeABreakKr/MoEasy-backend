@@ -20,6 +20,10 @@ export class ParticipantComponentImpl implements ParticipantComponent {
     return this.participantDao.findByUserIdAndActivityId(userId, activityId);
   }
 
+  public async existsParticipant(userId: number, activityId: number): Promise<boolean> {
+    return this.participantDao.existsParticipant(userId, activityId);
+  }
+
   public async findByActivityId(activityId: number): Promise<Participant[]> {
     return this.participantDao.findByActivityId(activityId);
   }

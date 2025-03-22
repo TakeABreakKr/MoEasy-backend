@@ -11,4 +11,5 @@ export interface ParticipantDao {
   deleteAll(userIds: number[], activityId: number): Promise<void>;
   getHomeActivityParticipants(activityId: number): Promise<ActivityParticipantDto[]>;
   getParticipantCount(activityId: number): Promise<number>;
+  existsParticipant(userId: number, activityId: number): Promise<boolean>;
 }
