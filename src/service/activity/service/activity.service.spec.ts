@@ -412,6 +412,13 @@ class MockParticipantComponent implements ParticipantComponent {
   async getParticipantCount(activityId: number): Promise<number> {
     return this.mockParticipants.filter((participant) => participant.activityId === activityId).length;
   }
+
+  async create(activityId: number, userId: number): Promise<Participant> {
+    const participant = Participant.create({ userId, activityId });
+    this.mockParticipants.push(participant);
+
+    return participant;
+  }
 }
 
 jest.mock('typeorm-transactional', () => ({ Transactional: () => () => {} }));
@@ -600,13 +607,11 @@ describe('ActivityServiceTest', () => {
       expect(result.activityList[0].onlineYn).toBe(true);
       expect(result.activityList[0].meetingId).toBe('64');
       expect(result.meetings[0].name).toBe('모임 이름1');
-      expect(result.meetings[0].thumbnail).toBe('testThumbnail1.jpg');
 
       expect(result.activityList[1].name).toBe('moeasy4');
       expect(result.activityList[1].onlineYn).toBe(false);
       expect(result.activityList[1].meetingId).toBe('64');
       expect(result.meetings[1].name).toBe('모임 이름2');
-      expect(result.meetings[1].thumbnail).toBe('testThumbnail2.jpg');
 
       expect(componentAccessLog).toEqual([
         MockActivityComponent.findByMeetingIdLog,
@@ -636,7 +641,7 @@ describe('ActivityServiceTest', () => {
       expect(beforeWithdraw).toBeDefined();
 
       const req = { meetingId: 'C8', activityId: activityId };
-      await activityService.withdraw(200, req);
+      await activityService.cancelActivity(200, req);
 
       const afterWithdraw = await participantComponent.findByUserIdAndActivityId(usersId, activityId);
       expect(afterWithdraw).toBeNull();
@@ -652,12 +657,12 @@ describe('ActivityServiceTest', () => {
 
     it('withdrawTest - UNAUTHORIZED_ACCESS  ', async () => {
       const req = { meetingId: 'C8', activityId: 200 };
-      await expect(activityService.withdraw(30, req)).rejects.toThrow(ErrorMessageType.UNAUTHORIZED_ACCESS);
+      await expect(activityService.cancelActivity(30, req)).rejects.toThrow(ErrorMessageType.UNAUTHORIZED_ACCESS);
     });
 
     it('withdrawTest - NOT_FOUND_PARTICIPANT', async () => {
       const req = { meetingId: 'C8', activityId: 999 };
-      await expect(activityService.withdraw(200, req)).rejects.toThrow(ErrorMessageType.NOT_FOUND_PARTICIPANT);
+      await expect(activityService.cancelActivity(200, req)).rejects.toThrow(ErrorMessageType.NOT_FOUND_PARTICIPANT);
     });
   });
 

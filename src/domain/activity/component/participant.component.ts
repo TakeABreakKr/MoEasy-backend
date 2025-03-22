@@ -8,6 +8,10 @@ import { ActivityParticipantDto } from '@domain/activity/dto/activity.participan
 export class ParticipantComponentImpl implements ParticipantComponent {
   constructor(@Inject('ParticipantDao') private participantDao: ParticipantDao) {}
 
+  public async create(activityId: number, userId: number): Promise<Participant> {
+    return this.participantDao.create(activityId, userId);
+  }
+
   public async saveAll(participants: Participant[]): Promise<void> {
     this.participantDao.saveAll(participants);
   }

@@ -7,7 +7,7 @@ import { ActivityCreateRequest } from '@service/activity/dto/request/activity.cr
 import { AuthUser } from '@decorator/token.decorator';
 import { ActivityUpdateRequest } from '@service/activity/dto/request/activity.update.request';
 import { MeetingUtils } from '@utils/meeting.utils';
-import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
+import { ActivityParticipantRequest } from '@service/activity/dto/request/activity.participant.request';
 import { OrderingOptionEnum } from '@enums/ordering.option.enum';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 
@@ -35,8 +35,9 @@ class MockActivityService implements ActivityService {
       meetings: [],
     };
   }
-  async withdraw() {}
+  async cancelActivity() {}
   async delete() {}
+  async joinActivity() {}
 }
 
 describe('ActivityController', () => {
@@ -118,7 +119,7 @@ describe('ActivityController', () => {
   });
 
   it('withdrawTest', async () => {
-    const req: ActivityWithdrawRequest = {
+    const req: ActivityParticipantRequest = {
       meetingId: 'OOOOOOO1',
       activityId: 1,
     };

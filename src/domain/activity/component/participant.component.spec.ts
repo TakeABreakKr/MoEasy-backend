@@ -55,6 +55,13 @@ class MockParticipantDao implements ParticipantDao {
   async getHomeActivityParticipants(): Promise<ActivityParticipantDto[]> {
     return;
   }
+
+  async create(activityId: number, userId: number): Promise<Participant> {
+    const participant = Participant.create({ userId, activityId });
+    this.mockParticipants.push(participant);
+
+    return participant;
+  }
 }
 
 describe('ParticipantComponent', () => {

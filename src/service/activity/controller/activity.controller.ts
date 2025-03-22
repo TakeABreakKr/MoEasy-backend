@@ -19,7 +19,7 @@ import { ActivityUpdateRequest } from '@service/activity/dto/request/activity.up
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
-import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
+import { ActivityParticipantRequest } from '@service/activity/dto/request/activity.participant.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 import AuthGuard from '@root/middleware/auth/auth.guard';
 import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
@@ -102,17 +102,30 @@ export class ActivityController {
     return this.activityService.getActivityList(user.id, status, options, meetingId);
   }
 
-  @Post('withdraw')
+  @Post('cancel')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBody({
     description: 'data to withdraw activity.',
-    type: ActivityWithdrawRequest,
+    type: ActivityParticipantRequest,
   })
-  async withdraw(@Body() req: ActivityWithdrawRequest, @Token() user: AuthUser): Promise<void> {
-    await this.activityService.withdraw(user.id, req);
+  async withdraw(@Body() req: ActivityParticipantRequest, @Token() user: AuthUser): Promise<void> {
+    await this.activityService.cancelActivity(user.id, req);
+  }
+
+  @Post('join')
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
+  @ApiCommonResponse()
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiBody({
+    description: 'data to join activity.',
+    type: ActivityParticipantRequest,
+  })
+  async joinActivity(@Body() req: ActivityParticipantRequest, @Token() user: AuthUser): Promise<void> {
+    await this.activityService.joinActivity(user.id, req);
   }
 
   @Post('delete')

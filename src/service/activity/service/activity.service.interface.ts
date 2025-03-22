@@ -4,7 +4,7 @@ import { ActivityUpdateRequest } from '@service/activity/dto/request/activity.up
 import { OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
-import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
+import { ActivityParticipantRequest } from '@service/activity/dto/request/activity.participant.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 
 export interface ActivityService {
@@ -17,6 +17,7 @@ export interface ActivityService {
     options: OrderingOptionEnumType,
     meetingId?: string,
   ): Promise<ActivityListResponse>;
-  withdraw(requesterId: number, req: ActivityWithdrawRequest): Promise<void>;
+  cancelActivity(requesterId: number, req: ActivityParticipantRequest): Promise<void>;
+  joinActivity(requesterId: number, req: ActivityParticipantRequest): Promise<void>;
   delete(requesterId: number, req: ActivityDeleteRequest): Promise<void>;
 }

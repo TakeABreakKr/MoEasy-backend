@@ -111,7 +111,7 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async join(requesterId: number, req: MemberJoinRequest) {
+  public async join(requesterId: number, req: MemberJoinRequest): Promise<void> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     const meeting = await this.meetingComponent.findByMeetingId(meetingId);
     if (meeting.canJoin) throw new BadRequestException(ErrorMessageType.JOIN_REQUEST_DISABLED);

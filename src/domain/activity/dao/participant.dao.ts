@@ -12,6 +12,12 @@ import { ActivityParticipantDto } from '@domain/activity/dto/activity.participan
 export class ParticipantDaoImpl implements ParticipantDao {
   constructor(@InjectRepository(Participant) private participantRepository: Repository<Participant>) {}
 
+  async create(activityId: number, userId: number): Promise<Participant> {
+    const participant = Participant.create({ activityId, userId });
+    await this.participantRepository.save(participant);
+
+    return participant;
+  }
   async saveAll(participants: Participant[]): Promise<void> {
     await this.participantRepository.save(participants);
   }

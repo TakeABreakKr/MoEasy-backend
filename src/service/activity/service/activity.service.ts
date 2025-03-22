@@ -15,7 +15,7 @@ import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.stat
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
 import { AuthorityEnum } from '@enums/authority.enum';
-import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
+import { ActivityParticipantRequest } from '@service/activity/dto/request/activity.participant.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 import { Transactional } from 'typeorm-transactional';
 import { ActivityListMeetingListDto } from '@service/activity/dto/response/activity.list.meeting.list.dto';
@@ -249,7 +249,6 @@ export class ActivityServiceImpl implements ActivityService {
     const meetingListDtos: ActivityListMeetingListDto[] = meetingList.map((meeting) => {
       return {
         name: meeting.name,
-        thumbnail: meeting.thumbnail,
       };
     });
 
@@ -260,7 +259,19 @@ export class ActivityServiceImpl implements ActivityService {
   }
 
   @Transactional()
-  public async withdraw(requesterId: number, req: ActivityWithdrawRequest): Promise<void> {
+  public async joinActivity(requester: number, req: ActivityParticipantRequest): Promise<void> {
+    const activitie = await this.activityComponent.findByActivityId(req.activityId);
+
+    const participantCount = await this.participantComponent.getParticipantCount(req.activityId);
+    if (participantCount >= activitie.participantLimit) {
+      throw new BadRequestException(ErrorMessageType.PARTICIPANT_LIMIT_EXCEEDED);
+    }
+
+    await this.participantComponent.create(req.activityId, requester);
+  }
+
+  @Transactional()
+  public async cancelActivity(requesterId: number, req: ActivityParticipantRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     const requester = await this.memberComponent.findByUsersAndMeetingId(requesterId, meetingId);
     if (requester.authority === AuthorityEnum.OWNER) {

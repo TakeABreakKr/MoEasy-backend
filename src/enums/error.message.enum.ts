@@ -30,6 +30,7 @@ export const ErrorMessageType = {
   LIKE_OPERATION_ERROR: '좋아요 처리 중 오류가 발생했습니다.',
 
   MEETING_NOT_EMPTY: '모임에 멤버가 존재하여 삭제할 수 없습니다.',
+  PARTICIPANT_LIMIT_EXCEEDED: '참여 인원 제한을 초과했습니다.',
 } as const;
 
 export type ErrorMessageEnumType = (typeof ErrorMessageType)[keyof typeof ErrorMessageType];
