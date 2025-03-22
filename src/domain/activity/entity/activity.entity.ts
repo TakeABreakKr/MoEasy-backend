@@ -21,9 +21,6 @@ export class Activity extends BaseEntity {
   name: string;
 
   @Column()
-  explanation: string;
-
-  @Column()
   thumbnail: string;
 
   @Column({

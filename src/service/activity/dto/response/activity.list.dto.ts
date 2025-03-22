@@ -9,9 +9,6 @@ export class ActivityListDto {
   name: string;
 
   @ApiProperty()
-  explanation: string;
-
-  @ApiProperty()
   thumbnail: string;
 
   @ApiProperty()
@@ -25,9 +22,6 @@ export class ActivityListDto {
 
   @ApiProperty()
   participantLimit: number;
-
-  @ApiProperty()
-  daysUntilStart: number;
 
   @ApiProperty()
   onlineLink?: string;

@@ -24,11 +24,6 @@ export abstract class ActivityRequest {
   name: string;
 
   @ApiProperty()
-  @IsOptional()
-  @IsString()
-  explanation: string;
-
-  @ApiProperty()
   @IsString()
   thumbnail: string;
 

@@ -39,8 +39,4 @@ export class ActivityComponentImpl implements ActivityComponent {
   public async delete(activityId: number): Promise<void> {
     await this.activityDao.delete(activityId);
   }
-
-  public async getDaysUntilStart(startDate: Date): Promise<number> {
-    return this.activityDao.getDaysUntilStart(startDate);
-  }
 }

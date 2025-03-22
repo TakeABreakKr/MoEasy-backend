@@ -10,5 +10,4 @@ export interface ActivityComponent {
   getClosingTimeActivities(): Promise<Partial<Activity>[]>;
   delete(activityId: number): Promise<void>;
   getUpcomingActivities(id?: number): Promise<Activity[]>;
-  getDaysUntilStart(startDate: Date): Promise<number>;
 }

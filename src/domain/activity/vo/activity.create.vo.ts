@@ -4,7 +4,6 @@ import { Address } from '@domain/activity/entity/address.embedded';
 export interface ActivityCreateVO {
   meetingId: string;
   name: string;
-  explanation: string;
   startDate: Date;
   endDate: Date;
   reminder: ReminderEnumType[];

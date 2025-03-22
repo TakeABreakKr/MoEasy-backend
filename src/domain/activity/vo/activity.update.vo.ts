@@ -3,7 +3,6 @@ import { Address } from '@domain/activity/entity/address.embedded';
 
 export interface ActivityUpdateVO {
   name: string;
-  explanation: string;
   thumbnail: string;
   startDate: Date;
   endDate: Date;

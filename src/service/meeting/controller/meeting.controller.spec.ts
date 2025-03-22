@@ -36,7 +36,6 @@ class MockMeetingService implements MeetingService {
       likeCount: 0,
       category: MeetingCategoryEnum.PET,
       memberCount: 0,
-      isLastMember: false,
     };
   }
 
@@ -135,7 +134,6 @@ describe('MeetingController', () => {
       likeCount: 0,
       category: MeetingCategoryEnum.PET,
       memberCount: 0,
-      isLastMember: false,
     };
     expect(result).toStrictEqual(response);
   });

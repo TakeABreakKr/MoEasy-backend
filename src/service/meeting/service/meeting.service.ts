@@ -250,7 +250,6 @@ export class MeetingServiceImpl implements MeetingService {
       canJoin: meeting.canJoin,
       likedYn: await this.meetingLikeComponent.likeStatus(meeting.id, requesterId),
       likeCount: await this.meetingLikeComponent.getLikeCountByMeetingId(meeting.id),
-      isLastMember: (await this.memberComponent.getMemberCount(meeting.id)) === 1,
     };
   }
 

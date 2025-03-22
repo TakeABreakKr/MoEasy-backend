@@ -240,7 +240,6 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(100, {
       meetingId: '64',
       name: 'moeasy1',
-      explanation: '모임설명1',
       thumbnail: 'testThumbnail1.jpg',
       startDate: new Date(),
       endDate: new Date(),
@@ -254,7 +253,6 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(101, {
       meetingId: '64',
       name: 'moeasy4',
-      explanation: '모임설명4',
       thumbnail: 'testThumbnail4.jpg',
       startDate: new Date(),
       endDate: new Date(),
@@ -268,7 +266,6 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(200, {
       meetingId: 'C8',
       name: 'moeasy2',
-      explanation: '모임설명2',
       thumbnail: 'testThumbnail2.jpg',
       startDate: new Date(),
       endDate: new Date(),
@@ -282,7 +279,6 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(300, {
       meetingId: 'C8',
       name: 'moeasy3',
-      explanation: '모임설명3',
       thumbnail: 'testThumbnail3.jpg',
       startDate: new Date(),
       endDate: new Date(),
@@ -528,7 +524,6 @@ describe('ActivityServiceTest', () => {
       expect(result.id).toBe(300);
       expect(result.meetingId).toBe(200);
       expect(result.name).toBe('moeasy3 수정');
-      expect(result.explanation).toBe('모임설명3 수정');
       expect(result.announcement).toBe('공지사항3 수정');
       expect(result.onlineYn).toBe(false);
       expect(result.detailAddress).toBe('시흥에서 수정');

@@ -43,13 +43,6 @@ export class ActivityDaoImpl implements ActivityDao {
     await this.activityRepository.delete(activityId);
   }
 
-  async getDaysUntilStart(startDate: Date): Promise<number> {
-    const now = DateTime.now().startOf('day');
-    const start = DateTime.fromJSDate(startDate).startOf('day');
-    const diffInDays = start.diff(now, 'days').days;
-    return Math.ceil(diffInDays);
-  }
-
   async getClosingTimeActivities(): Promise<Partial<Activity>[]> {
     try {
       const subQuery = this.activityRepository

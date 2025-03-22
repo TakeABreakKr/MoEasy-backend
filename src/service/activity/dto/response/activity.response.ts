@@ -10,9 +10,6 @@ export class ActivityResponse {
   startDate: Date;
 
   @ApiProperty()
-  explanation: string;
-
-  @ApiProperty()
   announcement: string;
 
   @ApiProperty()
@@ -32,9 +29,6 @@ export class ActivityResponse {
 
   @ApiProperty()
   participantCount: number;
-
-  @ApiProperty()
-  daysUntilStart: number;
 
   @ApiProperty()
   onlineLink?: string;

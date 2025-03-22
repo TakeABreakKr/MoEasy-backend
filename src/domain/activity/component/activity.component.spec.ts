@@ -11,7 +11,6 @@ class MockActivityDao implements ActivityDao {
     Activity.createForTest(100, {
       meetingId: '64',
       name: 'moeasy1',
-      explanation: '모임설명1',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -25,7 +24,6 @@ class MockActivityDao implements ActivityDao {
     Activity.createForTest(200, {
       meetingId: 'C8',
       name: 'moeasy2',
-      explanation: '모임설명2',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -103,7 +101,6 @@ describe('ActivityComponent', () => {
     const createActivityDto: ActivityCreateVO = {
       meetingId: 'C9',
       name: 'moeasy4',
-      explanation: '모임설명4',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -119,7 +116,6 @@ describe('ActivityComponent', () => {
     expect(result.meetingId).toBe(201);
     expect(result.id).toBe(101);
     expect(result.name).toBe('moeasy4');
-    expect(result.explanation).toBe('모임설명4');
     expect(result.announcement).toBe('공지사항4');
     expect(result.onlineYn).toBe(true);
     expect(result.address.address).toBe('address_test');
@@ -132,7 +128,6 @@ describe('ActivityComponent', () => {
 
     expect(result.id).toBe(100);
     expect(result.name).toBe('moeasy1');
-    expect(result.explanation).toBe('모임설명1');
     expect(result.announcement).toBe('공지사항1');
     expect(result.onlineYn).toBe(true);
     expect(result.address.address).toBe('address_test');
@@ -144,7 +139,6 @@ describe('ActivityComponent', () => {
     const activity = Activity.createForTest(activityId, {
       meetingId: '100',
       name: 'moeasy1 변경',
-      explanation: '모임설명1 변경',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -160,7 +154,6 @@ describe('ActivityComponent', () => {
 
     expect(updatedActivity.id).toBe(100);
     expect(updatedActivity.name).toBe('moeasy1 변경');
-    expect(updatedActivity.explanation).toBe('모임설명1 변경');
     expect(updatedActivity.announcement).toBe('공지사항1 변경');
     expect(updatedActivity.onlineYn).toBe(false);
     expect(updatedActivity.address.address).toBe('address_test');
@@ -174,7 +167,6 @@ describe('ActivityComponent', () => {
     expect(results[0].id).toBe(100);
     expect(results[0].meetingId).toBe(100);
     expect(results[0].name).toBe('moeasy1');
-    expect(results[0].explanation).toBe('모임설명1');
     expect(results[0].announcement).toBe('공지사항1');
     expect(results[0].onlineYn).toBe(true);
     expect(results[0].address.address).toBe('address_test');
@@ -183,7 +175,6 @@ describe('ActivityComponent', () => {
     expect(results[1].id).toBe(200);
     expect(results[1].meetingId).toBe(200);
     expect(results[1].name).toBe('moeasy2');
-    expect(results[1].explanation).toBe('모임설명2');
     expect(results[1].announcement).toBe('공지사항2');
     expect(results[1].onlineYn).toBe(false);
     expect(results[1].address.address).toBe('address_test');
@@ -196,7 +187,6 @@ describe('ActivityComponent', () => {
 
     expect(results[0].id).toBe(200);
     expect(results[0].name).toBe('moeasy2');
-    expect(results[0].explanation).toBe('모임설명2');
     expect(results[0].announcement).toBe('공지사항2');
     expect(results[0].onlineYn).toBe(false);
     expect(results[0].address.address).toBe('address_test');
