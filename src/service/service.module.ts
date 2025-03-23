@@ -5,6 +5,7 @@ import { ActivityServiceModule } from '@service/activity/activity.service.module
 import { NotificationServiceModule } from '@service/notification/notification.service.module';
 import { HomeServiceModule } from '@service/home/home.service.module';
 import { MemberServiceModule } from '@service/member/member.service.module';
+import { RegionServiceModule } from '@service/region/region.service.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MemberServiceModule } from '@service/member/member.service.module';
     ActivityServiceModule,
     NotificationServiceModule,
     HomeServiceModule,
+    RegionServiceModule,
   ],
 })
 export class ServiceModule {}

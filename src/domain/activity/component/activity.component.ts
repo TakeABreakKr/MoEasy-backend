@@ -3,6 +3,7 @@ import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { ActivityDao } from '@domain/activity/dao/activity.dao.interface';
+import { RegionEnumType } from '@enums/region.enum';
 
 @Injectable()
 export class ActivityComponentImpl implements ActivityComponent {
@@ -38,5 +39,9 @@ export class ActivityComponentImpl implements ActivityComponent {
 
   public async delete(activityId: number): Promise<void> {
     await this.activityDao.delete(activityId);
+  }
+
+  public async countRegions(region: RegionEnumType): Promise<number> {
+    return this.activityDao.countRegions(region);
   }
 }
