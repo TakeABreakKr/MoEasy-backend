@@ -19,12 +19,14 @@ class MockActivityService implements ActivityService {
   async getActivity(): Promise<ActivityResponse> {
     return {
       name: 'activity name',
-      explanation: 'this is activity',
       startDate: new Date(),
-      endDate: null,
       announcement: 'moeasa',
-      address: null,
       onlineYn: true,
+      thumbnail: 'thumbnail_test',
+      participantLimit: 10,
+      participantCount: 10,
+      onlineLink: 'onlineLink',
+      members: [],
     };
   }
   async getActivityList(): Promise<ActivityListResponse> {
@@ -49,7 +51,6 @@ describe('ActivityController', () => {
   const activityCreateRequest: ActivityCreateRequest = {
     meetingId: 'OOOOOOO1',
     name: 'activity name',
-    explanation: 'this is activity',
     startDate: new Date(),
     endDate: null,
     reminder: [],
@@ -59,6 +60,8 @@ describe('ActivityController', () => {
     onlineYn: true,
     participants: [],
     participantLimit: 10,
+    thumbnail: 'thumbnail_test',
+    onlineLink: 'onlineLink',
   };
 
   beforeEach(async () => {
@@ -93,12 +96,14 @@ describe('ActivityController', () => {
 
     const response: ActivityResponse = {
       name: 'activity name',
-      explanation: 'this is activity',
       startDate: new Date(),
-      endDate: null,
       announcement: 'moeasa',
-      address: null,
       onlineYn: true,
+      thumbnail: 'thumbnail_test',
+      participantLimit: 10,
+      participantCount: 10,
+      onlineLink: 'onlineLink',
+      members: [],
     };
     expect(result).toStrictEqual(response);
   });

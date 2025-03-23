@@ -20,6 +20,13 @@ export class MemberDaoImpl implements MemberDao {
     return this.memberRepository.findOneBy({ userId, meetingId });
   }
 
+  async findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]> {
+    return this.memberRepository.findBy({
+      userId: In(userIds),
+      meetingId,
+    });
+  }
+
   async findByMeetingId(meetingId: number): Promise<Member[]> {
     return this.memberRepository.findBy({ meetingId });
   }

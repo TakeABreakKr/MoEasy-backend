@@ -12,7 +12,6 @@ class MockActivityRepository extends Repository<Activity> {
     Activity.createForTest(100, {
       meetingId: '64',
       name: 'moeasy1',
-      explanation: '모임설명1',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -21,11 +20,11 @@ class MockActivityRepository extends Repository<Activity> {
       address: Address.createForTest(),
       detailAddress: '평택',
       participantLimit: 10,
+      thumbnail: 'thumbnail_test',
     }),
     Activity.createForTest(200, {
       meetingId: 'C8',
       name: 'moeasy2',
-      explanation: '모임설명2',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -34,6 +33,7 @@ class MockActivityRepository extends Repository<Activity> {
       address: Address.createForTest(),
       detailAddress: '수원',
       participantLimit: 10,
+      thumbnail: 'thumbnail_test',
     }),
   ];
 
@@ -109,7 +109,6 @@ describe('ActivityDao', () => {
 
     expect(result.id).toBe(activityId);
     expect(result.name).toBe('moeasy1');
-    expect(result.explanation).toBe('모임설명1');
     expect(result.announcement).toBe('공지사항1');
     expect(result.onlineYn).toBe(true);
     expect(result.address.address).toBe('address_test');
@@ -123,7 +122,6 @@ describe('ActivityDao', () => {
     expect(results[0].id).toBe(activityIds[0]);
     expect(results[0].meetingId).toBe(100);
     expect(results[0].name).toBe('moeasy1');
-    expect(results[0].explanation).toBe('모임설명1');
     expect(results[0].detailAddress).toBe('평택');
     expect(results[0].announcement).toBe('공지사항1');
     expect(results[0].onlineYn).toBe(true);
@@ -132,7 +130,6 @@ describe('ActivityDao', () => {
     expect(results[1].id).toBe(activityIds[1]);
     expect(results[1].meetingId).toBe(200);
     expect(results[1].name).toBe('moeasy2');
-    expect(results[1].explanation).toBe('모임설명2');
     expect(results[1].detailAddress).toBe('수원');
     expect(results[1].announcement).toBe('공지사항2');
     expect(results[1].onlineYn).toBe(false);
@@ -143,7 +140,6 @@ describe('ActivityDao', () => {
     const createActivityDto: ActivityCreateVO = {
       meetingId: 'G400',
       name: 'moeasy4',
-      explanation: '모임설명4',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -152,12 +148,12 @@ describe('ActivityDao', () => {
       address: Address.createForTest(),
       detailAddress: '서울',
       participantLimit: 10,
+      thumbnail: 'thumbnail_test',
     };
     const result = await activityDao.create(createActivityDto);
 
     expect(result.id).toBe(1024);
     expect(result.name).toBe('moeasy4');
-    expect(result.explanation).toBe('모임설명4');
     expect(result.detailAddress).toBe('서울');
     expect(result.announcement).toBe('공지사항4');
     expect(result.onlineYn).toBe(true);
@@ -168,7 +164,6 @@ describe('ActivityDao', () => {
     const activity = Activity.createForTest(100, {
       meetingId: '100',
       name: 'moeasy1 변경',
-      explanation: '모임설명1 변경',
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -177,6 +172,7 @@ describe('ActivityDao', () => {
       address: Address.createForTest(),
       detailAddress: '평택에서 변경',
       participantLimit: 10,
+      thumbnail: 'thumbnail_test',
     });
 
     await activityDao.update(activity);
@@ -184,7 +180,6 @@ describe('ActivityDao', () => {
 
     expect(updatedActivity.id).toBe(100);
     expect(updatedActivity.name).toBe('moeasy1 변경');
-    expect(updatedActivity.explanation).toBe('모임설명1 변경');
     expect(updatedActivity.announcement).toBe('공지사항1 변경');
     expect(updatedActivity.onlineYn).toBe(false);
     expect(updatedActivity.address.address).toBe('address_test');
@@ -197,7 +192,6 @@ describe('ActivityDao', () => {
 
     expect(results[0].meetingId).toBe(200);
     expect(results[0].name).toBe('moeasy2');
-    expect(results[0].explanation).toBe('모임설명2');
     expect(results[0].detailAddress).toBe('수원');
     expect(results[0].announcement).toBe('공지사항2');
     expect(results[0].onlineYn).toBe(false);

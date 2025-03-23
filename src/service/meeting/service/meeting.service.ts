@@ -24,8 +24,8 @@ import { MemberComponent } from '@domain/member/component/member.component.inter
 import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
 import { KeywordComponent } from '@domain/meeting/component/keyword.component.interface';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
-import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interface';
-import { MeetingLike } from '@root/domain/meeting/entity/meeting.like.entity';
+import { MeetingLikeComponent } from '@domain/meeting/component/meeting.like.component.interface';
+import { MeetingLike } from '@domain/meeting/entity/meeting.like.entity';
 
 type lineSeperatorFunctionType = (content: string) => string;
 
@@ -148,12 +148,16 @@ export class MeetingServiceImpl implements MeetingService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(_meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
 
+    const members = await this.memberComponent.findByMeetingId(meetingId);
+    if (members.length > 0) {
+      throw new BadRequestException(ErrorMessageType.MEETING_NOT_EMPTY);
+    }
+
+    await this.meetingComponent.delete(meetingId);
     const meeting = await this.meetingComponent.findByMeetingId(meetingId);
     const content = meeting.name + ' 모임이 삭제되었습니다.';
     const userIdList: number[] = (await this.memberComponent.findByMeetingId(meetingId)).map((member) => member.userId);
     await this.notificationComponent.addNotifications(content, userIdList);
-
-    await this.meetingComponent.delete(meetingId);
   }
 
   public async getMeeting(_meetingId: string, requesterId?: number): Promise<MeetingResponse> {
@@ -240,7 +244,9 @@ export class MeetingServiceImpl implements MeetingService {
       explanation: meeting.explanation,
       limit: meeting.limit,
       thumbnail: meeting.thumbnail,
+      category: meeting.category,
       members: memberDtos,
+      memberCount: await this.memberComponent.getMemberCount(meeting.id),
       canJoin: meeting.canJoin,
       likedYn: await this.meetingLikeComponent.likeStatus(meeting.id, requesterId),
       likeCount: await this.meetingLikeComponent.getLikeCountByMeetingId(meeting.id),

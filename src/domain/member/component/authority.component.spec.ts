@@ -37,6 +37,12 @@ class MockMemberDao implements MemberDao {
     return member ? member : null;
   }
 
+  async findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]> {
+    return this.mockMember.filter(
+      (member: Member) => userIds.includes(member.userId) && member.meetingId === meetingId,
+    );
+  }
+
   async saveAll(): Promise<void> {}
 
   async updateAuthority(): Promise<void> {}

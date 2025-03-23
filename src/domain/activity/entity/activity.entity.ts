@@ -21,7 +21,7 @@ export class Activity extends BaseEntity {
   name: string;
 
   @Column()
-  explanation: string;
+  thumbnail: string;
 
   @Column({
     type: 'datetime',
@@ -75,7 +75,7 @@ export class Activity extends BaseEntity {
   meeting: Promise<Meeting>;
 
   @OneToMany(() => Participant, (participant) => participant.activity)
-  participants: Promise<Participant>;
+  participants: Promise<Participant[]>;
 
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
@@ -88,7 +88,6 @@ export class Activity extends BaseEntity {
   public static create(activityCreateVO: ActivityCreateVO): Activity {
     const activity = new Activity();
     activity.name = activityCreateVO.name;
-    activity.explanation = activityCreateVO.explanation;
     activity.startDate = activityCreateVO.startDate;
     activity.endDate = activityCreateVO.endDate;
     activity.reminder = ActivityUtils.reminderListToMask(activityCreateVO.reminder);
@@ -98,13 +97,13 @@ export class Activity extends BaseEntity {
     activity.detailAddress = activityCreateVO.detailAddress;
     activity.participantLimit = activityCreateVO.participantLimit;
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
-
+    activity.onlineLink = activityCreateVO.onlineLink;
+    activity.thumbnail = activityCreateVO.thumbnail;
     return activity;
   }
 
   update(activityUpdateVO: ActivityUpdateVO) {
     this.name = activityUpdateVO.name;
-    this.explanation = activityUpdateVO.explanation;
     this.startDate = activityUpdateVO.startDate;
     this.endDate = activityUpdateVO.endDate;
     this.reminder = ActivityUtils.reminderListToMask(activityUpdateVO.reminder);
@@ -113,6 +112,8 @@ export class Activity extends BaseEntity {
     this.address = activityUpdateVO.address;
     this.detailAddress = activityUpdateVO.detailAddress;
     this.participantLimit = activityUpdateVO.participantLimit;
+    this.onlineLink = activityUpdateVO.onlineLink;
+    this.thumbnail = activityUpdateVO.thumbnail;
   }
 
   //only for test

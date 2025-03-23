@@ -23,6 +23,11 @@ import { MeetingComponent } from '@domain/meeting/component/meeting.component.in
 import { MemberComponent } from '@domain/member/component/member.component.interface';
 import { ActivityComponent } from '@domain/activity/component/activity.component.interface';
 import { ParticipantComponent } from '@domain/activity/component/participant.component.interface';
+import { getRegionEnum, RegionEnumType } from '@enums/region.enum';
+import { Users } from '@domain/user/entity/users.entity';
+import { UsersComponent } from '@domain/user/component/users.component.interface';
+import { ActivityMemberDto } from '@service/activity/dto/response/activity.member.dto';
+import { Member } from '@domain/member/entity/member.entity';
 
 @Injectable()
 export class ActivityServiceImpl implements ActivityService {
@@ -33,6 +38,7 @@ export class ActivityServiceImpl implements ActivityService {
     @Inject('ParticipantComponent') private participantComponent: ParticipantComponent,
     @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
     @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
+    @Inject('UsersComponent') private usersComponent: UsersComponent,
   ) {}
 
   @Transactional()
@@ -41,8 +47,16 @@ export class ActivityServiceImpl implements ActivityService {
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const activity: Activity = await this.activityComponent.create({
-      ...req,
-      address: req.address.toAddress(),
+      name: req.name,
+      thumbnail: req.thumbnail,
+      startDate: req.startDate,
+      endDate: req.endDate,
+      reminder: req.reminder,
+      announcement: req.announcement,
+      participantLimit: req.participantLimit,
+      onlineLink: req?.onlineLink,
+      address: req.address?.toAddress(),
+      detailAddress: req?.detailAddress,
       meetingId: req.meetingId,
       onlineYn: req.onlineYn,
     });
@@ -73,8 +87,17 @@ export class ActivityServiceImpl implements ActivityService {
     }
 
     activity.update({
-      ...req,
-      address: req.address.toAddress(),
+      name: req.name,
+      thumbnail: req.thumbnail,
+      startDate: req.startDate,
+      endDate: req.endDate,
+      reminder: req.reminder,
+      announcement: req.announcement,
+      participantLimit: req.participantLimit,
+      onlineLink: req?.onlineLink,
+      address: req.address?.toAddress(),
+      detailAddress: req?.detailAddress,
+      onlineYn: req.onlineYn,
     });
 
     const currentParticipants: number[] = (await this.participantComponent.findByActivityId(req.activityId)).map(
@@ -108,15 +131,53 @@ export class ActivityServiceImpl implements ActivityService {
     const activity: Activity | null = await this.activityComponent.findByActivityId(activityId);
     if (!activity) throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
 
-    return {
+    const participants: Participant[] = await this.participantComponent.findByActivityId(activity.id);
+    const userIds = participants.map((participant) => participant.userId);
+    const users: Users[] = await this.usersComponent.findByIds(userIds);
+    const userMap = new Map<number, Users>();
+    users.forEach((user) => {
+      userMap.set(user.id, user);
+    });
+
+    const members: Member[] = await this.memberComponent.findByUserIdsAndMeetingId(userIds, activity.meetingId);
+    const memberMap = new Map<number, Member>();
+    members.forEach((member) => {
+      memberMap.set(member.userId, member);
+    });
+
+    const memberDtos: ActivityMemberDto[] = participants.map((participant): ActivityMemberDto => {
+      const user: Users = userMap.get(participant.userId);
+      const member: Member = memberMap.get(participant.userId);
+
+      return {
+        username: user.username,
+        authority: member.authority,
+      };
+    });
+
+    const baseInfo = {
+      activityId: activity.id,
       name: activity.name,
-      explanation: activity.explanation,
+      thumbnail: activity.thumbnail,
       startDate: activity.startDate,
-      endDate: activity.endDate,
-      announcement: activity.announcement,
       onlineYn: activity.onlineYn,
-      address: activity.address.toAddressDto(),
+      onlineLink: activity.getOnlineLink(),
+      participantCount: await this.participantComponent.getParticipantCount(activity.id),
+      participantLimit: activity.participantLimit,
+      announcement: activity.announcement,
+      members: memberDtos,
     };
+
+    if (!activity.onlineYn) {
+      const address = activity.address;
+      const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
+      return {
+        ...baseInfo,
+        region,
+      };
+    }
+
+    return baseInfo;
   }
 
   public async getActivityList(
@@ -154,13 +215,33 @@ export class ActivityServiceImpl implements ActivityService {
     });
 
     SortUtils.sort<Activity>(filteredActivities, options);
-    const activityList: ActivityListDto[] = filteredActivities.map((activity) => {
-      return {
-        ...activity,
-        meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
-        address: activity.address.toAddressDto(),
-      };
-    });
+
+    const activityList: ActivityListDto[] = await Promise.all(
+      filteredActivities.map(async (activity) => {
+        const baseInfo = {
+          activityId: activity.id,
+          name: activity.name,
+          thumbnail: activity.thumbnail,
+          startDate: activity.startDate,
+          onlineYn: activity.onlineYn,
+          onlineLink: activity.getOnlineLink(),
+          participantCount: await this.participantComponent.getParticipantCount(activity.id),
+          participantLimit: activity.participantLimit,
+          meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
+        };
+
+        if (!activity.onlineYn) {
+          const address = activity.address;
+          const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
+          return {
+            ...baseInfo,
+            region,
+          };
+        }
+
+        return baseInfo;
+      }),
+    );
 
     const meetings = await this.memberComponent.findByUserId(requesterId);
     const meetingIds = meetings.map((meeting) => meeting.meetingId);

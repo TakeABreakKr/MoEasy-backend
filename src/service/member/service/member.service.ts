@@ -6,7 +6,7 @@ import { MeetingComponent } from '@domain/meeting/component/meeting.component.in
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Member } from '@domain/member/entity/member.entity';
 import { AuthorityEnum, MANAGING_AUTHORITIES } from '@enums/authority.enum';
-import { MemberService } from './member.service.interface';
+import { MemberService } from '@service/member/service/member.service.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
@@ -19,7 +19,7 @@ import { MemberDeleteRequest } from '@service/member/dto/request/member.delete.r
 import { MemberWaitingListDto } from '@service/member/dto/response/member.waiting.list.dto';
 import { MemberWaitingListResponse } from '@service/member/dto/response/member.waiting.list.response';
 import { MemberWaitingListMeetingDto } from '@service/member/dto/response/member.waiting.list.meeting.dto';
-import { MemberComponent } from '@root/domain/member/component/member.component.interface';
+import { MemberComponent } from '@domain/member/component/member.component.interface';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 
 @Injectable()
@@ -70,7 +70,7 @@ export class MemberServiceImpl implements MemberService {
     await this.notificationComponent.addNotifications(content, userIdList);
 
     if (member.authority === AuthorityEnum.OWNER) {
-      const owner: Member = this.getNewOwner(members);
+      const owner: Member = await this.getNewOwner(members);
       await this.memberComponent.updateAuthority(owner, AuthorityEnum.OWNER);
 
       content = (await owner.getUser()).username + ' 님이 모임장이 되었습니다.';
@@ -78,10 +78,14 @@ export class MemberServiceImpl implements MemberService {
     }
   }
 
-  private getNewOwner(members: Member[]): Member {
+  private async getNewOwner(members: Member[]): Promise<Member> {
     const managers = members.filter((member) => member.authority === AuthorityEnum.MANAGER);
-    const managerRandomIndex: number = Math.floor(Math.random() * managers.length);
-    return managers[managerRandomIndex] || members[Math.floor(Math.random() * members.length)];
+    const candidateMembers = managers.length > 0 ? managers : members;
+
+    const newOwner = candidateMembers.reduce((earliest, current) =>
+      earliest.createdAt < current.createdAt ? earliest : current,
+    );
+    return newOwner;
   }
 
   @Transactional()

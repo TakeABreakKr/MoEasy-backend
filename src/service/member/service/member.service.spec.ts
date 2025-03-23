@@ -10,9 +10,9 @@ import { CreateMemberDto } from '@domain/member/dto/create.member.dto';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { NotificationComponent } from '@domain/notification/component/notification.component.interface';
 import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
-import { MeetingComponent } from '@root/domain/meeting/component/meeting.component.interface';
-import { MemberComponent } from '@root/domain/member/component/member.component.interface';
-import { Notification } from '@root/domain/notification/entity/notification.entity';
+import { MeetingComponent } from '@domain/meeting/component/meeting.component.interface';
+import { MemberComponent } from '@domain/member/component/member.component.interface';
+import { Notification } from '@domain/notification/entity/notification.entity';
 import { MeetingCategoryEnum } from '@enums/meeting.category.enum';
 
 const componentAccessLog: string[] = [];
@@ -148,6 +148,10 @@ class MockMemberComponent implements MemberComponent {
       member.user = Promise.resolve(this.mockUsers.find((user) => user.id === userId) || null);
     }
     return member || null;
+  }
+
+  async findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]> {
+    return this.mockMembers.filter((member) => userIds.includes(member.userId) && member.meetingId === meetingId);
   }
 
   async findByUsersAndAuthorities(userId: number, authorities: AuthorityEnumType[]): Promise<Member[]> {

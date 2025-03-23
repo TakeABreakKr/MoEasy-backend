@@ -21,6 +21,12 @@ export class MeetingResponse {
   thumbnail?: string;
 
   @ApiProperty()
+  category: string;
+
+  @ApiProperty()
+  memberCount: number;
+
+  @ApiProperty()
   canJoin: boolean;
 
   @ApiProperty()
