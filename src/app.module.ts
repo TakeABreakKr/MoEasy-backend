@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { JwtModule } from '@nestjs/jwt';
 import { NecordModule } from 'necord';
 import { DataSource } from 'typeorm';
@@ -33,6 +34,7 @@ import { AppController } from '@root/controller/app.controller';
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
+    ScheduleModule.forRoot(),
     JwtModule.register({
       global: true,
     }),

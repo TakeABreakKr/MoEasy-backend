@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '@domain/common/base.entity';
-import { RegionEnum } from '@enums/region.enum';
+import { RegionEnum, RegionEnumType } from '@enums/region.enum';
+import { EnumUtil } from '@utils/enum.util';
 
 @Entity()
 export class Region extends BaseEntity {
@@ -21,4 +22,11 @@ export class Region extends BaseEntity {
     default: 0,
   })
   count: number;
+
+  public static create(name: RegionEnumType, count: number): Region {
+    const region = new Region();
+    region.name = EnumUtil.findEnumKeyFromValue<typeof RegionEnum>(RegionEnum, name);
+    region.count = count;
+    return region;
+  }
 }

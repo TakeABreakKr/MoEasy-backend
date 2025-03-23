@@ -1,5 +1,6 @@
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
+import { RegionEnumType } from '@enums/region.enum';
 
 export interface ActivityDao {
   findByActivityId(activity_id: number): Promise<Activity | null>;
@@ -10,4 +11,5 @@ export interface ActivityDao {
   delete(activity_id: number): Promise<void>;
   getClosingTimeActivities(): Promise<Partial<Activity>[]>;
   getUpcomingActivities(id?: number): Promise<Activity[]>;
+  countRegions(region: RegionEnumType): Promise<number>;
 }

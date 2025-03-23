@@ -14,4 +14,15 @@ export class RegionDaoImpl implements RegionDao {
       take: 5,
     });
   }
+
+  async save(regionList: Region[]): Promise<void> {
+    for (const region of regionList) {
+      const savedRegion: Region | null = await this.regionRepository.findOneBy({ name: region.name });
+      if (savedRegion) {
+        region.id = savedRegion.id;
+      }
+    }
+
+    await this.regionRepository.save(regionList);
+  }
 }

@@ -7,6 +7,7 @@ import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { ActivityDao } from '@domain/activity/dao/activity.dao.interface';
+import { RegionEnumType } from '@enums/region.enum';
 
 @Injectable()
 export class ActivityDaoImpl implements ActivityDao {
@@ -109,5 +110,15 @@ export class ActivityDaoImpl implements ActivityDao {
       this.logger.error(e);
       throw e;
     }
+  }
+
+  async countRegions(region: RegionEnumType): Promise<number> {
+    const regionString: string = region.toString();
+    return this.activityRepository
+      .createQueryBuilder()
+      .select()
+      .where(`addressSido in ("서울", "경기") AND addressSigungu like "%${regionString}%"`)
+      .orWhere(`addressSido like "%${regionString}%"`)
+      .getCount();
   }
 }

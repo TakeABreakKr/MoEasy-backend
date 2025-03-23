@@ -3,6 +3,8 @@ import { RegionComponent } from '@domain/region/component/region.component.inter
 import { RegionActivityDto } from '@domain/region/dto/region.activity.dto';
 import { RegionDao } from '@domain/region/dao/region.dao.interface';
 import { RegionEnum } from '@enums/region.enum';
+import { CreateRegionDto } from '@domain/region/dto/create.region.dto';
+import { Region } from '@domain/region/entity/region.entity';
 
 @Injectable()
 export class RegionComponentImpl implements RegionComponent {
@@ -19,5 +21,12 @@ export class RegionComponentImpl implements RegionComponent {
           activityCount: region.count,
         };
       });
+  }
+
+  async create(regionCreateDtos: CreateRegionDto[]): Promise<void> {
+    const regionList: Region[] = regionCreateDtos.map((regionCreateDto) => {
+      return Region.create(regionCreateDto.name, regionCreateDto.count);
+    });
+    await this.regionDao.save(regionList);
   }
 }
