@@ -30,6 +30,9 @@ export const ErrorMessageType = {
   LIKE_OPERATION_ERROR: '좋아요 처리 중 오류가 발생했습니다.',
 
   MEETING_NOT_EMPTY: '모임에 멤버가 존재하여 삭제할 수 없습니다.',
+
+  REGION_COUNT_INVALID: '활동 지역 카운트는 음수가 될 수 없습니다.',
+  REGION_NAME_INVALID: '유효하지 않은 지역 값 입니다.',
 } as const;
 
 export type ErrorMessageEnumType = (typeof ErrorMessageType)[keyof typeof ErrorMessageType];

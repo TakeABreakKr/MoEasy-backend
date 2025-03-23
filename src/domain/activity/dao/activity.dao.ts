@@ -114,11 +114,15 @@ export class ActivityDaoImpl implements ActivityDao {
 
   async countRegions(region: RegionEnumType): Promise<number> {
     const regionString: string = region.toString();
+    const regionPattern = `%${regionString}%`;
     return this.activityRepository
       .createQueryBuilder()
       .select()
-      .where(`addressSido in ("서울", "경기") AND addressSigungu like "%${regionString}%"`)
-      .orWhere(`addressSido like "%${regionString}%"`)
+      .where('addressSido in (:...sidoList) AND addressSigungu like :sigunguPattern', {
+        sidoList: ['서울', '경기'],
+        sigunguPattern: regionPattern,
+      })
+      .orWhere('addressSido like :sidoPattern', { sidoPattern: regionPattern })
       .getCount();
   }
 }

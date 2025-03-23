@@ -5,6 +5,7 @@ import { RegionDao } from '@domain/region/dao/region.dao.interface';
 import { RegionEnum } from '@enums/region.enum';
 import { CreateRegionDto } from '@domain/region/dto/create.region.dto';
 import { Region } from '@domain/region/entity/region.entity';
+import { EnumUtil } from '@utils/enum.util';
 
 @Injectable()
 export class RegionComponentImpl implements RegionComponent {
@@ -23,10 +24,28 @@ export class RegionComponentImpl implements RegionComponent {
       });
   }
 
-  async create(regionCreateDtos: CreateRegionDto[]): Promise<void> {
-    const regionList: Region[] = regionCreateDtos.map((regionCreateDto) => {
-      return Region.create(regionCreateDto.name, regionCreateDto.count);
-    });
-    await this.regionDao.save(regionList);
+  async save(regionCreateDtos: CreateRegionDto[]): Promise<void> {
+    if (!regionCreateDtos?.length) {
+      return;
+    }
+
+    const regionNames: string[] = regionCreateDtos.map((regionCreateDto) =>
+      EnumUtil.findEnumKeyFromValue<typeof RegionEnum>(RegionEnum, regionCreateDto.name),
+    );
+    const regions = await this.regionDao.findByRegionNames(regionNames);
+    const regionMap: Map<string, Region> = new Map(regions.map((region) => [region.name, region]));
+
+    for (const regionCreateDto of regionCreateDtos) {
+      const name = regionCreateDto.name;
+      let region = regionMap.get(name);
+      if (!region) {
+        region = Region.create(name);
+      }
+
+      region.setCount(regionCreateDto.count);
+      regionMap.set(name, region);
+    }
+
+    await this.regionDao.save(Array.from(regionMap.values()));
   }
 }

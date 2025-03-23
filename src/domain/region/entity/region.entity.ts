@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '@domain/common/base.entity';
-import { RegionEnum, RegionEnumType } from '@enums/region.enum';
-import { EnumUtil } from '@utils/enum.util';
+import { findEnumKeyFromValue, RegionEnum, RegionEnumType } from '@enums/region.enum';
+import { ErrorMessageType } from '@enums/error.message.enum';
 
 @Entity()
 export class Region extends BaseEntity {
@@ -23,10 +23,16 @@ export class Region extends BaseEntity {
   })
   count: number;
 
-  public static create(name: RegionEnumType, count: number): Region {
+  public static create(name: RegionEnumType): Region {
     const region = new Region();
-    region.name = EnumUtil.findEnumKeyFromValue<typeof RegionEnum>(RegionEnum, name);
-    region.count = count;
+    region.name = findEnumKeyFromValue(name);
     return region;
+  }
+
+  public setCount(count: number): void {
+    if (count < 0) {
+      throw new Error(ErrorMessageType.REGION_COUNT_INVALID);
+    }
+    this.count = count;
   }
 }

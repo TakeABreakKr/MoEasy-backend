@@ -3,5 +3,5 @@ import { CreateRegionDto } from '@domain/region/dto/create.region.dto';
 
 export interface RegionComponent {
   getMostActivatedRegions(): Promise<RegionActivityDto[]>;
-  create(regionCreateDtos: CreateRegionDto[]): Promise<void>;
+  save(regionCreateDtos: CreateRegionDto[]): Promise<void>;
 }

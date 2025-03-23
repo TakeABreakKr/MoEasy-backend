@@ -1,3 +1,6 @@
+import { EnumUtil } from '@utils/enum.util';
+import { ErrorMessageType } from '@enums/error.message.enum';
+
 export const RegionEnum = {
   // 서울
   GANGSEO: '강서구',
@@ -90,4 +93,13 @@ export function getRegionEnum(sido: string, sigungu: string): RegionEnumType {
     throw new Error(`매칭되는 Region Enum을 찾지 못했습니다. sido: ${sido}, sigungu: ${sigungu}`);
   }
   return enumValue[0];
+}
+
+export function findEnumKeyFromValue(name: RegionEnumType): keyof typeof RegionEnum {
+  const enumKey = EnumUtil.findEnumKeyFromValue<typeof RegionEnum>(RegionEnum, name);
+  if (!enumKey) {
+    throw new Error(ErrorMessageType.REGION_NAME_INVALID);
+  }
+
+  return enumKey;
 }
