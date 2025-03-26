@@ -31,6 +31,7 @@ export const ErrorMessageType = {
 
   MEETING_NOT_EMPTY: '모임에 멤버가 존재하여 삭제할 수 없습니다.',
   PARTICIPANT_LIMIT_EXCEEDED: '참여 인원 제한을 초과했습니다.',
+  MAX_MANAGER_COUNT_EXCEEDED: '매니저는 최대 10명까지 등록할 수 있습니다.',
 } as const;
 
 export type ErrorMessageEnumType = (typeof ErrorMessageType)[keyof typeof ErrorMessageType];

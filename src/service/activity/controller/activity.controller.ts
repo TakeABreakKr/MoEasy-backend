@@ -138,6 +138,6 @@ export class ActivityController {
     type: ActivityDeleteRequest,
   })
   async delete(@Body() req: ActivityDeleteRequest, @Token() user: AuthUser): Promise<void> {
-    await this.activityService.delete(user.id, req);
+    await this.activityService.deleteActivity(user.id, req);
   }
 }

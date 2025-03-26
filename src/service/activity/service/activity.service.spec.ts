@@ -171,6 +171,10 @@ class MockMemberComponent implements MemberComponent {
     return member;
   }
 
+  async countByMeetingIdAndAuthority(meetingId: number, authority: AuthorityEnumType): Promise<number> {
+    return this.mockMembers.filter((member) => member.meetingId === meetingId && member.authority === authority).length;
+  }
+
   async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
     componentAccessLog.push(MockMemberComponent.updateAuthorityLog);
 
@@ -679,7 +683,7 @@ describe('ActivityServiceTest', () => {
       const beforeDelete = await activityComponent.findByActivityId(100);
       expect(beforeDelete).toBeDefined();
 
-      await activityService.delete(100, req);
+      await activityService.deleteActivity(100, req);
 
       const afterDelete = await activityComponent.findByActivityId(100);
       expect(afterDelete).toBeNull();

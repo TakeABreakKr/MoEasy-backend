@@ -180,6 +180,10 @@ class MockMemberComponent implements MemberComponent {
     return member;
   }
 
+  async countByMeetingIdAndAuthority(meetingId: number, authority: AuthorityEnumType): Promise<number> {
+    return this.mockMembers.filter((member) => member.meetingId === meetingId && member.authority === authority).length;
+  }
+
   async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
     componentAccessLog.push(MockMemberComponent.updateAuthorityLog);
 

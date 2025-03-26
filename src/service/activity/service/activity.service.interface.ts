@@ -19,5 +19,5 @@ export interface ActivityService {
   ): Promise<ActivityListResponse>;
   cancelActivity(requesterId: number, req: ActivityParticipantRequest): Promise<void>;
   joinActivity(requesterId: number, req: ActivityParticipantRequest): Promise<void>;
-  delete(requesterId: number, req: ActivityDeleteRequest): Promise<void>;
+  deleteActivity(requesterId: number, req: ActivityDeleteRequest): Promise<void>;
 }

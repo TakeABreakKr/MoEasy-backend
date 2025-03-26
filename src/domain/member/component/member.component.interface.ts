@@ -4,6 +4,7 @@ import { AuthorityEnumType } from '@root/enums/authority.enum';
 
 export interface MemberComponent {
   saveAll(members: Member[]): Promise<void>;
+  countByMeetingIdAndAuthority(meetingId: number, authority: AuthorityEnumType): Promise<number>;
   findByMeetingId(meetingId: number): Promise<Member[]>;
   findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null>;
   findByUserIdsAndMeetingId(userIds: number[], meetingId: number): Promise<Member[]>;

@@ -37,7 +37,7 @@ class MockActivityService implements ActivityService {
     };
   }
   async cancelActivity() {}
-  async delete() {}
+  async deleteActivity() {}
   async joinActivity() {}
 }
 

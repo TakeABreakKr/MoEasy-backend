@@ -292,8 +292,13 @@ export class ActivityServiceImpl implements ActivityService {
   }
 
   @Transactional()
-  public async delete(requesterId: number, req: ActivityDeleteRequest): Promise<void> {
+  public async deleteActivity(requesterId: number, req: ActivityDeleteRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+
+    const activity: Activity | null = await this.activityComponent.findByActivityId(req.activityId);
+    if (!activity) {
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
+    }
 
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
     await this.activityComponent.delete(req.activityId);
