@@ -7,6 +7,7 @@ import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { ActivityUpdateVO } from '@domain/activity/vo/activity.update.vo';
 import { ActivityUtils } from '@utils/activity.utils';
 import { MeetingUtils } from '@utils/meeting.utils';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -76,6 +77,9 @@ export class Activity extends BaseEntity {
 
   @OneToMany(() => Participant, (participant) => participant.activity)
   participants: Promise<Participant[]>;
+
+  @OneToMany(() => Attachment, (attachment) => attachment.activity)
+  attachment: Promise<Attachment[]>;
 
   async getMeeting(): Promise<Meeting> {
     return this.meeting;

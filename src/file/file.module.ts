@@ -1,7 +1,9 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { LocalFileService } from './service/local.file.service';
-import { S3FileService } from './service/s3.file.service';
+import { LocalFileService } from '@file/service/local.file.service';
+import { S3FileService } from '@file/service/s3.file.service';
 import { FileModeEnum, FileModeEnumType } from '@enums/file.mode.enum';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Global()
 @Module({})
@@ -18,6 +20,7 @@ export class FileModule {
 
         return {
           module: FileModule,
+          imports: [TypeOrmModule.forFeature([Attachment])],
           providers,
           exports: providers,
         };
@@ -32,6 +35,7 @@ export class FileModule {
 
         return {
           module: FileModule,
+          imports: [TypeOrmModule.forFeature([Attachment])],
           providers,
           exports: providers,
         };

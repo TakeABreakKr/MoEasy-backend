@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { LocalFileService } from './local.file.service';
+import { LocalFileService } from '@file/service/local.file.service';
 import { ConfigService } from '@nestjs/config';
 import { StreamableFile } from '@nestjs/common';
 

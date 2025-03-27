@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { S3FileService } from './s3.file.service';
+import { S3FileService } from '@file/service/s3.file.service';
 import { StreamableFile } from '@nestjs/common';
 
 class MockConfigService extends ConfigService {

@@ -2,7 +2,7 @@ import { Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { extname } from 'path';
-import { FileService } from './file.service';
+import { FileService } from '@file/service/file.service';
 
 @Injectable()
 export class S3FileService extends FileService {

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { FileService } from './file.service';
+import { FileService } from '@file/service/file.service';
 
 @Injectable()
 export class LocalFileService extends FileService {

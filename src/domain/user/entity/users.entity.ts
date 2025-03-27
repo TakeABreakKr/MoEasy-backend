@@ -6,6 +6,7 @@ import { BaseEntity } from '@domain/common/base.entity';
 import { UsersCreateDto } from '@domain/user/dto/users.create.dto';
 import { Settings } from '@domain/user/entity/settings.embedded';
 import { MeetingLike } from '@domain/meeting/entity/meeting.like.entity';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Entity()
 export class Users extends BaseEntity {
@@ -48,6 +49,9 @@ export class Users extends BaseEntity {
 
   @OneToMany(() => MeetingLike, (meetingLike) => meetingLike.user)
   meetingLikes: Promise<MeetingLike[]>;
+
+  @OneToMany(() => Attachment, (attachment) => attachment.user)
+  attachment: Promise<Attachment>;
 
   @ManyToMany(() => Users, (users) => users.friends)
   @JoinTable({
