@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { BaseEntity } from '@domain/common/base.entity';
@@ -21,8 +21,10 @@ export class Activity extends BaseEntity {
   })
   name: string;
 
-  @Column()
-  thumbnail: string;
+  @Column({
+    name: 'thumbnail_id',
+  })
+  thumbnailId: number;
 
   @Column({
     type: 'datetime',
@@ -78,8 +80,9 @@ export class Activity extends BaseEntity {
   @OneToMany(() => Participant, (participant) => participant.activity)
   participants: Promise<Participant[]>;
 
-  @OneToMany(() => Attachment, (attachment) => attachment.activity)
-  attachment: Promise<Attachment[]>;
+  @OneToOne(() => Attachment)
+  @JoinColumn({ name: 'thumbnail_id' })
+  thumbnail: Promise<Attachment>;
 
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
@@ -102,7 +105,7 @@ export class Activity extends BaseEntity {
     activity.participantLimit = activityCreateVO.participantLimit;
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
     activity.onlineLink = activityCreateVO.onlineLink;
-    activity.thumbnail = activityCreateVO.thumbnail;
+    activity.thumbnailId = activityCreateVO.thumbnailId;
     return activity;
   }
 
@@ -117,7 +120,7 @@ export class Activity extends BaseEntity {
     this.detailAddress = activityUpdateVO.detailAddress;
     this.participantLimit = activityUpdateVO.participantLimit;
     this.onlineLink = activityUpdateVO.onlineLink;
-    this.thumbnail = activityUpdateVO.thumbnail;
+    this.thumbnailId = activityUpdateVO.thumbnailId;
   }
 
   //only for test

@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { Member } from '@domain/member/entity/member.entity';
 import { BaseEntity } from '@domain//common/base.entity';
@@ -45,8 +45,10 @@ export class Meeting extends BaseEntity {
   })
   publicYn: boolean;
 
-  @Column()
-  thumbnail: string;
+  @Column({
+    name: 'thumbnail_id',
+  })
+  thumbnailId: number;
 
   @Column()
   canJoin: boolean;
@@ -63,8 +65,9 @@ export class Meeting extends BaseEntity {
   @OneToMany(() => MeetingLike, (meetingLike) => meetingLike.meeting)
   meetingLikes: Promise<MeetingLike[]>;
 
-  @OneToMany(() => Attachment, (attachment) => attachment.meeting)
-  attachment: Promise<Attachment[]>;
+  @OneToOne(() => Attachment)
+  @JoinTable({ name: 'thumbnail_id' })
+  thumbnail: Promise<Attachment>;
 
   getCategory(): MeetingCategoryEnum.MeetingCategoryEnumType {
     return MeetingCategoryEnum.MeetingCategoryEnum[this.category];
@@ -82,7 +85,7 @@ export class Meeting extends BaseEntity {
     return this.members;
   }
 
-  static create({ name, category, explanation, limit, publicYn, thumbnail, canJoin }: CreateMeetingDto): Meeting {
+  static create({ name, category, explanation, limit, publicYn, thumbnailId, canJoin }: CreateMeetingDto): Meeting {
     const meeting = new Meeting();
 
     meeting.name = name;
@@ -90,7 +93,7 @@ export class Meeting extends BaseEntity {
     meeting.explanation = explanation;
     meeting.limit = limit;
     meeting.publicYn = publicYn;
-    meeting.thumbnail = thumbnail;
+    meeting.thumbnailId = thumbnailId;
     meeting.canJoin = canJoin;
 
     return meeting;

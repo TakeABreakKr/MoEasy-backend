@@ -7,6 +7,7 @@ import { AttachmentDao } from '@file/dao/attachment.dao.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { FileModeEnum } from '@enums/file.mode.enum';
 import { Attachment } from '@file/entity/attachment.entity';
+import axios from 'axios';
 
 @Injectable()
 export class S3FileService extends FileService {
@@ -28,7 +29,27 @@ export class S3FileService extends FileService {
     this.awsS3BucketName = configService.get('AWS_S3_BUCKET_NAME');
   }
 
-  public async uploadAttachment(file: Express.Multer.File): Promise<string> {
+  public async uploadFromUrl(url: string): Promise<number> {
+    const filename = `external_image_${Date.now()}.png`;
+
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+
+    const file: Express.Multer.File = {
+      originalname: filename,
+      buffer: response.data,
+      fieldname: 'avatar',
+      mimetype: 'image/png',
+      size: response.data.length,
+      encoding: '7bit',
+      filename: filename,
+      stream: null,
+      destination: '',
+      path: '',
+    };
+    return this.uploadAttachment(file);
+  }
+
+  public async uploadAttachment(file: Express.Multer.File): Promise<number> {
     const path = await this.uploadThumbnailFile(file);
 
     const attachment: Attachment = await this.attachmentDao.create({
@@ -38,7 +59,7 @@ export class S3FileService extends FileService {
       deletedYn: false,
     });
 
-    return attachment.path;
+    return attachment.id;
   }
 
   public async downloadAttachment(id: number): Promise<StreamableFile | null> {

@@ -55,7 +55,7 @@ export class MeetingServiceImpl implements MeetingService {
       explanation: req.explanation,
       limit: req.limit,
       publicYn: req.publicYn,
-      thumbnail: attachmentPath,
+      thumbnailId: attachmentPath,
       canJoin: req.canJoin,
     });
 
@@ -135,7 +135,7 @@ export class MeetingServiceImpl implements MeetingService {
     await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
     const meeting: Meeting = await this.meetingComponent.findByMeetingId(meetingId);
 
-    meeting.thumbnail = attachmentPath;
+    meeting.thumbnailId = attachmentPath;
     await this.meetingComponent.update(meeting);
 
     const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
@@ -243,7 +243,7 @@ export class MeetingServiceImpl implements MeetingService {
       name: meeting.name,
       explanation: meeting.explanation,
       limit: meeting.limit,
-      thumbnail: meeting.thumbnail,
+      thumbnailId: meeting.thumbnailId,
       category: meeting.category,
       members: memberDtos,
       memberCount: await this.memberComponent.getMemberCount(meeting.id),

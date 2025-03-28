@@ -28,6 +28,7 @@ import { Users } from '@domain/user/entity/users.entity';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { ActivityMemberDto } from '@service/activity/dto/response/activity.member.dto';
 import { Member } from '@domain/member/entity/member.entity';
+import { FileService } from '@root/file/service/file.service';
 
 @Injectable()
 export class ActivityServiceImpl implements ActivityService {
@@ -39,6 +40,7 @@ export class ActivityServiceImpl implements ActivityService {
     @Inject('AuthorityComponent') private authorityComponent: AuthorityComponent,
     @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
+    @Inject('FileService') private fileService: FileService,
   ) {}
 
   @Transactional()
@@ -46,9 +48,10 @@ export class ActivityServiceImpl implements ActivityService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
+    const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
-      thumbnail: req.thumbnail,
+      thumbnailId: thumbnailId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -86,9 +89,10 @@ export class ActivityServiceImpl implements ActivityService {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
     }
 
+    const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
     activity.update({
       name: req.name,
-      thumbnail: req.thumbnail,
+      thumbnailId: thumbnailId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -158,7 +162,7 @@ export class ActivityServiceImpl implements ActivityService {
     const baseInfo = {
       activityId: activity.id,
       name: activity.name,
-      thumbnail: activity.thumbnail,
+      thumbnailId: activity.thumbnailId,
       startDate: activity.startDate,
       onlineYn: activity.onlineYn,
       onlineLink: activity.getOnlineLink(),
@@ -221,7 +225,7 @@ export class ActivityServiceImpl implements ActivityService {
         const baseInfo = {
           activityId: activity.id,
           name: activity.name,
-          thumbnail: activity.thumbnail,
+          thumbnailId: activity.thumbnailId,
           startDate: activity.startDate,
           onlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
@@ -249,7 +253,7 @@ export class ActivityServiceImpl implements ActivityService {
     const meetingListDtos: ActivityListMeetingListDto[] = meetingList.map((meeting) => {
       return {
         name: meeting.name,
-        thumbnail: meeting.thumbnail,
+        thumbnailId: meeting.thumbnailId,
       };
     });
 

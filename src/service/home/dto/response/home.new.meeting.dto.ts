@@ -14,7 +14,7 @@ export class HomeNewMeetingDto {
   memberCount: number;
 
   @ApiProperty()
-  thumbnail: string;
+  thumbnailId: number;
 
   @ApiProperty()
   likedYn: boolean = false;

@@ -19,7 +19,7 @@ export class HomeClosingTimeActivityDto {
   meetingName: string;
 
   @ApiProperty()
-  thumbnail: string;
+  thumbnailId: number;
 
   @ApiProperty({
     enum: RegionEnum,

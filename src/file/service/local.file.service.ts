@@ -15,7 +15,7 @@ export class LocalFileService extends FileService {
   ) {
     super();
   }
-  public async uploadAttachment(file: Express.Multer.File): Promise<string> {
+  public async uploadAttachment(file: Express.Multer.File): Promise<number> {
     const path = await this.uploadThumbnailFile(file);
 
     const attachment: Attachment = await this.attachmentDao.create({
@@ -25,7 +25,7 @@ export class LocalFileService extends FileService {
       deletedYn: false,
     });
 
-    return attachment.path;
+    return attachment.id;
   }
 
   async downloadAttachment(attachmentId: number): Promise<StreamableFile | null> {
@@ -53,5 +53,16 @@ export class LocalFileService extends FileService {
       return null;
     }
     return new StreamableFile(readFileSync(thumbnailPath));
+  }
+
+  public async uploadFromUrl(url: string): Promise<number> {
+    const attachment: Attachment = await this.attachmentDao.create({
+      name: `external_image_${Date.now()}`,
+      type: FileModeEnum.external,
+      path: url,
+      deletedYn: false,
+    });
+
+    return attachment.id;
   }
 }

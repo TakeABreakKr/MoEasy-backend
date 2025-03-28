@@ -22,7 +22,7 @@ export class ActivityResponse {
   region?: RegionEnumType;
 
   @ApiProperty()
-  thumbnail: string;
+  thumbnailId: number;
 
   @ApiProperty()
   participantLimit: number;

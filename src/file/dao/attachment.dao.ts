@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attachment } from '@file/entity/attachment.entity';
-import { AttachmentDao } from '@root/file/dao/attachment.dao.interface';
-import { CreateAttachmentDto } from '../dto/create.attachment.dto';
+import { AttachmentDao } from '@file/dao/attachment.dao.interface';
+import { CreateAttachmentDto } from '@file/dto/create.attachment.dto';
 
 @Injectable()
 export class AttachmentDaoImpl implements AttachmentDao {

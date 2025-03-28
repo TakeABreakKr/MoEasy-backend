@@ -18,7 +18,7 @@ export class MeetingResponse {
   members: MeetingMemberDto[];
 
   @ApiProperty()
-  thumbnail?: string;
+  thumbnailId?: number;
 
   @ApiProperty()
   category: string;
