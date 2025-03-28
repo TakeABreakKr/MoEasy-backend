@@ -57,22 +57,21 @@ describe('LocalFileService', () => {
       filename: '',
       path: '',
     };
-    const path = await localFileService.uploadThumbnailFile(file);
+    const path = await localFileService.uploadAttachment(file);
 
     expect(path).toBe('/upload/MOEASY.jpg');
   });
 
   it('getFileTest - NULL', async () => {
-    const thumbnailPath = '/upload/MOEASY.jpg';
-    const result = await localFileService.getFile(thumbnailPath);
+    const attachmentId = 30;
+    const result = await localFileService.downloadAttachment(attachmentId);
 
     expect(result).toBeNull();
   });
 
   it('getFileTest', async () => {
-    const nonExistingPath = '/upload/nonexistent.jpg';
-    mockFiles[nonExistingPath] = Buffer.from('test content');
-    const result = await localFileService.getFile(nonExistingPath);
+    const attachmentId = 30;
+    const result = await localFileService.downloadAttachment(attachmentId);
 
     expect(result).toBeInstanceOf(StreamableFile);
   });

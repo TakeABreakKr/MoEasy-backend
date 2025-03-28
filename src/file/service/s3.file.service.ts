@@ -1,15 +1,22 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { extname } from 'path';
 import { FileService } from '@file/service/file.service';
+import { AttachmentDao } from '@file/dao/attachment.dao.interface';
+import { ErrorMessageType } from '@enums/error.message.enum';
+import { FileModeEnum } from '@enums/file.mode.enum';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Injectable()
 export class S3FileService extends FileService {
   private s3Client: S3Client;
   private readonly awsS3BucketName: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @Inject('AttachmentDao') private attachmentDao: AttachmentDao,
+  ) {
     super();
     this.s3Client = new S3Client({
       region: configService.get('AWS.region'),
@@ -21,7 +28,43 @@ export class S3FileService extends FileService {
     this.awsS3BucketName = configService.get('AWS_S3_BUCKET_NAME');
   }
 
-  async uploadThumbnailFile(file: Express.Multer.File): Promise<string> {
+  public async uploadAttachment(file: Express.Multer.File): Promise<string> {
+    const path = await this.uploadThumbnailFile(file);
+
+    const attachment: Attachment = await this.attachmentDao.create({
+      name: file.originalname,
+      type: FileModeEnum.s3,
+      path: path,
+      deletedYn: false,
+    });
+
+    return attachment.path;
+  }
+
+  public async downloadAttachment(id: number): Promise<StreamableFile | null> {
+    const attachment = await this.attachmentDao.findById(id);
+    if (!attachment || attachment.deletedYn) {
+      throw new BadRequestException(ErrorMessageType.FILE_NOT_FOUND);
+    }
+
+    return this.getFile(attachment.path);
+  }
+
+  public async deleteAttachment(attachmentId: number): Promise<void> {
+    const attachment = await this.attachmentDao.findById(attachmentId);
+    if (attachment && !attachment.deletedYn) {
+      const key = attachment.path.split('/').pop();
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: this.awsS3BucketName,
+        Key: key,
+      });
+      await this.s3Client.send(deleteCommand);
+
+      await this.attachmentDao.delete(attachmentId);
+    }
+  }
+
+  private async uploadThumbnailFile(file: Express.Multer.File): Promise<string> {
     const filename = file.filename;
     const ext = extname(file.originalname);
     const uploadCommand = new PutObjectCommand({
@@ -36,10 +79,11 @@ export class S3FileService extends FileService {
 
     const urlBucketName = this.configService.get('AWS.bucket');
     const region = this.configService.get('AWS.region');
+
     return `https://s3.${region}.amazonaws.com/${urlBucketName}/${filename}`;
   }
 
-  async getFile(path: string): Promise<StreamableFile | null> {
+  private async getFile(path: string): Promise<StreamableFile | null> {
     if (!path) {
       return null;
     }

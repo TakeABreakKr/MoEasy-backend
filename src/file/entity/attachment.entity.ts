@@ -4,6 +4,7 @@ import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { Users } from '@domain/user/entity/users.entity';
+import { CreateAttachmentDto } from '../dto/create.attachment.dto';
 
 @Entity()
 export class Attachment extends BaseEntity {
@@ -55,4 +56,15 @@ export class Attachment extends BaseEntity {
   })
   @JoinColumn({ name: 'users_id' })
   user: Promise<Users>;
+
+  static create({ name, type, path, deletedYn }: CreateAttachmentDto): Attachment {
+    const attachment = new Attachment();
+
+    attachment.name = name;
+    attachment.type = type;
+    attachment.path = path;
+    attachment.deletedYn = deletedYn;
+
+    return attachment;
+  }
 }
