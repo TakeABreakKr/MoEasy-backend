@@ -27,6 +27,7 @@ export abstract class ActivityRequest {
     type: String,
     format: 'binary',
   })
+  @IsNotEmpty()
   thumbnail: Express.Multer.File;
 
   @ApiProperty()

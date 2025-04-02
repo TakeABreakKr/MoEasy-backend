@@ -44,7 +44,7 @@ describe('LocalFileService', () => {
     localFileService = module.get<LocalFileService>(LocalFileService);
   });
 
-  it('uploadThumbnailFileTest', async () => {
+  it('uploadAttachmentTest', async () => {
     const file = {
       fieldname: 'thumbnail',
       originalname: 'MOEASY.jpg',
@@ -62,14 +62,14 @@ describe('LocalFileService', () => {
     expect(path).toBe('/upload/MOEASY.jpg');
   });
 
-  it('getFileTest - NULL', async () => {
+  it('downloadAttachmentTest - NULL', async () => {
     const attachmentId = 30;
     const result = await localFileService.downloadAttachment(attachmentId);
 
     expect(result).toBeNull();
   });
 
-  it('getFileTest', async () => {
+  it('downloadAttachmentTest', async () => {
     const attachmentId = 30;
     const result = await localFileService.downloadAttachment(attachmentId);
 

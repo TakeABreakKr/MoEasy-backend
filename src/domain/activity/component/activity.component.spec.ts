@@ -19,7 +19,7 @@ class MockActivityDao implements ActivityDao {
       address: Address.createForTest(),
       detailAddress: '평택',
       participantLimit: 10,
-      thumbnail: 'thumbnail_test',
+      thumbnailId: 10,
     }),
     Activity.createForTest(200, {
       meetingId: 'C8',
@@ -32,7 +32,7 @@ class MockActivityDao implements ActivityDao {
       address: Address.createForTest(),
       detailAddress: '수원',
       participantLimit: 10,
-      thumbnail: 'thumbnail_test',
+      thumbnailId: 20,
     }),
   ];
 
@@ -109,7 +109,7 @@ describe('ActivityComponent', () => {
       address: Address.createForTest(),
       detailAddress: '서울',
       participantLimit: 10,
-      thumbnail: 'thumbnail_test',
+      thumbnailId: 30,
     };
     const result = await activityComponent.create(createActivityDto);
 
@@ -147,7 +147,7 @@ describe('ActivityComponent', () => {
       address: Address.createForTest(),
       detailAddress: '평택에서 변경',
       participantLimit: 10,
-      thumbnail: 'thumbnail_test',
+      thumbnailId: 40,
     });
     await activityComponent.update(activity);
     const updatedActivity = await activityComponent.findByActivityId(100);

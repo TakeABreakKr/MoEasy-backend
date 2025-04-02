@@ -99,7 +99,7 @@ describe('ActivityController', () => {
       startDate: new Date(),
       announcement: 'moeasa',
       onlineYn: true,
-      thumbnailId: 80,
+      thumbnailId: 50,
       participantLimit: 10,
       participantCount: 10,
       onlineLink: 'onlineLink',

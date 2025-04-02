@@ -23,6 +23,7 @@ export class AttachmentDaoImpl implements AttachmentDao {
   async delete(id: number): Promise<void> {
     const attachment = await this.attachmentRepository.findOne({ where: { id } });
     attachment.deletedYn = true;
+    await this.attachmentRepository.save(attachment);
   }
 
   async create(createAttachmentDto: CreateAttachmentDto): Promise<Attachment> {

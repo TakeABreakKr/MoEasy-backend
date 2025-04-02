@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { Member } from '@domain/member/entity/member.entity';
 import { BaseEntity } from '@domain//common/base.entity';
@@ -47,6 +47,7 @@ export class Meeting extends BaseEntity {
 
   @Column({
     name: 'thumbnail_id',
+    nullable: false,
   })
   thumbnailId: number;
 
@@ -66,7 +67,7 @@ export class Meeting extends BaseEntity {
   meetingLikes: Promise<MeetingLike[]>;
 
   @OneToOne(() => Attachment)
-  @JoinTable({ name: 'thumbnail_id' })
+  @JoinColumn({ name: 'thumbnail_id' })
   thumbnail: Promise<Attachment>;
 
   getCategory(): MeetingCategoryEnum.MeetingCategoryEnumType {

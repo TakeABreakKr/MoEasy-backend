@@ -97,10 +97,18 @@ export class AuthService {
       return user;
     }
 
-    const discordAvatarUrl =
-      this.configService.get<string>('discord.cdnHost') + 'avatars/' + profile.id + '/' + profile.avatar;
+    let profileImageId: number = null;
 
-    const profileImageId = await this.fileService.uploadFromUrl(discordAvatarUrl);
+    if (profile.avatar) {
+      try {
+        const discordAvatarUrl =
+          this.configService.get<string>('discord.cdnHost') + 'avatars/' + profile.id + '/' + profile.avatar;
+
+        profileImageId = await this.fileService.uploadFromUrl(discordAvatarUrl);
+      } catch (e) {
+        throw new BadRequestException(ErrorMessageType.DISCORD_PROFILE_IMAGE_UPLOAD_FAILED);
+      }
+    }
 
     const profileWithImage: DiscordProfileDto = {
       ...profile,

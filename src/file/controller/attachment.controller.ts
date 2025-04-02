@@ -1,7 +1,18 @@
-import { Controller, Inject, Post, Query, StreamableFile, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Query,
+  StreamableFile,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiQuery,
   ApiTags,
@@ -11,6 +22,7 @@ import AuthGuard from '@root/middleware/auth/auth.guard';
 import { FileService } from '@file/service/file.service.interface';
 import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AuthGuard)
 @ApiTags('file')
@@ -20,19 +32,26 @@ export class AttachmentController {
 
   @Post('upload')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
+  @UseInterceptors(FileInterceptor('file'))
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('multipart/form-data')
-  @ApiQuery({
-    name: 'file',
-    type: File,
-    description: 'data required to upload attachment',
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        thumbnail: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
-  async uploadAttachment(@Query('file') file: Express.Multer.File): Promise<string> {
+  async uploadAttachment(@UploadedFile() file: Express.Multer.File): Promise<number> {
     return this.fileService.uploadAttachment(file);
   }
 
-  @Post('download')
+  @Get('download')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })

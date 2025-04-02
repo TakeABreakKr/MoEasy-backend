@@ -30,8 +30,26 @@ export class S3FileService extends FileService {
   }
 
   public async uploadFromUrl(url: string): Promise<number> {
-    const filename = `external_image_${Date.now()}.png`;
+    const ALLOWED_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
+    try {
+      new URL(url);
+    } catch (e) {
+      throw new BadRequestException(ErrorMessageType.INVALID_URL_FORMAT);
+    }
+
+    try {
+      const head = await axios.head(url);
+      const contentType = head.headers['content-type'];
+
+      if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
+        throw new BadRequestException(ErrorMessageType.INVALID_IMAGE_TYPE);
+      }
+    } catch (e) {
+      throw new BadRequestException(ErrorMessageType.FAILED_TO_FETCH_URL_HEADER);
+    }
+
+    const filename = `external_image_${Date.now()}.png`;
     const response = await axios.get(url, { responseType: 'arraybuffer' });
 
     const file: Express.Multer.File = {

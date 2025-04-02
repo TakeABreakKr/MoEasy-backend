@@ -6,6 +6,7 @@ import { Attachment } from '@file/entity/attachment.entity';
 import { AttachmentDao } from '@file/dao/attachment.dao.interface';
 import { FileModeEnum } from '@enums/file.mode.enum';
 import { ErrorMessageType } from '@enums/error.message.enum';
+import axios from 'axios';
 
 @Injectable()
 export class LocalFileService extends FileService {
@@ -49,13 +50,32 @@ export class LocalFileService extends FileService {
   }
 
   private async getFile(thumbnailPath: string): Promise<StreamableFile | null> {
-    if (!thumbnailPath || existsSync(thumbnailPath)) {
+    if (!thumbnailPath || !existsSync(thumbnailPath)) {
       return null;
     }
     return new StreamableFile(readFileSync(thumbnailPath));
   }
 
   public async uploadFromUrl(url: string): Promise<number> {
+    const ALLOWED_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+    try {
+      new URL(url);
+    } catch (e) {
+      throw new BadRequestException(ErrorMessageType.INVALID_URL_FORMAT);
+    }
+
+    try {
+      const head = await axios.head(url);
+      const contentType = head.headers['content-type'];
+
+      if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
+        throw new BadRequestException(ErrorMessageType.INVALID_IMAGE_TYPE);
+      }
+    } catch (e) {
+      throw new BadRequestException(ErrorMessageType.FAILED_TO_FETCH_URL_HEADER);
+    }
+
     const attachment: Attachment = await this.attachmentDao.create({
       name: `external_image_${Date.now()}`,
       type: FileModeEnum.external,
