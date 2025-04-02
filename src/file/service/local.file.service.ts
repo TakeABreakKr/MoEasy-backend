@@ -17,10 +17,12 @@ export class LocalFileService extends FileService {
     super();
   }
   public async uploadAttachment(file: Express.Multer.File): Promise<number> {
-    const path = await this.uploadThumbnailFile(file);
+    const path = await this.uploadFile(file);
+
+    const sanitizedFileName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '').substring(0, 255);
 
     const attachment: Attachment = await this.attachmentDao.create({
-      name: file.originalname,
+      name: sanitizedFileName,
       type: FileModeEnum.local,
       path: path,
       deletedYn: false,
@@ -42,7 +44,7 @@ export class LocalFileService extends FileService {
     await this.attachmentDao.delete(attachmentId);
   }
 
-  private async uploadThumbnailFile(file: Express.Multer.File): Promise<string> {
+  private async uploadFile(file: Express.Multer.File): Promise<string> {
     if (!file || !file.originalname) {
       throw new BadRequestException(ErrorMessageType.FILE_UPLOAD_FAILED);
     }
