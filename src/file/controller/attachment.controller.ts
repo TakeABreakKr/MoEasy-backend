@@ -23,6 +23,7 @@ import { FileService } from '@file/service/file.service.interface';
 import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageFileFilter } from '@root/utils/image.filter.utils';
 
 @UseGuards(AuthGuard)
 @ApiTags('file')
@@ -32,7 +33,14 @@ export class AttachmentController {
 
   @Post('upload')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+      fileFilter: ImageFileFilter.filter,
+    }),
+  )
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiConsumes('multipart/form-data')

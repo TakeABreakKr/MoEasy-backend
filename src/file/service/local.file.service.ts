@@ -43,6 +43,10 @@ export class LocalFileService extends FileService {
   }
 
   private async uploadThumbnailFile(file: Express.Multer.File): Promise<string> {
+    if (!file || !file.originalname) {
+      throw new BadRequestException(ErrorMessageType.FILE_UPLOAD_FAILED);
+    }
+
     const path = this.configService.get('file.dir') + file.originalname;
     writeFileSync(path, file.buffer);
 

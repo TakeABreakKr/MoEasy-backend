@@ -36,6 +36,7 @@ export const ErrorMessageType = {
   INVALID_URL_FORMAT: '잘못된 URL 형식입니다.',
   INVALID_IMAGE_TYPE: '이미지 파일만 업로드할 수 있습니다.',
   FAILED_TO_FETCH_URL_HEADER: 'URL로부터 파일 정보를 가져올 수 없습니다.',
+  FILE_UPLOAD_FAILED: '파일 업로드에 실패했습니다.',
 } as const;
 
 export type ErrorMessageEnumType = (typeof ErrorMessageType)[keyof typeof ErrorMessageType];

@@ -104,6 +104,10 @@ export class S3FileService extends FileService {
   }
 
   private async uploadThumbnailFile(file: Express.Multer.File): Promise<string> {
+    if (!file || !file.originalname) {
+      throw new BadRequestException(ErrorMessageType.FILE_UPLOAD_FAILED);
+    }
+
     const filename = file.filename;
     const ext = extname(file.originalname);
     const uploadCommand = new PutObjectCommand({

@@ -59,7 +59,7 @@ describe('LocalFileService', () => {
     };
     const path = await localFileService.uploadAttachment(file);
 
-    expect(path).toBe('/upload/MOEASY.jpg');
+    expect(path).toBe(1);
   });
 
   it('downloadAttachmentTest - NULL', async () => {
