@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { LocalFileService } from './local.file.service';
+import { LocalFileService } from '@file/service/local.file.service';
 import { ConfigService } from '@nestjs/config';
 import { StreamableFile } from '@nestjs/common';
 
@@ -44,7 +44,7 @@ describe('LocalFileService', () => {
     localFileService = module.get<LocalFileService>(LocalFileService);
   });
 
-  it('uploadThumbnailFileTest', async () => {
+  it('uploadAttachmentTest', async () => {
     const file = {
       fieldname: 'thumbnail',
       originalname: 'MOEASY.jpg',
@@ -57,22 +57,21 @@ describe('LocalFileService', () => {
       filename: '',
       path: '',
     };
-    const path = await localFileService.uploadThumbnailFile(file);
+    const path = await localFileService.uploadAttachment(file);
 
-    expect(path).toBe('/upload/MOEASY.jpg');
+    expect(path).toBe(1);
   });
 
-  it('getFileTest - NULL', async () => {
-    const thumbnailPath = '/upload/MOEASY.jpg';
-    const result = await localFileService.getFile(thumbnailPath);
+  it('downloadAttachmentTest - NULL', async () => {
+    const attachmentId = 30;
+    const result = await localFileService.downloadAttachment(attachmentId);
 
     expect(result).toBeNull();
   });
 
-  it('getFileTest', async () => {
-    const nonExistingPath = '/upload/nonexistent.jpg';
-    mockFiles[nonExistingPath] = Buffer.from('test content');
-    const result = await localFileService.getFile(nonExistingPath);
+  it('downloadAttachmentTest', async () => {
+    const attachmentId = 30;
+    const result = await localFileService.downloadAttachment(attachmentId);
 
     expect(result).toBeInstanceOf(StreamableFile);
   });

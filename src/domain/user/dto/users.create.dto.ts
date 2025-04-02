@@ -6,6 +6,6 @@ export interface UsersCreateDto {
   avatar: string;
   email: string;
   explanation: string;
-  thumbnail: string;
+  profileImageId: number;
   settings: SettingsCreateDto;
 }

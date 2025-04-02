@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { S3FileService } from './s3.file.service';
+import { S3FileService } from '@file/service/s3.file.service';
 import { StreamableFile } from '@nestjs/common';
 
 class MockConfigService extends ConfigService {
@@ -47,7 +47,7 @@ describe('S3FileService', () => {
     s3FileService = module.get<S3FileService>(S3FileService);
   });
 
-  it('uploadThumbnailFileTest', async () => {
+  it('uploadAttachmentTest', async () => {
     const file = {
       fieldname: 'thumbnail',
       originalname: 'MOEASY.jpg',
@@ -60,20 +60,20 @@ describe('S3FileService', () => {
       filename: 'testFilenameMoeasy.jpg',
       path: '',
     };
-    const path = await s3FileService.uploadThumbnailFile(file);
+    const path = await s3FileService.uploadAttachment(file);
 
     expect(path).toBe('https://s3.ap-northeast-2.amazonaws.com/urlBucketName/testFilenameMoeasy.jpg');
   });
 
   it('getFileTest', async () => {
-    const path = 'MOEASY.jpg';
-    const result = await s3FileService.getFile(path);
+    const attachmentId = 30;
+    const result = await s3FileService.downloadAttachment(attachmentId);
 
     expect(result).toBeInstanceOf(StreamableFile);
   });
 
   it('getFileTest - EMPTY', async () => {
-    const result = await s3FileService.getFile('');
+    const result = await s3FileService.downloadAttachment(999);
 
     expect(result).toBeNull();
   });

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -23,6 +23,8 @@ import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 import AuthGuard from '@root/middleware/auth/auth.guard';
 import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageFileFilter } from '@root/utils/image.filter.utils';
 
 @UseGuards(AuthGuard)
 @ApiTags('activity')
@@ -31,6 +33,14 @@ export class ActivityController {
   constructor(@Inject('ActivityService') private readonly activityService: ActivityService) {}
 
   @Post('create')
+  @UseInterceptors(
+    FileInterceptor('thumbnail', {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+      fileFilter: ImageFileFilter.filter,
+    }),
+  )
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
@@ -44,6 +54,14 @@ export class ActivityController {
   }
 
   @Post('update')
+  @UseInterceptors(
+    FileInterceptor('thumbnail', {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+      fileFilter: ImageFileFilter.filter,
+    }),
+  )
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })

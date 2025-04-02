@@ -12,6 +12,7 @@ import { TokenDto } from '@service/auth/dto/token.dto';
 import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 import { AuthCallbackResponse } from '@service/auth/dto/response/auth.callback.response';
 import { RefreshTokenResponse } from '@service/auth/dto/response/refresh.token.response';
+import { FileService } from '@file/service/file.service';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,7 @@ export class AuthService {
     private jwtService: JwtService,
     @Inject('DiscordComponent') private discordComponent: DiscordComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
+    @Inject('FileService') private fileService: FileService,
   ) {
     this.ACCESS_TOKEN_SECRET_KEY = this.configService.get('auth.ACCESS_TOKEN_SECRET_KEY');
     this.REFRESH_TOKEN_SECRET_KEY = this.configService.get('auth.REFRESH_TOKEN_SECRET_KEY');
@@ -95,7 +97,25 @@ export class AuthService {
       return user;
     }
 
-    return this.usersComponent.createUsers(profile);
+    let profileImageId: number = null;
+
+    if (profile.avatar) {
+      try {
+        const discordAvatarUrl =
+          this.configService.get<string>('discord.cdnHost') + 'avatars/' + profile.id + '/' + profile.avatar;
+
+        profileImageId = await this.fileService.uploadFromUrl(discordAvatarUrl);
+      } catch (e) {
+        throw new BadRequestException(ErrorMessageType.DISCORD_PROFILE_IMAGE_UPLOAD_FAILED);
+      }
+    }
+
+    const profileWithImage: DiscordProfileDto = {
+      ...profile,
+      profileImageId,
+    };
+
+    return this.usersComponent.createUsers(profileWithImage);
   }
 
   private createTokens(user: Users): TokenDto {

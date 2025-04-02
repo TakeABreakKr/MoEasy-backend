@@ -10,7 +10,7 @@ export class HomeUpcomingActivityDto {
   activityName: string;
 
   @ApiProperty()
-  thumbnail: string;
+  thumbnailId: number;
 
   @ApiProperty()
   isOnlineYn: boolean;

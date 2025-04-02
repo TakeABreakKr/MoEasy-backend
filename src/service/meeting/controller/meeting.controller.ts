@@ -24,6 +24,7 @@ import { Public } from '@decorator/public.decorator';
 import { AuthUser, Token } from '@decorator/token.decorator';
 import AuthGuard from '@root/middleware/auth/auth.guard';
 import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
+import { ImageFileFilter } from '@root/utils/image.filter.utils';
 
 @UseGuards(AuthGuard)
 @ApiTags('meeting')
@@ -32,7 +33,14 @@ export class MeetingController {
   constructor(@Inject('MeetingService') private readonly meetingService: MeetingService) {}
 
   @Post('create')
-  @UseInterceptors(FileInterceptor('thumbnail'))
+  @UseInterceptors(
+    FileInterceptor('thumbnail', {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+      fileFilter: ImageFileFilter.filter,
+    }),
+  )
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
@@ -61,7 +69,14 @@ export class MeetingController {
 
   @Post('update/thumbnail')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
-  @UseInterceptors(FileInterceptor('thumbnail'))
+  @UseInterceptors(
+    FileInterceptor('thumbnail', {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+      fileFilter: ImageFileFilter.filter,
+    }),
+  )
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_MEETING })

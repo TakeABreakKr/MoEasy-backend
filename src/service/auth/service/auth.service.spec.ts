@@ -58,7 +58,7 @@ class MockUsersComponent implements UsersComponent {
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
       settings: { allowNotificationYn: true },
-      thumbnail: 'thumbnail',
+      profileImageId: 30,
     }),
     Users.createForTest({
       id: 512,
@@ -68,7 +68,7 @@ class MockUsersComponent implements UsersComponent {
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
       settings: { allowNotificationYn: true },
-      thumbnail: 'thumbnail',
+      profileImageId: 50,
     }),
   ];
 
@@ -91,7 +91,7 @@ class MockUsersComponent implements UsersComponent {
       email: 'moeasy@naver.com',
       explanation: 'explanation3',
       settings: { allowNotificationYn: true },
-      thumbnail: 'thumbnail',
+      profileImageId: 80,
     });
     return users;
   }

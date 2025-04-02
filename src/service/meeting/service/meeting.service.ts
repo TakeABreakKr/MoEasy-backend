@@ -48,14 +48,14 @@ export class MeetingServiceImpl implements MeetingService {
       throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
     }
 
-    const thumbnailPath: string = await this.fileService.uploadThumbnailFile(req.thumbnail);
+    const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
     const meeting: Meeting = await this.meetingComponent.create({
       name: req.name,
       category: req.category,
       explanation: req.explanation,
       limit: req.limit,
       publicYn: req.publicYn,
-      thumbnail: thumbnailPath,
+      thumbnailId: thumbnailId,
       canJoin: req.canJoin,
     });
 
@@ -129,13 +129,13 @@ export class MeetingServiceImpl implements MeetingService {
 
   @Transactional()
   public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requesterId: number) {
-    const thumbnailPath: string = await this.fileService.uploadThumbnailFile(request.thumbnail);
+    const thumbnailId = await this.fileService.uploadAttachment(request.thumbnail);
 
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
     const meeting: Meeting = await this.meetingComponent.findByMeetingId(meetingId);
 
-    meeting.thumbnail = thumbnailPath;
+    meeting.thumbnailId = thumbnailId;
     await this.meetingComponent.update(meeting);
 
     const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
@@ -191,8 +191,9 @@ export class MeetingServiceImpl implements MeetingService {
           name: meeting.name,
           explanation: meeting.explanation,
           canJoin: meeting.canJoin,
-          thumbnail: meeting.thumbnail,
+          thumbnailId: meeting.thumbnailId,
           likedYn: userId ? await this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
+          memberCount: await this.memberComponent.getMemberCount(meeting.id),
         };
       }),
     );
@@ -243,7 +244,7 @@ export class MeetingServiceImpl implements MeetingService {
       name: meeting.name,
       explanation: meeting.explanation,
       limit: meeting.limit,
-      thumbnail: meeting.thumbnail,
+      thumbnailId: meeting.thumbnailId,
       category: meeting.category,
       members: memberDtos,
       memberCount: await this.memberComponent.getMemberCount(meeting.id),

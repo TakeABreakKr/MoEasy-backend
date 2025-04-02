@@ -5,5 +5,5 @@ export class HeaderResponse {
   id: number;
 
   @ApiProperty()
-  thumbnail: string;
+  profileImageId: number;
 }

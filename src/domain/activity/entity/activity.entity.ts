@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Meeting } from '@domain/meeting/entity/meeting.entity';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { BaseEntity } from '@domain/common/base.entity';
@@ -7,6 +7,7 @@ import { ActivityCreateVO } from '@domain/activity/vo/activity.create.vo';
 import { ActivityUpdateVO } from '@domain/activity/vo/activity.update.vo';
 import { ActivityUtils } from '@utils/activity.utils';
 import { MeetingUtils } from '@utils/meeting.utils';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -20,8 +21,11 @@ export class Activity extends BaseEntity {
   })
   name: string;
 
-  @Column()
-  thumbnail: string;
+  @Column({
+    name: 'thumbnail_id',
+    nullable: false,
+  })
+  thumbnailId: number;
 
   @Column({
     type: 'datetime',
@@ -77,6 +81,10 @@ export class Activity extends BaseEntity {
   @OneToMany(() => Participant, (participant) => participant.activity)
   participants: Promise<Participant[]>;
 
+  @OneToOne(() => Attachment)
+  @JoinColumn({ name: 'thumbnail_id' })
+  thumbnail: Promise<Attachment>;
+
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
   }
@@ -98,7 +106,7 @@ export class Activity extends BaseEntity {
     activity.participantLimit = activityCreateVO.participantLimit;
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
     activity.onlineLink = activityCreateVO.onlineLink;
-    activity.thumbnail = activityCreateVO.thumbnail;
+    activity.thumbnailId = activityCreateVO.thumbnailId;
     return activity;
   }
 
@@ -113,7 +121,7 @@ export class Activity extends BaseEntity {
     this.detailAddress = activityUpdateVO.detailAddress;
     this.participantLimit = activityUpdateVO.participantLimit;
     this.onlineLink = activityUpdateVO.onlineLink;
-    this.thumbnail = activityUpdateVO.thumbnail;
+    this.thumbnailId = activityUpdateVO.thumbnailId;
   }
 
   //only for test
