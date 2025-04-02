@@ -19,7 +19,7 @@ export class LocalFileService extends FileService {
   public async uploadAttachment(file: Express.Multer.File): Promise<number> {
     const path = await this.uploadFile(file);
 
-    const sanitizedFileName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '').substring(0, 255);
+    const sanitizedFileName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 255);
 
     const attachment: Attachment = await this.attachmentDao.create({
       name: sanitizedFileName,

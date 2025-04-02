@@ -31,6 +31,7 @@ export class S3FileService extends FileService {
 
   public async uploadFromUrl(url: string): Promise<number> {
     const ALLOWED_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     try {
       new URL(url);
@@ -38,9 +39,10 @@ export class S3FileService extends FileService {
       throw new BadRequestException(ErrorMessageType.INVALID_URL_FORMAT);
     }
 
+    let contentType: string;
     try {
       const head = await axios.head(url);
-      const contentType = head.headers['content-type'];
+      contentType = head.headers['content-type'];
 
       if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
         throw new BadRequestException(ErrorMessageType.INVALID_IMAGE_TYPE);
@@ -49,8 +51,13 @@ export class S3FileService extends FileService {
       throw new BadRequestException(ErrorMessageType.FAILED_TO_FETCH_URL_HEADER);
     }
 
-    const filename = `external_image_${Date.now()}.png`;
-    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    const ext = contentType.split('/').pop();
+    const filename = `external_image_${Date.now()}.${ext}`;
+
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer',
+      maxContentLength: MAX_FILE_SIZE,
+    });
 
     const file: Express.Multer.File = {
       originalname: filename,
@@ -64,13 +71,14 @@ export class S3FileService extends FileService {
       destination: '',
       path: '',
     };
+
     return this.uploadAttachment(file);
   }
 
   public async uploadAttachment(file: Express.Multer.File): Promise<number> {
     const path = await this.uploadFile(file);
 
-    const sanitizedFileName = file.originalname.replace(/[^a-zA-Z0-9.]/g, '').substring(0, 255);
+    const sanitizedFileName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 255);
 
     const attachment: Attachment = await this.attachmentDao.create({
       name: sanitizedFileName,
