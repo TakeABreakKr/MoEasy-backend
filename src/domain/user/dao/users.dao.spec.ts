@@ -16,7 +16,7 @@ class MockUsersRepository extends Repository<Users> {
       avatar: 'avatar1',
       email: 'kimmoiji@example.com',
       explanation: 'explanation1',
-      thumbnail: '',
+      profileImageId: 80,
       settings: Settings.create({ allowNotificationYn: false }),
     }),
     Users.createForTest({
@@ -26,7 +26,7 @@ class MockUsersRepository extends Repository<Users> {
       avatar: 'avatar2',
       email: 'Parkmoiji@example.com',
       explanation: 'explanation2',
-      thumbnail: '',
+      profileImageId: 60,
       settings: Settings.create({ allowNotificationYn: false }),
     }),
   ];

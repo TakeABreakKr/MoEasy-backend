@@ -26,7 +26,7 @@ class MockMeetingComponent implements MeetingComponent {
       name: '모임 이름1',
       explanation: '모임 설명1',
       limit: 10,
-      thumbnail: 'testThumbnail1.jpg',
+      thumbnailId: 20,
       canJoin: false,
       category: MeetingCategoryEnum.STUDY,
       publicYn: true,
@@ -36,7 +36,7 @@ class MockMeetingComponent implements MeetingComponent {
       name: '모임 이름2',
       explanation: '모임 설명2',
       limit: 10,
-      thumbnail: 'testThumbnail2.jpg',
+      thumbnailId: 30,
       canJoin: true,
       category: MeetingCategoryEnum.STUDY,
       publicYn: true,
@@ -115,7 +115,7 @@ class MockMemberComponent implements MemberComponent {
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
-      thumbnail: '',
+      profileImageId: 10,
       settings: { allowNotificationYn: false },
     }),
     Users.createForTest({
@@ -125,7 +125,7 @@ class MockMemberComponent implements MemberComponent {
       avatar: 'avatar3',
       email: 'parkmoiji2@test.com',
       explanation: 'explanation3',
-      thumbnail: '',
+      profileImageId: 30,
       settings: { allowNotificationYn: false },
     }),
     Users.createForTest({
@@ -135,7 +135,7 @@ class MockMemberComponent implements MemberComponent {
       avatar: 'avatar4',
       email: 'kimmoiji2@test.com',
       explanation: 'explanation4',
-      thumbnail: '',
+      profileImageId: 40,
       settings: { allowNotificationYn: false },
     }),
   ];
@@ -226,7 +226,7 @@ class MockUsersComponent implements UsersComponent {
       avatar: 'avatar1',
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
-      thumbnail: '',
+      profileImageId: 20,
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
@@ -236,7 +236,7 @@ class MockUsersComponent implements UsersComponent {
       avatar: 'avatar2',
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
-      thumbnail: '',
+      profileImageId: 30,
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
@@ -246,7 +246,7 @@ class MockUsersComponent implements UsersComponent {
       avatar: 'avatar3',
       email: 'parkmoiji2@test.com',
       explanation: 'explanation3',
-      thumbnail: '',
+      profileImageId: 40,
       settings: { allowNotificationYn: true },
     }),
   ];

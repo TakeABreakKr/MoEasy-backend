@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
 import { Member } from '@domain/member/entity/member.entity';
 import { BaseEntity } from '@domain//common/base.entity';
@@ -6,6 +6,7 @@ import { Keyword } from '@domain/meeting/entity/keyword.entity';
 import { CreateMeetingDto } from '@domain/meeting/dto/create.meeting.dto';
 import * as MeetingCategoryEnum from '@enums/meeting.category.enum';
 import { MeetingLike } from '@domain/meeting/entity/meeting.like.entity';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Entity()
 export class Meeting extends BaseEntity {
@@ -44,8 +45,11 @@ export class Meeting extends BaseEntity {
   })
   publicYn: boolean;
 
-  @Column()
-  thumbnail: string;
+  @Column({
+    name: 'thumbnail_id',
+    nullable: false,
+  })
+  thumbnailId: number;
 
   @Column()
   canJoin: boolean;
@@ -61,6 +65,10 @@ export class Meeting extends BaseEntity {
 
   @OneToMany(() => MeetingLike, (meetingLike) => meetingLike.meeting)
   meetingLikes: Promise<MeetingLike[]>;
+
+  @OneToOne(() => Attachment)
+  @JoinColumn({ name: 'thumbnail_id' })
+  thumbnail: Promise<Attachment>;
 
   getCategory(): MeetingCategoryEnum.MeetingCategoryEnumType {
     return MeetingCategoryEnum.MeetingCategoryEnum[this.category];
@@ -78,7 +86,7 @@ export class Meeting extends BaseEntity {
     return this.members;
   }
 
-  static create({ name, category, explanation, limit, publicYn, thumbnail, canJoin }: CreateMeetingDto): Meeting {
+  static create({ name, category, explanation, limit, publicYn, thumbnailId, canJoin }: CreateMeetingDto): Meeting {
     const meeting = new Meeting();
 
     meeting.name = name;
@@ -86,7 +94,7 @@ export class Meeting extends BaseEntity {
     meeting.explanation = explanation;
     meeting.limit = limit;
     meeting.publicYn = publicYn;
-    meeting.thumbnail = thumbnail;
+    meeting.thumbnailId = thumbnailId;
     meeting.canJoin = canJoin;
 
     return meeting;

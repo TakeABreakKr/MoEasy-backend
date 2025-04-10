@@ -8,7 +8,7 @@ export class HomePopularMeetingDto {
   name: string;
 
   @ApiProperty()
-  thumbnail: string;
+  thumbnailId: number;
 
   @ApiProperty()
   explanation: string;

@@ -1,4 +1,13 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Member } from '@domain/member/entity/member.entity';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { Notification } from '@domain/notification/entity/notification.entity';
@@ -6,6 +15,7 @@ import { BaseEntity } from '@domain/common/base.entity';
 import { UsersCreateDto } from '@domain/user/dto/users.create.dto';
 import { Settings } from '@domain/user/entity/settings.embedded';
 import { MeetingLike } from '@domain/meeting/entity/meeting.like.entity';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Entity()
 export class Users extends BaseEntity {
@@ -31,8 +41,10 @@ export class Users extends BaseEntity {
   @Column()
   explanation: string;
 
-  @Column()
-  thumbnail: string;
+  @Column({
+    name: 'profile_image_id',
+  })
+  profileImageId: number;
 
   @Column(() => Settings)
   settings: Settings;
@@ -49,6 +61,12 @@ export class Users extends BaseEntity {
   @OneToMany(() => MeetingLike, (meetingLike) => meetingLike.user)
   meetingLikes: Promise<MeetingLike[]>;
 
+  @OneToOne(() => Attachment)
+  @JoinColumn({
+    name: 'profile_image_id',
+  })
+  profileImage: Promise<Attachment>;
+
   @ManyToMany(() => Users, (users) => users.friends)
   @JoinTable({
     name: 'friend',
@@ -62,7 +80,7 @@ export class Users extends BaseEntity {
     users.avatar = usersCreateDto.avatar;
     users.email = usersCreateDto.email;
     users.explanation = usersCreateDto.explanation;
-    users.thumbnail = usersCreateDto.thumbnail;
+    users.profileImageId = usersCreateDto.profileImageId;
     users.settings = Settings.create(usersCreateDto.settings);
     return users;
   }

@@ -38,7 +38,7 @@ class MockMeetingComponent implements MeetingComponent {
       name: '모임 이름1',
       explanation: '모임 설명1',
       limit: 10,
-      thumbnail: 'testThumbnail1.jpg',
+      thumbnailId: 20,
       canJoin: false,
       category: MeetingCategoryEnum.GAME,
       publicYn: true,
@@ -48,7 +48,7 @@ class MockMeetingComponent implements MeetingComponent {
       name: '모임 이름2',
       explanation: '모임 설명2',
       limit: 10,
-      thumbnail: 'testThumbnail2.jpg',
+      thumbnailId: 30,
       canJoin: true,
       category: MeetingCategoryEnum.GAME,
       publicYn: true,
@@ -244,7 +244,7 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(100, {
       meetingId: '64',
       name: 'moeasy1',
-      thumbnail: 'testThumbnail1.jpg',
+      thumbnailId: 30,
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -257,7 +257,7 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(101, {
       meetingId: '64',
       name: 'moeasy4',
-      thumbnail: 'testThumbnail4.jpg',
+      thumbnailId: 40,
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -270,7 +270,7 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(200, {
       meetingId: 'C8',
       name: 'moeasy2',
-      thumbnail: 'testThumbnail2.jpg',
+      thumbnailId: 50,
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -283,7 +283,7 @@ class MockActivityComponent implements ActivityComponent {
     Activity.createForTest(300, {
       meetingId: 'C8',
       name: 'moeasy3',
-      thumbnail: 'testThumbnail3.jpg',
+      thumbnailId: 60,
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -484,7 +484,7 @@ describe('ActivityServiceTest', () => {
         meetingId: '64',
         name: 'moeasy1',
         explanation: '모임설명1',
-        thumbnail: 'testThumbnail1.jpg',
+        thumbnail: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
@@ -518,7 +518,7 @@ describe('ActivityServiceTest', () => {
         meetingId: 'C8',
         name: 'moeasy3 수정',
         explanation: '모임설명3 수정',
-        thumbnail: 'testThumbnail3.jpg',
+        thumbnail: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
@@ -565,7 +565,7 @@ describe('ActivityServiceTest', () => {
         meetingId: '64',
         name: 'moeasy1 수정',
         explanation: '모임설명1 수정',
-        thumbnail: 'testThumbnail1.jpg',
+        thumbnail: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
@@ -618,11 +618,13 @@ describe('ActivityServiceTest', () => {
       expect(result.activityList[0].onlineYn).toBe(true);
       expect(result.activityList[0].meetingId).toBe('64');
       expect(result.meetings[0].name).toBe('모임 이름1');
+      expect(result.meetings[0].thumbnailId).toBe(20);
 
       expect(result.activityList[1].name).toBe('moeasy4');
       expect(result.activityList[1].onlineYn).toBe(false);
       expect(result.activityList[1].meetingId).toBe('64');
       expect(result.meetings[1].name).toBe('모임 이름2');
+      expect(result.meetings[1].thumbnailId).toBe(30);
 
       expect(componentAccessLog).toEqual([
         MockActivityComponent.findByMeetingIdLog,

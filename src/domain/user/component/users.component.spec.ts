@@ -15,7 +15,7 @@ class MockUsersDao implements UsersDao {
       avatar: 'avatar1',
       email: 'kimmoiji@example.com',
       explanation: 'explanation1',
-      thumbnail: '',
+      profileImageId: 20,
       settings: Settings.create({ allowNotificationYn: false }),
     }),
     Users.createForTest({
@@ -25,7 +25,7 @@ class MockUsersDao implements UsersDao {
       avatar: 'avatar2',
       email: 'Parkmoiji@example.com',
       explanation: 'explanation2',
-      thumbnail: '',
+      profileImageId: 40,
       settings: Settings.create({ allowNotificationYn: false }),
     }),
   ];
@@ -54,7 +54,7 @@ class MockUsersDao implements UsersDao {
       avatar: profile.avatar,
       email: profile.email,
       explanation: 'explanation3',
-      thumbnail: '',
+      profileImageId: 50,
       settings: Settings.create({ allowNotificationYn: false }),
     });
 

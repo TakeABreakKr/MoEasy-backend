@@ -6,6 +6,6 @@ export interface CreateMeetingDto {
   explanation: string;
   limit: number;
   publicYn: boolean;
-  thumbnail: string;
+  thumbnailId: number;
   canJoin: boolean;
 }

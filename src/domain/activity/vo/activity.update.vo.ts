@@ -3,7 +3,7 @@ import { Address } from '@domain/activity/entity/address.embedded';
 
 export interface ActivityUpdateVO {
   name: string;
-  thumbnail: string;
+  thumbnailId: number;
   startDate: Date;
   endDate: Date;
   reminder: ReminderEnumType[];

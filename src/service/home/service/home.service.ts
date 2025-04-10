@@ -62,7 +62,7 @@ export class HomeServiceImpl implements HomeService {
         return {
           id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
-          thumbnail: meeting.thumbnail,
+          thumbnailId: meeting.thumbnailId,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
           likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
@@ -89,7 +89,7 @@ export class HomeServiceImpl implements HomeService {
           isOnlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
           meetingName: meeting.name,
-          thumbnail: meeting.thumbnail,
+          thumbnailId: meeting.thumbnailId,
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,
@@ -115,7 +115,7 @@ export class HomeServiceImpl implements HomeService {
           isOnlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
           meetingName: meeting.name,
-          thumbnail: meeting.thumbnail,
+          thumbnailId: meeting.thumbnailId,
           region: region,
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
@@ -133,7 +133,7 @@ export class HomeServiceImpl implements HomeService {
         return {
           id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
-          thumbnail: meeting.thumbnail,
+          thumbnailId: meeting.thumbnailId,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
           likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
@@ -183,7 +183,7 @@ export class HomeServiceImpl implements HomeService {
     }
     return {
       id: user.id,
-      thumbnail: userEntity.thumbnail,
+      profileImageId: userEntity.profileImageId,
     };
   }
 }

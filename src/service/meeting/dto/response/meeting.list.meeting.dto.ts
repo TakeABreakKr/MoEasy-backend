@@ -21,4 +21,10 @@ export class MeetingListMeetingDto {
 
   @ApiProperty()
   likedYn: boolean;
+
+  @ApiProperty()
+  memberCount: number;
+
+  @ApiProperty()
+  thumbnailId: number;
 }

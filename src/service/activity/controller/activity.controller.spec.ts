@@ -22,7 +22,7 @@ class MockActivityService implements ActivityService {
       startDate: new Date(),
       announcement: 'moeasa',
       onlineYn: true,
-      thumbnail: 'thumbnail_test',
+      thumbnailId: 50,
       participantLimit: 10,
       participantCount: 10,
       onlineLink: 'onlineLink',
@@ -62,7 +62,7 @@ describe('ActivityController', () => {
     onlineYn: true,
     participants: [],
     participantLimit: 10,
-    thumbnail: 'thumbnail_test',
+    thumbnail: null,
     onlineLink: 'onlineLink',
   };
 
@@ -101,7 +101,7 @@ describe('ActivityController', () => {
       startDate: new Date(),
       announcement: 'moeasa',
       onlineYn: true,
-      thumbnail: 'thumbnail_test',
+      thumbnailId: 50,
       participantLimit: 10,
       participantCount: 10,
       onlineLink: 'onlineLink',

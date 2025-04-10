@@ -22,6 +22,7 @@ export const ErrorMessageType = {
   INVALID_NOTIFICATION_CHECK_REQUEST: '알림 확인 요청이 잘못 되었습니다.',
 
   DISCORD_AUTH_CODE_ERROR: '디스코드 인증 코드 오류가 발생했습니다.',
+  DISCORD_PROFILE_IMAGE_UPLOAD_FAILED: '디스코드 프로필 이미지를 업로드하는 데 실패했습니다.',
   TOKEN_ISSUANCE_FAILED: '토큰 발급에 실패했습니다.',
 
   SERVER_ERROR: '서버 내 예상하지 못한 에러가 발생했습니다.',
@@ -32,6 +33,13 @@ export const ErrorMessageType = {
   MEETING_NOT_EMPTY: '모임에 멤버가 존재하여 삭제할 수 없습니다.',
   PARTICIPANT_LIMIT_EXCEEDED: '참여 인원 제한을 초과했습니다.',
   MAX_MANAGER_COUNT_EXCEEDED: '매니저는 최대 10명까지 등록할 수 있습니다.',
+  FILE_NOT_FOUND: '파일을 찾을 수 없습니다.',
+
+  INVALID_URL_FORMAT: '잘못된 URL 형식입니다.',
+  INVALID_IMAGE_TYPE: '이미지 파일만 업로드할 수 있습니다.',
+  FAILED_TO_FETCH_URL_HEADER: 'URL로부터 파일 정보를 가져올 수 없습니다.',
+  FILE_UPLOAD_FAILED: '파일 업로드에 실패했습니다.',
+  INVALID_FILE_NAME: '잘못된 파일 이름입니다.',
 } as const;
 
 export type ErrorMessageEnumType = (typeof ErrorMessageType)[keyof typeof ErrorMessageType];
