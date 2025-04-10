@@ -2,7 +2,7 @@ export const ErrorMessageType = {
   NOT_FOUND_MEETING: '해당 모임을 찾을 수 없습니다.',
   NOT_FOUND_ACTIVITY: '해당 일정을 찾을 수 없습니다.',
   NOT_FOUND_MEMBER: '해당 멤버를 찾을 수 없습니다.',
-  NOT_FOUND_PARTICIPANT: '일정 참여자가 아닙니다.',
+  NOT_FOUND_PARTICIPANT: '활동 참여자가 아닙니다.',
   NOT_EXIST_REQUESTER: '존재하지 않는 요청자입니다.',
 
   INVALID_TOKEN: '토큰이 전송되지 않았거나 잘못 되었습니다.',

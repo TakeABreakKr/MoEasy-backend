@@ -30,6 +30,13 @@ export abstract class ActivityRequest {
   @IsNotEmpty()
   thumbnail: Express.Multer.File;
 
+  @ApiProperty({
+    type: String,
+    format: 'binary',
+  })
+  @IsNotEmpty()
+  announcementImage: Express.Multer.File;
+
   @ApiProperty()
   @IsDate()
   @IsNotEmpty()

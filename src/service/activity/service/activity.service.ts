@@ -14,7 +14,6 @@ import { AuthorityComponent } from '@domain/member/component/authority.component
 import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
-import { AuthorityEnum } from '@enums/authority.enum';
 import { ActivityParticipantRequest } from '@service/activity/dto/request/activity.participant.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 import { Transactional } from 'typeorm-transactional';
@@ -49,9 +48,12 @@ export class ActivityServiceImpl implements ActivityService {
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
+    const announcementImageId = await this.fileService.uploadAttachment(req.announcementImage);
+
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
       thumbnailId: thumbnailId,
+      announcementImageId: announcementImageId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -90,9 +92,12 @@ export class ActivityServiceImpl implements ActivityService {
     }
 
     const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
+    const announcementImageId = await this.fileService.uploadAttachment(req.announcementImage);
+
     activity.update({
       name: req.name,
       thumbnailId: thumbnailId,
+      announcementImageId: announcementImageId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -280,10 +285,8 @@ export class ActivityServiceImpl implements ActivityService {
   @Transactional()
   public async cancelActivity(requesterId: number, req: ActivityParticipantRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-    const requester = await this.memberComponent.findByUsersAndMeetingId(requesterId, meetingId);
-    if (requester.authority === AuthorityEnum.OWNER) {
-      throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_ACCESS);
-    }
+
+    await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const participant: Participant | null = await this.participantComponent.findByUserIdAndActivityId(
       requesterId,
@@ -307,5 +310,14 @@ export class ActivityServiceImpl implements ActivityService {
 
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
     await this.activityComponent.delete(req.activityId);
+
+    const participants: Participant[] = await this.participantComponent.findByActivityId(req.activityId);
+    if (!participants.length) {
+      return;
+    }
+
+    const content = activity.name + ' 일정이 삭제되었습니다.';
+    const userIdList: number[] = participants.map((participant) => participant.userId);
+    await this.notificationComponent.addNotifications(content, userIdList);
   }
 }

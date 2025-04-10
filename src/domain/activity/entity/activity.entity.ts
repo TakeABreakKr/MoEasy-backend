@@ -28,6 +28,12 @@ export class Activity extends BaseEntity {
   thumbnailId: number;
 
   @Column({
+    name: 'announcementImage_id',
+    nullable: false,
+  })
+  announcementImageId: number;
+
+  @Column({
     type: 'datetime',
     nullable: false,
   })
@@ -85,6 +91,10 @@ export class Activity extends BaseEntity {
   @JoinColumn({ name: 'thumbnail_id' })
   thumbnail: Promise<Attachment>;
 
+  @OneToOne(() => Attachment)
+  @JoinColumn({ name: 'announcementImage_id' })
+  announcementImage: Promise<Attachment>;
+
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
   }
@@ -107,6 +117,7 @@ export class Activity extends BaseEntity {
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
     activity.onlineLink = activityCreateVO.onlineLink;
     activity.thumbnailId = activityCreateVO.thumbnailId;
+    activity.announcementImageId = activityCreateVO.announcementImageId;
     return activity;
   }
 
@@ -122,6 +133,7 @@ export class Activity extends BaseEntity {
     this.participantLimit = activityUpdateVO.participantLimit;
     this.onlineLink = activityUpdateVO.onlineLink;
     this.thumbnailId = activityUpdateVO.thumbnailId;
+    this.announcementImageId = activityUpdateVO.announcementImageId;
   }
 
   //only for test

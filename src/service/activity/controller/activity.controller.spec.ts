@@ -63,6 +63,7 @@ describe('ActivityController', () => {
     participants: [],
     participantLimit: 10,
     thumbnail: null,
+    announcementImage: null,
     onlineLink: 'onlineLink',
   };
 
