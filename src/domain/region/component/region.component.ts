@@ -2,10 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { RegionComponent } from '@domain/region/component/region.component.interface';
 import { RegionActivityDto } from '@domain/region/dto/region.activity.dto';
 import { RegionDao } from '@domain/region/dao/region.dao.interface';
-import { RegionEnum } from '@enums/region.enum';
+import { findEnumKeyFromValue, RegionEnum } from '@enums/region.enum';
 import { CreateRegionDto } from '@domain/region/dto/create.region.dto';
 import { Region } from '@domain/region/entity/region.entity';
-import { EnumUtil } from '@utils/enum.util';
 
 @Injectable()
 export class RegionComponentImpl implements RegionComponent {
@@ -29,9 +28,7 @@ export class RegionComponentImpl implements RegionComponent {
       return;
     }
 
-    const regionNames: string[] = regionCreateDtos.map((regionCreateDto) =>
-      EnumUtil.findEnumKeyFromValue<typeof RegionEnum>(RegionEnum, regionCreateDto.name),
-    );
+    const regionNames: string[] = regionCreateDtos.map((regionCreateDto) => findEnumKeyFromValue(regionCreateDto.name));
     const regions = await this.regionDao.findByRegionNames(regionNames);
     const regionMap: Map<string, Region> = new Map(regions.map((region) => [region.name, region]));
 
