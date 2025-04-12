@@ -28,7 +28,7 @@ import { ImageFileFilter } from '@root/utils/image.filter.utils';
 @UseGuards(AuthGuard)
 @ApiTags('file')
 @Controller('file')
-export class AttachmentController {
+export class FileController {
   constructor(@Inject('FileService') private readonly fileService: FileService) {}
 
   @Post('upload')
