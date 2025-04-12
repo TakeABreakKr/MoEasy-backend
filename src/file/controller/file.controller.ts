@@ -24,6 +24,7 @@ import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageFileFilter } from '@root/utils/image.filter.utils';
+import { Public } from '@decorator/public.decorator';
 
 @UseGuards(AuthGuard)
 @ApiTags('file')
@@ -58,7 +59,7 @@ export class FileController {
   async uploadAttachment(@UploadedFile() file: Express.Multer.File): Promise<number> {
     return this.fileService.uploadAttachment(file);
   }
-
+  @Public()
   @Get('download')
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
