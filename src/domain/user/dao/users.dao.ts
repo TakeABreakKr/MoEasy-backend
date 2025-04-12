@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '@domain/user/entity/users.entity';
-import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 import { UsersDao } from '@domain/user/dao/users.dao.interface';
+import { UsersCreateDto } from '@domain/user/dto/users.create.dto';
 
 @Injectable()
 export class UsersDaoImpl implements UsersDao {
@@ -25,11 +25,10 @@ export class UsersDaoImpl implements UsersDao {
     return this.usersRepository.findOneBy({ discordId });
   }
 
-  public async createUsers(profile: DiscordProfileDto): Promise<Users> {
+  public async createUsers(profile: UsersCreateDto): Promise<Users> {
     const user: Users = Users.create({
-      discordId: profile.id,
+      discordId: profile.discordId,
       username: profile.username,
-      avatar: profile.avatar || '',
       email: profile.email,
       explanation: '',
       profileImageId: profile.profileImageId,

@@ -33,9 +33,6 @@ export class Users extends BaseEntity {
   username: string;
 
   @Column()
-  avatar: string;
-
-  @Column()
   email: string;
 
   @Column()
@@ -77,7 +74,6 @@ export class Users extends BaseEntity {
     const users = new Users();
     users.discordId = usersCreateDto.discordId;
     users.username = usersCreateDto.username;
-    users.avatar = usersCreateDto.avatar;
     users.email = usersCreateDto.email;
     users.explanation = usersCreateDto.explanation;
     users.profileImageId = usersCreateDto.profileImageId;

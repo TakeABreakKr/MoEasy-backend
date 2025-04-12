@@ -1,4 +1,4 @@
-export interface DiscordProfileDto {
+export interface DiscordUserProfileDto {
   id: string;
   username: string;
   avatar: string;
