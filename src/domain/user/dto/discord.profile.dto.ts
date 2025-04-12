@@ -3,4 +3,5 @@ export interface DiscordUserProfileDto {
   username: string;
   avatar: string;
   email: string;
+  discriminator: string;
 }

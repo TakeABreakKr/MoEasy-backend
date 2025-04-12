@@ -62,8 +62,6 @@ export class FileController {
   @Public()
   @Get('download')
   @ApiCommonResponse()
-  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.FILE_NOT_FOUND })
   @ApiQuery({
     name: 'attachmentId',
     type: Number,

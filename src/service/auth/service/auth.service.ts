@@ -62,11 +62,13 @@ export class AuthService {
       accessToken: discordTokens.accessToken,
       refreshToken: discordTokens.refreshToken,
     });
+
     const profile: DiscordUserProfileDto = {
       id: discordUser.id,
       username: discordUser.username,
       avatar: discordUser.avatar,
       email: discordUser.email,
+      discriminator: discordUser.discriminator,
     };
     const user = await this.getUser(profile);
     const { accessToken, refreshToken }: TokenDto = this.createTokens(user);
@@ -99,17 +101,20 @@ export class AuthService {
       return user;
     }
 
-    let profileImageId: number = null;
+    let profileImageId: number;
 
-    if (profile.avatar) {
-      try {
+    try {
+      const defaultImageUrl = `https://cdn.discordapp.com/embed/avatars/${parseInt(profile.discriminator, 10) % 5}.png`;
+
+      if (profile.avatar) {
         const discordAvatarUrl =
           this.configService.get<string>('discord.cdnHost') + 'avatars/' + profile.id + '/' + profile.avatar;
-
         profileImageId = await this.fileService.uploadFromUrl(discordAvatarUrl);
-      } catch (e) {
-        throw new BadRequestException(ErrorMessageType.DISCORD_PROFILE_IMAGE_UPLOAD_FAILED);
+      } else {
+        profileImageId = await this.fileService.uploadFromUrl(defaultImageUrl);
       }
+    } catch (e) {
+      throw new BadRequestException(ErrorMessageType.DISCORD_PROFILE_IMAGE_UPLOAD_FAILED);
     }
 
     const userProfile: UsersCreateDto = {

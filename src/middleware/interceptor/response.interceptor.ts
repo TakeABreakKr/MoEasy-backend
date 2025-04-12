@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, HttpStatus, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpStatus, Injectable, NestInterceptor, StreamableFile } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CommonResponse } from '@root/middleware/common.response';
@@ -11,6 +11,9 @@ export class ResponseInterceptor implements NestInterceptor {
     const message = response.message || 'success';
     return next.handle().pipe(
       map((data) => {
+        if (data instanceof StreamableFile) {
+          return data;
+        }
         return new CommonResponse(statusCode, message, data);
       }),
     );

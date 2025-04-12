@@ -5,7 +5,7 @@ import { extname } from 'path';
 import { FileService } from '@file/service/file.service';
 import { AttachmentDao } from '@file/dao/attachment.dao.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { FileModeEnum } from '@enums/file.mode.enum';
+import { FileModeEnum, FileModeEnumType } from '@enums/file.mode.enum';
 import { Attachment } from '@file/entity/attachment.entity';
 import axios from 'axios';
 
@@ -96,7 +96,7 @@ export class S3FileService extends FileService {
       throw new BadRequestException(ErrorMessageType.FILE_NOT_FOUND);
     }
 
-    return this.getFile(attachment.path);
+    return this.getFile(attachment.type, attachment.path);
   }
 
   public async deleteAttachment(attachmentId: number): Promise<void> {
@@ -136,17 +136,27 @@ export class S3FileService extends FileService {
     return `https://s3.${region}.amazonaws.com/${urlBucketName}/${filename}`;
   }
 
-  private async getFile(path: string): Promise<StreamableFile | null> {
+  private async getFile(type: FileModeEnumType, path: string): Promise<StreamableFile | null> {
     if (!path) {
       return null;
     }
 
-    const downloadCommand = new GetObjectCommand({
-      Bucket: this.awsS3BucketName,
-      Key: path,
-    });
+    let content: Buffer | Uint8Array;
 
-    const file: Uint8Array = await (await this.s3Client.send(downloadCommand)).Body.transformToByteArray();
-    return new StreamableFile(file);
+    if (type == FileModeEnum.external) {
+      const response = await axios.get(path, { responseType: 'arraybuffer' });
+      content = response.data;
+    }
+
+    if (type == FileModeEnum.s3) {
+      const downloadCommand = new GetObjectCommand({
+        Bucket: this.awsS3BucketName,
+        Key: path,
+      });
+
+      content = await (await this.s3Client.send(downloadCommand)).Body.transformToByteArray();
+    }
+
+    return new StreamableFile(content);
   }
 }

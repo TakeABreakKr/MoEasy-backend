@@ -4,9 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import { FileService } from '@file/service/file.service';
 import { Attachment } from '@file/entity/attachment.entity';
 import { AttachmentDao } from '@file/dao/attachment.dao.interface';
-import { FileModeEnum } from '@enums/file.mode.enum';
+import { FileModeEnum, FileModeEnumType } from '@enums/file.mode.enum';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 @Injectable()
 export class LocalFileService extends FileService {
@@ -37,7 +37,7 @@ export class LocalFileService extends FileService {
       throw new BadRequestException(ErrorMessageType.FILE_NOT_FOUND);
     }
 
-    return this.getFile(attachment.path);
+    return this.getFile(attachment.type, attachment.path);
   }
 
   public async deleteAttachment(attachmentId: number): Promise<void> {
@@ -55,11 +55,27 @@ export class LocalFileService extends FileService {
     return path;
   }
 
-  private async getFile(thumbnailPath: string): Promise<StreamableFile | null> {
-    if (!thumbnailPath || !existsSync(thumbnailPath)) {
+  private async getFile(type: FileModeEnumType, thumbnailPath: string): Promise<StreamableFile | null> {
+    if (!thumbnailPath) {
       return null;
     }
-    return new StreamableFile(readFileSync(thumbnailPath));
+
+    let content: Buffer | Uint8Array;
+
+    if (type == FileModeEnum.external) {
+      const response: AxiosResponse = await axios.get(thumbnailPath, { responseType: 'arraybuffer' });
+      content = response.data;
+    }
+
+    if (type == FileModeEnum.local) {
+      if (!existsSync(thumbnailPath)) {
+        return null;
+      }
+
+      content = readFileSync(thumbnailPath);
+    }
+
+    return new StreamableFile(content);
   }
 
   public async uploadFromUrl(url: string): Promise<number> {
