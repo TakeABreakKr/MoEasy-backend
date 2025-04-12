@@ -59,6 +59,7 @@ export class FileController {
   async uploadAttachment(@UploadedFile() file: Express.Multer.File): Promise<number> {
     return this.fileService.uploadAttachment(file);
   }
+
   @Public()
   @Get('download')
   @ApiCommonResponse()
