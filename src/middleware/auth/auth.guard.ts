@@ -48,13 +48,12 @@ export default class AuthGuard implements CanActivate {
 
       return this.jwtService.verify(token, { secret: this.ACCESS_TOKEN_SECRET_KEY });
     } catch (error) {
-      switch (error.message) {
-        case 'INVALID_TOKEN':
-        case 'TOKEN_IS_ARRAY':
-        case 'NO_USER':
+      switch (error.name) {
+        case 'JsonWebTokenError':
+        case 'NotBeforeError':
           throw new HttpException(ErrorMessageType.NO_USER, HttpStatus.UNAUTHORIZED);
 
-        case 'EXPIRED_TOKEN':
+        case 'TokenExpiredError':
           throw new HttpException(ErrorMessageType.EXPIRED_TOKEN, HttpStatus.GONE);
 
         default:
