@@ -13,6 +13,8 @@ import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 import { AuthCallbackResponse } from '@service/auth/dto/response/auth.callback.response';
 import { RefreshTokenResponse } from '@service/auth/dto/response/refresh.token.response';
 import { FileService } from '@file/service/file.service';
+import { UsersCreateDto } from '@domain/user/dto/users.create.dto';
+import { DiscordUserProfileDto } from '@domain/user/dto/discord.profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -60,7 +62,7 @@ export class AuthService {
       accessToken: discordTokens.accessToken,
       refreshToken: discordTokens.refreshToken,
     });
-    const profile: DiscordProfileDto = {
+    const profile: DiscordUserProfileDto = {
       id: discordUser.id,
       username: discordUser.username,
       avatar: discordUser.avatar,
@@ -110,12 +112,18 @@ export class AuthService {
       }
     }
 
-    const profileWithImage: DiscordProfileDto = {
-      ...profile,
-      profileImageId,
+    const userProfile: UsersCreateDto = {
+      discordId: profile.id,
+      username: profile.username,
+      email: profile.email,
+      profileImageId: profileImageId,
+      explanation: '',
+      settings: {
+        allowNotificationYn: false,
+      },
     };
 
-    return this.usersComponent.createUsers(profileWithImage);
+    return this.usersComponent.createUsers(userProfile);
   }
 
   private createTokens(user: Users): TokenDto {

@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UsersDao } from '@domain/user/dao/users.dao.interface';
 import { Users } from '@domain/user/entity/users.entity';
-import { DiscordProfileDto } from '@service/auth/dto/discord.profile.dto';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
+import { UsersCreateDto } from '@domain/user/dto/users.create.dto';
 
 @Injectable()
 export class UsersComponentImpl implements UsersComponent {
@@ -12,7 +12,7 @@ export class UsersComponentImpl implements UsersComponent {
     return this.usersDao.findByDiscordId(discordId);
   }
 
-  public async createUsers(profile: DiscordProfileDto): Promise<Users> {
+  public async createUsers(profile: UsersCreateDto): Promise<Users> {
     return this.usersDao.createUsers(profile);
   }
 

@@ -28,7 +28,7 @@ import { ImageFileFilter } from '@root/utils/image.filter.utils';
 @UseGuards(AuthGuard)
 @ApiTags('file')
 @Controller('file')
-export class AttachmentController {
+export class FileController {
   constructor(@Inject('FileService') private readonly fileService: FileService) {}
 
   @Post('upload')
@@ -60,7 +60,6 @@ export class AttachmentController {
   }
 
   @Get('download')
-  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.FILE_NOT_FOUND })
