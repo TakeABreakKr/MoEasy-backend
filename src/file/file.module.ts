@@ -5,6 +5,7 @@ import { FileModeEnum, FileModeEnumType } from '@enums/file.mode.enum';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Attachment } from '@file/entity/attachment.entity';
 import { AttachmentDaoImpl } from '@file/dao/attachment.dao';
+import { AttachmentController } from '@file/controller/attachment.controller';
 
 @Global()
 @Module({})
@@ -25,7 +26,7 @@ export class FileModule {
     return {
       module: FileModule,
       imports: [TypeOrmModule.forFeature([Attachment])],
-
+      controllers: [AttachmentController],
       providers,
       exports: providers,
     };
