@@ -28,10 +28,10 @@ export class Activity extends BaseEntity {
   thumbnailId: number;
 
   @Column({
-    name: 'announcementImage_id',
-    nullable: false,
+    name: 'noticeImage_id',
+    nullable: true,
   })
-  announcementImageId: number;
+  noticeImageId: number;
 
   @Column({
     type: 'datetime',
@@ -50,8 +50,11 @@ export class Activity extends BaseEntity {
   })
   reminder: number;
 
-  @Column()
-  announcement: string;
+  @Column({
+    nullable: true,
+    length: 1000,
+  })
+  notice: string;
 
   @Column({
     type: 'tinyint',
@@ -109,7 +112,7 @@ export class Activity extends BaseEntity {
     activity.startDate = activityCreateVO.startDate;
     activity.endDate = activityCreateVO.endDate;
     activity.reminder = ActivityUtils.reminderListToMask(activityCreateVO.reminder);
-    activity.announcement = activityCreateVO.announcement;
+    activity.notice = activityCreateVO.notice;
     activity.onlineYn = activityCreateVO.onlineYn;
     activity.address = activityCreateVO.address;
     activity.detailAddress = activityCreateVO.detailAddress;
@@ -117,7 +120,7 @@ export class Activity extends BaseEntity {
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
     activity.onlineLink = activityCreateVO.onlineLink;
     activity.thumbnailId = activityCreateVO.thumbnailId;
-    activity.announcementImageId = activityCreateVO.announcementImageId;
+    activity.noticeImageId = activityCreateVO.noticeImageId;
     return activity;
   }
 
@@ -126,14 +129,14 @@ export class Activity extends BaseEntity {
     this.startDate = activityUpdateVO.startDate;
     this.endDate = activityUpdateVO.endDate;
     this.reminder = ActivityUtils.reminderListToMask(activityUpdateVO.reminder);
-    this.announcement = activityUpdateVO.announcement;
+    this.notice = activityUpdateVO.notice;
     this.onlineYn = activityUpdateVO.onlineYn;
     this.address = activityUpdateVO.address;
     this.detailAddress = activityUpdateVO.detailAddress;
     this.participantLimit = activityUpdateVO.participantLimit;
     this.onlineLink = activityUpdateVO.onlineLink;
     this.thumbnailId = activityUpdateVO.thumbnailId;
-    this.announcementImageId = activityUpdateVO.announcementImageId;
+    this.noticeImageId = activityUpdateVO.noticeImageId;
   }
 
   //only for test

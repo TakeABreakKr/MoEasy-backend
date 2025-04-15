@@ -48,16 +48,19 @@ export class ActivityServiceImpl implements ActivityService {
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
-    const announcementImageId = await this.fileService.uploadAttachment(req.announcementImage);
+    let noticeImageId: number;
+    if (req.noticeImage) {
+      noticeImageId = await this.fileService.uploadAttachment(req.noticeImage);
+    }
 
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
       thumbnailId: thumbnailId,
-      announcementImageId: announcementImageId,
+      noticeImageId: noticeImageId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
-      announcement: req.announcement,
+      notice: req?.notice,
       participantLimit: req.participantLimit,
       onlineLink: req?.onlineLink,
       address: req.address?.toAddress(),
@@ -92,16 +95,19 @@ export class ActivityServiceImpl implements ActivityService {
     }
 
     const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
-    const announcementImageId = await this.fileService.uploadAttachment(req.announcementImage);
+    let noticeImageId: number;
+    if (req.noticeImage) {
+      noticeImageId = await this.fileService.uploadAttachment(req.noticeImage);
+    }
 
     activity.update({
       name: req.name,
       thumbnailId: thumbnailId,
-      announcementImageId: announcementImageId,
+      noticeImageId: noticeImageId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
-      announcement: req.announcement,
+      notice: req?.notice,
       participantLimit: req.participantLimit,
       onlineLink: req?.onlineLink,
       address: req.address?.toAddress(),
@@ -173,9 +179,10 @@ export class ActivityServiceImpl implements ActivityService {
       onlineLink: activity.getOnlineLink(),
       participantCount: await this.participantComponent.getParticipantCount(activity.id),
       participantLimit: activity.participantLimit,
-      announcement: activity.announcement,
+      notice: activity.notice,
       members: memberDtos,
       isJoined: await this.participantComponent.existsParticipant(requesterId, activity.id),
+      noticeImageId: activity.noticeImageId,
     };
 
     if (!activity.onlineYn) {

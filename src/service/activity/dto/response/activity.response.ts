@@ -10,7 +10,7 @@ export class ActivityResponse {
   startDate: Date;
 
   @ApiProperty()
-  announcement: string;
+  notice: string;
 
   @ApiProperty()
   onlineYn: boolean;
@@ -23,6 +23,9 @@ export class ActivityResponse {
 
   @ApiProperty()
   thumbnailId: number;
+
+  @ApiProperty()
+  noticeImageId: number;
 
   @ApiProperty()
   participantLimit: number;

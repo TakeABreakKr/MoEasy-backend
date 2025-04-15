@@ -7,12 +7,12 @@ export interface ActivityCreateVO {
   startDate: Date;
   endDate: Date;
   reminder: ReminderEnumType[];
-  announcement: string;
+  notice?: string;
   onlineYn: boolean;
   address?: Address;
   detailAddress?: string;
   onlineLink?: string;
   participantLimit: number;
   thumbnailId: number;
-  announcementImageId: number;
+  noticeImageId?: number;
 }

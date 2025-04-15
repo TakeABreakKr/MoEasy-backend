@@ -34,8 +34,8 @@ export abstract class ActivityRequest {
     type: String,
     format: 'binary',
   })
-  @IsNotEmpty()
-  announcementImage: Express.Multer.File;
+  @IsOptional()
+  noticeImage: Express.Multer.File;
 
   @ApiProperty()
   @IsDate()
@@ -56,7 +56,7 @@ export abstract class ActivityRequest {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  announcement: string;
+  notice: string;
 
   @ApiProperty()
   @IsBoolean()
