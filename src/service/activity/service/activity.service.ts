@@ -288,10 +288,10 @@ export class ActivityServiceImpl implements ActivityService {
 
   @Transactional()
   public async joinActivity(requester: number, req: ActivityParticipantRequest): Promise<void> {
-    const activitie = await this.activityComponent.findByActivityId(req.activityId);
+    const activity = await this.activityComponent.findByActivityId(req.activityId);
 
     const participantCount = await this.participantComponent.getParticipantCount(req.activityId);
-    if (participantCount >= activitie.participantLimit) {
+    if (participantCount >= activity.participantLimit) {
       throw new BadRequestException(ErrorMessageType.PARTICIPANT_LIMIT_EXCEEDED);
     }
 

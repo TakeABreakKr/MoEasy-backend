@@ -65,7 +65,7 @@ export class ActivityController {
     @Token() user: AuthUser,
   ): Promise<string> {
     request.thumbnail = files.thumbnail[0];
-    request.noticeImages = files.noticeImages;
+    request.noticeImages = files?.noticeImages;
     return this.activityService.createActivity(request, user.id);
   }
 
@@ -101,7 +101,7 @@ export class ActivityController {
     @Token() user: AuthUser,
   ): Promise<void> {
     request.thumbnail = files.thumbnail[0];
-    request.noticeImages = files.noticeImages;
+    request.noticeImages = files?.noticeImages;
     await this.activityService.updateActivity(request, user.id);
   }
 
