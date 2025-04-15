@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
 import { ActivityService } from '@service/activity/service/activity.service.interface';
 import { ActivityCreateRequest } from '@service/activity/dto/request/activity.create.request';
 import { ActivityUpdateRequest } from '@service/activity/dto/request/activity.update.request';
@@ -66,12 +66,7 @@ export class ActivityServiceImpl implements ActivityService {
       onlineYn: req.onlineYn,
     });
 
-    if (req.noticeImages?.length > 0) {
-      for (const image of req.noticeImages.slice(0, 3)) {
-        const attachmentId = await this.fileService.uploadAttachment(image);
-        await this.activityNoticeImageComponent.create(activity.id, attachmentId);
-      }
-    }
+    await this.processActivityNoticeImages(activity.id, req.noticeImages);
 
     const participants: Participant[] = req.participants.map((participant) => {
       return Participant.create({
@@ -114,12 +109,7 @@ export class ActivityServiceImpl implements ActivityService {
       onlineYn: req.onlineYn,
     });
 
-    if (req.noticeImages?.length > 0) {
-      for (const image of req.noticeImages.slice(0, 3)) {
-        const attachmentId = await this.fileService.uploadAttachment(image);
-        await this.activityNoticeImageComponent.create(activity.id, attachmentId);
-      }
-    }
+    await this.processActivityNoticeImages(activity.id, req.noticeImages);
 
     const currentParticipants: number[] = (await this.participantComponent.findByActivityId(req.activityId)).map(
       (participant) => participant.userId,
@@ -146,6 +136,19 @@ export class ActivityServiceImpl implements ActivityService {
     await this.notificationComponent.addNotifications(content, userIdList);
 
     await this.activityComponent.update(activity);
+  }
+
+  private async processActivityNoticeImages(activityId: number, noticeImages?: Express.Multer.File[]): Promise<void> {
+    if (!noticeImages?.length) return;
+
+    for (const image of noticeImages.slice(0, 3)) {
+      try {
+        const attachmentId = await this.fileService.uploadAttachment(image);
+        await this.activityNoticeImageComponent.create(activityId, attachmentId);
+      } catch (error) {
+        throw new BadRequestException(ErrorMessageType.ACTIVITY_NOTICE_IMAGE_UPLOAD_FAILED);
+      }
+    }
   }
 
   public async getActivity(activityId: number, requesterId: number): Promise<ActivityResponse> {
@@ -289,13 +292,21 @@ export class ActivityServiceImpl implements ActivityService {
   @Transactional()
   public async joinActivity(requester: number, req: ActivityParticipantRequest): Promise<void> {
     const activity = await this.activityComponent.findByActivityId(req.activityId);
+    if (!activity) throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
 
-    const participantCount = await this.participantComponent.getParticipantCount(req.activityId);
-    if (participantCount >= activity.participantLimit) {
-      throw new BadRequestException(ErrorMessageType.PARTICIPANT_LIMIT_EXCEEDED);
+    try {
+      const participantCount = await this.participantComponent.getParticipantCount(req.activityId);
+      if (participantCount >= activity.participantLimit) {
+        throw new BadRequestException(ErrorMessageType.PARTICIPANT_LIMIT_EXCEEDED);
+      }
+
+      await this.participantComponent.create(req.activityId, requester);
+    } catch (error) {
+      if (error.message?.toLowerCase().includes('lock')) {
+        throw new ConflictException(ErrorMessageType.JOIN_CONCURRENT_ERROR);
+      }
+      throw new ConflictException(ErrorMessageType.JOIN_OPERATION_ERROR);
     }
-
-    await this.participantComponent.create(req.activityId, requester);
   }
 
   @Transactional()

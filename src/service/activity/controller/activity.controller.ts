@@ -59,12 +59,12 @@ export class ActivityController {
     @Body() request: ActivityCreateRequest,
     @UploadedFiles()
     files: {
-      thumbnail: Express.Multer.File[];
+      thumbnail?: Express.Multer.File[];
       noticeImages?: Express.Multer.File[];
     },
     @Token() user: AuthUser,
   ): Promise<string> {
-    request.thumbnail = files.thumbnail[0];
+    request.thumbnail = files?.thumbnail[0];
     request.noticeImages = files?.noticeImages;
     return this.activityService.createActivity(request, user.id);
   }
@@ -95,12 +95,12 @@ export class ActivityController {
     @Body() request: ActivityUpdateRequest,
     @UploadedFiles()
     files: {
-      thumbnail: Express.Multer.File[];
+      thumbnail?: Express.Multer.File[];
       noticeImages?: Express.Multer.File[];
     },
     @Token() user: AuthUser,
   ): Promise<void> {
-    request.thumbnail = files.thumbnail[0];
+    request.thumbnail = files?.thumbnail[0];
     request.noticeImages = files?.noticeImages;
     await this.activityService.updateActivity(request, user.id);
   }
