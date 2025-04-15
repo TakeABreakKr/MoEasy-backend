@@ -95,6 +95,11 @@ export class MemberServiceImpl implements MemberService {
 
     const member = await this.memberComponent.findByUsersAndMeetingId(req.userId, meetingId);
     if (member.authority === AuthorityEnum.MEMBER && req.isManager) {
+      const managerCount = await this.memberComponent.countByMeetingIdAndAuthority(meetingId, AuthorityEnum.MANAGER);
+
+      if (managerCount >= 10) {
+        throw new BadRequestException(ErrorMessageType.MAX_MANAGER_COUNT_EXCEEDED);
+      }
       await this.memberComponent.updateAuthority(member, AuthorityEnum.MANAGER);
     }
   }
@@ -111,7 +116,7 @@ export class MemberServiceImpl implements MemberService {
   }
 
   @Transactional()
-  public async join(requesterId: number, req: MemberJoinRequest) {
+  public async join(requesterId: number, req: MemberJoinRequest): Promise<void> {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     const meeting = await this.meetingComponent.findByMeetingId(meetingId);
     if (meeting.canJoin) throw new BadRequestException(ErrorMessageType.JOIN_REQUEST_DISABLED);

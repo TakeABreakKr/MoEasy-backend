@@ -2,8 +2,10 @@ export const ErrorMessageType = {
   NOT_FOUND_MEETING: '해당 모임을 찾을 수 없습니다.',
   NOT_FOUND_ACTIVITY: '해당 일정을 찾을 수 없습니다.',
   NOT_FOUND_MEMBER: '해당 멤버를 찾을 수 없습니다.',
-  NOT_FOUND_PARTICIPANT: '일정 참여자가 아닙니다.',
+  NOT_FOUND_PARTICIPANT: '활동 참여자가 아닙니다.',
   NOT_EXIST_REQUESTER: '존재하지 않는 요청자입니다.',
+  JOIN_CONCURRENT_ERROR: '동시에 여러 요청이 처리되어 활동 참여에 실패했습니다.',
+  JOIN_OPERATION_ERROR: '활동 참여 중 오류가 발생했습니다.',
 
   INVALID_TOKEN: '토큰이 전송되지 않았거나 잘못 되었습니다.',
   EXPIRED_TOKEN: '토큰이 만료되었습니다.',
@@ -31,6 +33,8 @@ export const ErrorMessageType = {
   LIKE_OPERATION_ERROR: '좋아요 처리 중 오류가 발생했습니다.',
 
   MEETING_NOT_EMPTY: '모임에 멤버가 존재하여 삭제할 수 없습니다.',
+  PARTICIPANT_LIMIT_EXCEEDED: '참여 인원 제한을 초과했습니다.',
+  MAX_MANAGER_COUNT_EXCEEDED: '매니저는 최대 10명까지 등록할 수 있습니다.',
   FILE_NOT_FOUND: '파일을 찾을 수 없습니다.',
 
   INVALID_URL_FORMAT: '잘못된 URL 형식입니다.',
@@ -38,6 +42,7 @@ export const ErrorMessageType = {
   FAILED_TO_FETCH_URL_HEADER: 'URL로부터 파일 정보를 가져올 수 없습니다.',
   FILE_UPLOAD_FAILED: '파일 업로드에 실패했습니다.',
   INVALID_FILE_NAME: '잘못된 파일 이름입니다.',
+  ACTIVITY_NOTICE_IMAGE_UPLOAD_FAILED: '활동안내 이미지 등록에 실패했습니다.',
 } as const;
 
 export type ErrorMessageEnumType = (typeof ErrorMessageType)[keyof typeof ErrorMessageType];

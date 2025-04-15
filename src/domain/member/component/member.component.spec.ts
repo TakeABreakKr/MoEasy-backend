@@ -30,6 +30,10 @@ class MockMemberDao implements MemberDao {
     this.mockMembers.push(...members);
   }
 
+  async countByMeetingIdAndAuthority(meetingId: number, authority: AuthorityEnumType): Promise<number> {
+    return this.mockMembers.filter((member) => member.meetingId === meetingId && member.authority === authority).length;
+  }
+
   async findByMeetingId(meetingId: number): Promise<Member[]> {
     return this.mockMembers.filter((member) => member.meetingId === meetingId);
   }

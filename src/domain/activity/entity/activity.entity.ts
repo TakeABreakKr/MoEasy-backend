@@ -8,6 +8,7 @@ import { ActivityUpdateVO } from '@domain/activity/vo/activity.update.vo';
 import { ActivityUtils } from '@utils/activity.utils';
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Attachment } from '@file/entity/attachment.entity';
+import { ActivityNoticeImage } from '@domain/activity/entity/activity.notice.image.entity';
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -44,8 +45,11 @@ export class Activity extends BaseEntity {
   })
   reminder: number;
 
-  @Column()
-  announcement: string;
+  @Column({
+    nullable: true,
+    length: 1000,
+  })
+  notice: string;
 
   @Column({
     type: 'tinyint',
@@ -85,6 +89,9 @@ export class Activity extends BaseEntity {
   @JoinColumn({ name: 'thumbnail_id' })
   thumbnail: Promise<Attachment>;
 
+  @OneToMany(() => ActivityNoticeImage, (activityNoticeImage) => activityNoticeImage.activity)
+  noticeImages: ActivityNoticeImage[];
+
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
   }
@@ -99,7 +106,7 @@ export class Activity extends BaseEntity {
     activity.startDate = activityCreateVO.startDate;
     activity.endDate = activityCreateVO.endDate;
     activity.reminder = ActivityUtils.reminderListToMask(activityCreateVO.reminder);
-    activity.announcement = activityCreateVO.announcement;
+    activity.notice = activityCreateVO.notice;
     activity.onlineYn = activityCreateVO.onlineYn;
     activity.address = activityCreateVO.address;
     activity.detailAddress = activityCreateVO.detailAddress;
@@ -115,7 +122,7 @@ export class Activity extends BaseEntity {
     this.startDate = activityUpdateVO.startDate;
     this.endDate = activityUpdateVO.endDate;
     this.reminder = ActivityUtils.reminderListToMask(activityUpdateVO.reminder);
-    this.announcement = activityUpdateVO.announcement;
+    this.notice = activityUpdateVO.notice;
     this.onlineYn = activityUpdateVO.onlineYn;
     this.address = activityUpdateVO.address;
     this.detailAddress = activityUpdateVO.detailAddress;

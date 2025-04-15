@@ -2,6 +2,7 @@ import { Participant } from '@domain/activity/entity/participant.entity';
 import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 export interface ParticipantDao {
+  create(activityId: number, userId: number): Promise<Participant>;
   saveAll(participants: Participant[]): Promise<void>;
   findByUserIdAndActivityId(userId: number, activityId: number): Promise<Participant | null>;
   findByActivityId(activityId: number): Promise<Participant[]>;
@@ -10,4 +11,5 @@ export interface ParticipantDao {
   deleteAll(userIds: number[], activityId: number): Promise<void>;
   getHomeActivityParticipants(activityId: number): Promise<ActivityParticipantDto[]>;
   getParticipantCount(activityId: number): Promise<number>;
+  existsParticipant(userId: number, activityId: number): Promise<boolean>;
 }

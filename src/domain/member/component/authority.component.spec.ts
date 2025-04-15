@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MemberDao } from '@domain/member/dao/member.dao.interface';
-import { AuthorityEnum } from '@enums/authority.enum';
+import { AuthorityEnum, AuthorityEnumType } from '@enums/authority.enum';
 import { Member } from '@domain/member/entity/member.entity';
 import { AuthorityComponent } from '@domain/member/component/authority.component.interface';
 import { AuthorityComponentImpl } from '@domain/member/component/authority.component';
@@ -67,6 +67,11 @@ class MockMemberDao implements MemberDao {
 
   async getMostPopularMeetingIds(popularMeetingCount: number): Promise<number[]> {
     return this.mockMember.slice(0, popularMeetingCount).map((member: Member) => member.meetingId);
+  }
+
+  async countByMeetingIdAndAuthority(meetingId: number, authority: AuthorityEnumType): Promise<number> {
+    return this.mockMember.filter((member: Member) => member.meetingId === meetingId && member.authority === authority)
+      .length;
   }
 }
 

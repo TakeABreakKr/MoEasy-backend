@@ -2,8 +2,10 @@ import { Participant } from '@domain/activity/entity/participant.entity';
 import { ActivityParticipantDto } from '@domain/activity/dto/activity.participant.dto';
 
 export interface ParticipantComponent {
+  create(activityId: number, userId: number): Promise<Participant>;
   saveAll(participants: Participant[]): Promise<void>;
   findByUserIdAndActivityId(userId: number, activityId: number): Promise<Participant | null>;
+  existsParticipant(userId: number, activityId: number): Promise<boolean>;
   findByActivityId(activityId: number): Promise<Participant[]>;
   findAllByUserId(userId: number): Promise<Participant[]>;
   getParticipantCount(activityId: number): Promise<number>;

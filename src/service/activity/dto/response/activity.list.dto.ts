@@ -26,6 +26,9 @@ export class ActivityListDto {
   @ApiProperty()
   onlineLink?: string;
 
+  @ApiProperty()
+  isJoined: boolean;
+
   @ApiProperty({
     enum: RegionEnum,
     example: RegionEnum.SEOCHO,

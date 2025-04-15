@@ -8,12 +8,20 @@ import { ActivityParticipantDto } from '@domain/activity/dto/activity.participan
 export class ParticipantComponentImpl implements ParticipantComponent {
   constructor(@Inject('ParticipantDao') private participantDao: ParticipantDao) {}
 
+  public async create(activityId: number, userId: number): Promise<Participant> {
+    return this.participantDao.create(activityId, userId);
+  }
+
   public async saveAll(participants: Participant[]): Promise<void> {
     this.participantDao.saveAll(participants);
   }
 
   public async findByUserIdAndActivityId(userId: number, activityId: number): Promise<Participant> {
     return this.participantDao.findByUserIdAndActivityId(userId, activityId);
+  }
+
+  public async existsParticipant(userId: number, activityId: number): Promise<boolean> {
+    return this.participantDao.existsParticipant(userId, activityId);
   }
 
   public async findByActivityId(activityId: number): Promise<Participant[]> {

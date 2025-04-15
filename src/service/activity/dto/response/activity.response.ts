@@ -10,7 +10,7 @@ export class ActivityResponse {
   startDate: Date;
 
   @ApiProperty()
-  announcement: string;
+  notice: string;
 
   @ApiProperty()
   onlineYn: boolean;
@@ -24,6 +24,9 @@ export class ActivityResponse {
   @ApiProperty()
   thumbnailId: number;
 
+  @ApiProperty({ type: [Number] })
+  noticeImageIds: number[];
+
   @ApiProperty()
   participantLimit: number;
 
@@ -32,6 +35,9 @@ export class ActivityResponse {
 
   @ApiProperty()
   onlineLink?: string;
+
+  @ApiProperty()
+  isJoined: boolean;
 
   @ApiProperty({
     type: ActivityMemberDto,

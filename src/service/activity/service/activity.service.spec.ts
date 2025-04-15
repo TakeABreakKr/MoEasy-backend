@@ -171,6 +171,10 @@ class MockMemberComponent implements MemberComponent {
     return member;
   }
 
+  async countByMeetingIdAndAuthority(meetingId: number, authority: AuthorityEnumType): Promise<number> {
+    return this.mockMembers.filter((member) => member.meetingId === meetingId && member.authority === authority).length;
+  }
+
   async updateAuthority(member: Member, authority: AuthorityEnumType): Promise<void> {
     componentAccessLog.push(MockMemberComponent.updateAuthorityLog);
 
@@ -244,7 +248,7 @@ class MockActivityComponent implements ActivityComponent {
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
-      announcement: '공지사항1',
+      notice: '안내사항1',
       onlineYn: true,
       address: Address.createForTest(),
       detailAddress: '평택',
@@ -257,7 +261,7 @@ class MockActivityComponent implements ActivityComponent {
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
-      announcement: '공지사항4',
+      notice: '안내사항4',
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '인천',
@@ -267,10 +271,11 @@ class MockActivityComponent implements ActivityComponent {
       meetingId: 'C8',
       name: 'moeasy2',
       thumbnailId: 50,
+
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
-      announcement: '공지사항2',
+      notice: '안내사항2',
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '수원',
@@ -283,7 +288,7 @@ class MockActivityComponent implements ActivityComponent {
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
-      announcement: '공지사항3',
+      notice: '안내사항3',
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '시흥',
@@ -412,6 +417,19 @@ class MockParticipantComponent implements ParticipantComponent {
   async getParticipantCount(activityId: number): Promise<number> {
     return this.mockParticipants.filter((participant) => participant.activityId === activityId).length;
   }
+
+  async create(activityId: number, userId: number): Promise<Participant> {
+    const participant = Participant.create({ userId, activityId });
+    this.mockParticipants.push(participant);
+
+    return participant;
+  }
+
+  async existsParticipant(userId: number, activityId: number): Promise<boolean> {
+    return !!this.mockParticipants.find(
+      (participant: Participant) => participant.userId === userId && participant.activityId === activityId,
+    );
+  }
 }
 
 jest.mock('typeorm-transactional', () => ({ Transactional: () => () => {} }));
@@ -466,12 +484,12 @@ describe('ActivityServiceTest', () => {
       const activityCreateRequest = {
         meetingId: '64',
         name: 'moeasy1',
-        explanation: '모임설명1',
         thumbnail: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
-        announcement: '공지사항1',
+        notice: '안내사항1',
+        noticeImage: null,
         onlineYn: true,
         address: Address.createTestDto(),
         detailAddress: '평택',
@@ -500,12 +518,12 @@ describe('ActivityServiceTest', () => {
         activityId: activityId,
         meetingId: 'C8',
         name: 'moeasy3 수정',
-        explanation: '모임설명3 수정',
         thumbnail: null,
+        noticeImage: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
-        announcement: '공지사항3 수정',
+        notice: '안내사항3 수정',
         onlineYn: false,
         address: Address.createTestDto(),
         detailAddress: '시흥에서 수정',
@@ -524,7 +542,7 @@ describe('ActivityServiceTest', () => {
       expect(result.id).toBe(300);
       expect(result.meetingId).toBe(200);
       expect(result.name).toBe('moeasy3 수정');
-      expect(result.announcement).toBe('공지사항3 수정');
+      expect(result.notice).toBe('안내사항3 수정');
       expect(result.onlineYn).toBe(false);
       expect(result.detailAddress).toBe('시흥에서 수정');
       expect(participant).toEqual([20, 10]);
@@ -547,12 +565,12 @@ describe('ActivityServiceTest', () => {
         activityId: 999,
         meetingId: '64',
         name: 'moeasy1 수정',
-        explanation: '모임설명1 수정',
         thumbnail: null,
+        noticeImage: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
-        announcement: '공지사항1 수정',
+        notice: '안내사항1 수정',
         onlineYn: false,
         address: Address.createTestDto(),
         detailAddress: '평택에서 수정',
@@ -571,17 +589,18 @@ describe('ActivityServiceTest', () => {
   describe('getActivityTest', () => {
     it('getActivityTest - SUCCESS', async () => {
       const activityId = 200;
-      const result = await activityService.getActivity(activityId);
+      const requesterId = 200;
+      const result = await activityService.getActivity(activityId, requesterId);
 
       expect(result.name).toBe('moeasy2');
-      expect(result.announcement).toBe('공지사항2');
+      expect(result.notice).toBe('안내사항2');
       expect(result.onlineYn).toBe(false);
 
       expect(componentAccessLog).toEqual([MockActivityComponent.findByActivityIdLog]);
     });
 
     it('getActivityTest - NOT_FOUND_ACTIVITY', async () => {
-      await expect(activityService.getActivity(999)).rejects.toThrow(ErrorMessageType.NOT_FOUND_ACTIVITY);
+      await expect(activityService.getActivity(999, 999)).rejects.toThrow(ErrorMessageType.NOT_FOUND_ACTIVITY);
     });
   });
 
@@ -636,7 +655,7 @@ describe('ActivityServiceTest', () => {
       expect(beforeWithdraw).toBeDefined();
 
       const req = { meetingId: 'C8', activityId: activityId };
-      await activityService.withdraw(200, req);
+      await activityService.cancelActivity(200, req);
 
       const afterWithdraw = await participantComponent.findByUserIdAndActivityId(usersId, activityId);
       expect(afterWithdraw).toBeNull();
@@ -652,12 +671,12 @@ describe('ActivityServiceTest', () => {
 
     it('withdrawTest - UNAUTHORIZED_ACCESS  ', async () => {
       const req = { meetingId: 'C8', activityId: 200 };
-      await expect(activityService.withdraw(30, req)).rejects.toThrow(ErrorMessageType.UNAUTHORIZED_ACCESS);
+      await expect(activityService.cancelActivity(30, req)).rejects.toThrow(ErrorMessageType.UNAUTHORIZED_ACCESS);
     });
 
     it('withdrawTest - NOT_FOUND_PARTICIPANT', async () => {
       const req = { meetingId: 'C8', activityId: 999 };
-      await expect(activityService.withdraw(200, req)).rejects.toThrow(ErrorMessageType.NOT_FOUND_PARTICIPANT);
+      await expect(activityService.cancelActivity(200, req)).rejects.toThrow(ErrorMessageType.NOT_FOUND_PARTICIPANT);
     });
   });
 
@@ -667,7 +686,7 @@ describe('ActivityServiceTest', () => {
       const beforeDelete = await activityComponent.findByActivityId(100);
       expect(beforeDelete).toBeDefined();
 
-      await activityService.delete(100, req);
+      await activityService.deleteActivity(100, req);
 
       const afterDelete = await activityComponent.findByActivityId(100);
       expect(afterDelete).toBeNull();

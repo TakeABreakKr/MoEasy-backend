@@ -9,9 +9,12 @@ import { ParticipantComponentImpl } from '@domain/activity/component/participant
 import { UsersComponentImpl } from '@domain/user/component/users.component';
 import { UsersDaoImpl } from '@domain/user/dao/users.dao';
 import { Users } from '@domain/user/entity/users.entity';
+import { ActivityNoticeImageDaoImpl } from '@domain/activity/dao/activity.notice.image.dao';
+import { ActivityNoticeImageComponentImpl } from '@domain/activity/component/activity.notice.image.component';
+import { ActivityNoticeImage } from '@domain/activity/entity/activity.notice.image.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Activity, Participant, Users])],
+  imports: [TypeOrmModule.forFeature([Activity, Participant, Users, ActivityNoticeImage])],
   providers: [
     { provide: 'ActivityDao', useClass: ActivityDaoImpl },
     { provide: 'ParticipantDao', useClass: ParticipantDaoImpl },
@@ -19,7 +22,9 @@ import { Users } from '@domain/user/entity/users.entity';
     { provide: 'ParticipantComponent', useClass: ParticipantComponentImpl },
     { provide: 'UsersComponent', useClass: UsersComponentImpl },
     { provide: 'UsersDao', useClass: UsersDaoImpl },
+    { provide: 'ActivityNoticeImageDao', useClass: ActivityNoticeImageDaoImpl },
+    { provide: 'ActivityNoticeImageComponent', useClass: ActivityNoticeImageComponentImpl },
   ],
-  exports: ['ActivityComponent', 'ParticipantComponent'],
+  exports: ['ActivityComponent', 'ParticipantComponent', 'ActivityNoticeImageComponent'],
 })
 export class ActivityModule {}

@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
 import { ActivityService } from '@service/activity/service/activity.service.interface';
 import { ActivityCreateRequest } from '@service/activity/dto/request/activity.create.request';
 import { ActivityUpdateRequest } from '@service/activity/dto/request/activity.update.request';
@@ -14,8 +14,7 @@ import { AuthorityComponent } from '@domain/member/component/authority.component
 import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { Participant } from '@domain/activity/entity/participant.entity';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
-import { AuthorityEnum } from '@enums/authority.enum';
-import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
+import { ActivityParticipantRequest } from '@service/activity/dto/request/activity.participant.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 import { Transactional } from 'typeorm-transactional';
 import { ActivityListMeetingListDto } from '@service/activity/dto/response/activity.list.meeting.list.dto';
@@ -29,6 +28,7 @@ import { UsersComponent } from '@domain/user/component/users.component.interface
 import { ActivityMemberDto } from '@service/activity/dto/response/activity.member.dto';
 import { Member } from '@domain/member/entity/member.entity';
 import { FileService } from '@root/file/service/file.service';
+import { ActivityNoticeImageComponent } from '@domain/activity/component/activity.notice.image.component.interface';
 
 @Injectable()
 export class ActivityServiceImpl implements ActivityService {
@@ -41,6 +41,7 @@ export class ActivityServiceImpl implements ActivityService {
     @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
     @Inject('FileService') private fileService: FileService,
+    @Inject('ActivityNoticeImageComponent') private activityNoticeImageComponent: ActivityNoticeImageComponent,
   ) {}
 
   @Transactional()
@@ -49,13 +50,14 @@ export class ActivityServiceImpl implements ActivityService {
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
+
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
       thumbnailId: thumbnailId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
-      announcement: req.announcement,
+      notice: req?.notice,
       participantLimit: req.participantLimit,
       onlineLink: req?.onlineLink,
       address: req.address?.toAddress(),
@@ -63,6 +65,8 @@ export class ActivityServiceImpl implements ActivityService {
       meetingId: req.meetingId,
       onlineYn: req.onlineYn,
     });
+
+    await this.processActivityNoticeImages(activity.id, req.noticeImages);
 
     const participants: Participant[] = req.participants.map((participant) => {
       return Participant.create({
@@ -90,19 +94,22 @@ export class ActivityServiceImpl implements ActivityService {
     }
 
     const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
+
     activity.update({
       name: req.name,
       thumbnailId: thumbnailId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
-      announcement: req.announcement,
+      notice: req?.notice,
       participantLimit: req.participantLimit,
       onlineLink: req?.onlineLink,
       address: req.address?.toAddress(),
       detailAddress: req?.detailAddress,
       onlineYn: req.onlineYn,
     });
+
+    await this.processActivityNoticeImages(activity.id, req.noticeImages);
 
     const currentParticipants: number[] = (await this.participantComponent.findByActivityId(req.activityId)).map(
       (participant) => participant.userId,
@@ -131,7 +138,20 @@ export class ActivityServiceImpl implements ActivityService {
     await this.activityComponent.update(activity);
   }
 
-  public async getActivity(activityId: number): Promise<ActivityResponse> {
+  private async processActivityNoticeImages(activityId: number, noticeImages?: Express.Multer.File[]): Promise<void> {
+    if (!noticeImages?.length) return;
+
+    for (const image of noticeImages.slice(0, 3)) {
+      try {
+        const attachmentId = await this.fileService.uploadAttachment(image);
+        await this.activityNoticeImageComponent.create(activityId, attachmentId);
+      } catch (error) {
+        throw new BadRequestException(ErrorMessageType.ACTIVITY_NOTICE_IMAGE_UPLOAD_FAILED);
+      }
+    }
+  }
+
+  public async getActivity(activityId: number, requesterId: number): Promise<ActivityResponse> {
     const activity: Activity | null = await this.activityComponent.findByActivityId(activityId);
     if (!activity) throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
 
@@ -159,6 +179,9 @@ export class ActivityServiceImpl implements ActivityService {
       };
     });
 
+    const noticeImages = await this.activityNoticeImageComponent.findByActivityId(activity.id);
+    const noticeImageIds = noticeImages.length > 0 ? noticeImages.map((image) => image.attachmentId) : [];
+
     const baseInfo = {
       activityId: activity.id,
       name: activity.name,
@@ -168,8 +191,10 @@ export class ActivityServiceImpl implements ActivityService {
       onlineLink: activity.getOnlineLink(),
       participantCount: await this.participantComponent.getParticipantCount(activity.id),
       participantLimit: activity.participantLimit,
-      announcement: activity.announcement,
+      notice: activity.notice,
       members: memberDtos,
+      isJoined: await this.participantComponent.existsParticipant(requesterId, activity.id),
+      noticeImageIds: noticeImageIds,
     };
 
     if (!activity.onlineYn) {
@@ -231,6 +256,7 @@ export class ActivityServiceImpl implements ActivityService {
           onlineLink: activity.getOnlineLink(),
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,
+          isJoined: await this.participantComponent.existsParticipant(requesterId, activity.id),
           meetingId: MeetingUtils.transformMeetingIdToString(activity.meetingId),
         };
 
@@ -264,12 +290,30 @@ export class ActivityServiceImpl implements ActivityService {
   }
 
   @Transactional()
-  public async withdraw(requesterId: number, req: ActivityWithdrawRequest): Promise<void> {
-    const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
-    const requester = await this.memberComponent.findByUsersAndMeetingId(requesterId, meetingId);
-    if (requester.authority === AuthorityEnum.OWNER) {
-      throw new BadRequestException(ErrorMessageType.UNAUTHORIZED_ACCESS);
+  public async joinActivity(requester: number, req: ActivityParticipantRequest): Promise<void> {
+    const activity = await this.activityComponent.findByActivityId(req.activityId);
+    if (!activity) throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
+
+    try {
+      const participantCount = await this.participantComponent.getParticipantCount(req.activityId);
+      if (participantCount >= activity.participantLimit) {
+        throw new BadRequestException(ErrorMessageType.PARTICIPANT_LIMIT_EXCEEDED);
+      }
+
+      await this.participantComponent.create(req.activityId, requester);
+    } catch (error) {
+      if (error.message?.toLowerCase().includes('lock')) {
+        throw new ConflictException(ErrorMessageType.JOIN_CONCURRENT_ERROR);
+      }
+      throw new ConflictException(ErrorMessageType.JOIN_OPERATION_ERROR);
     }
+  }
+
+  @Transactional()
+  public async cancelActivity(requesterId: number, req: ActivityParticipantRequest): Promise<void> {
+    const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+
+    await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const participant: Participant | null = await this.participantComponent.findByUserIdAndActivityId(
       requesterId,
@@ -283,10 +327,24 @@ export class ActivityServiceImpl implements ActivityService {
   }
 
   @Transactional()
-  public async delete(requesterId: number, req: ActivityDeleteRequest): Promise<void> {
+  public async deleteActivity(requesterId: number, req: ActivityDeleteRequest): Promise<void> {
     const meetingId = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
+
+    const activity: Activity | null = await this.activityComponent.findByActivityId(req.activityId);
+    if (!activity) {
+      throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
+    }
 
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
     await this.activityComponent.delete(req.activityId);
+
+    const participants: Participant[] = await this.participantComponent.findByActivityId(req.activityId);
+    if (!participants.length) {
+      return;
+    }
+
+    const content = activity.name + ' 일정이 삭제되었습니다.';
+    const userIdList: number[] = participants.map((participant) => participant.userId);
+    await this.notificationComponent.addNotifications(content, userIdList);
   }
 }

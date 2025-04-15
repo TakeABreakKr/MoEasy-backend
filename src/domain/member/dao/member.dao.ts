@@ -16,6 +16,10 @@ export class MemberDaoImpl implements MemberDao {
     await this.memberRepository.save(members);
   }
 
+  async countByMeetingIdAndAuthority(meetingId: number, authority: AuthorityEnumType): Promise<number> {
+    return this.memberRepository.countBy({ meetingId, authority });
+  }
+
   async findByUsersAndMeetingId(userId: number, meetingId: number): Promise<Member | null> {
     return this.memberRepository.findOneBy({ userId, meetingId });
   }

@@ -7,7 +7,7 @@ export interface ActivityUpdateVO {
   startDate: Date;
   endDate: Date;
   reminder: ReminderEnumType[];
-  announcement: string;
+  notice?: string;
   onlineYn: boolean;
   onlineLink?: string;
   address?: Address;

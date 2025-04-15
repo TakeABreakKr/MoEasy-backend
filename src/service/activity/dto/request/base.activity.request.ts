@@ -30,6 +30,17 @@ export abstract class ActivityRequest {
   @IsNotEmpty()
   thumbnail: Express.Multer.File;
 
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @IsOptional()
+  @ArrayMaxSize(3)
+  noticeImages?: Express.Multer.File[];
+
   @ApiProperty()
   @IsDate()
   @IsNotEmpty()
@@ -49,7 +60,7 @@ export abstract class ActivityRequest {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  announcement: string;
+  notice: string;
 
   @ApiProperty()
   @IsBoolean()

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -19,11 +19,11 @@ import { ActivityUpdateRequest } from '@service/activity/dto/request/activity.up
 import { OrderingOptionEnum, OrderingOptionEnumType } from '@enums/ordering.option.enum';
 import { ActivityStatusEnum, ActivityStatusEnumType } from '@enums/activity.status.enum';
 import { ActivityResponse } from '@service/activity/dto/response/activity.response';
-import { ActivityWithdrawRequest } from '@service/activity/dto/request/activity.withdraw.request';
+import { ActivityParticipantRequest } from '@service/activity/dto/request/activity.participant.request';
 import { ActivityDeleteRequest } from '@service/activity/dto/request/activity.delete.request';
 import AuthGuard from '@root/middleware/auth/auth.guard';
 import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ImageFileFilter } from '@root/utils/image.filter.utils';
 
 @UseGuards(AuthGuard)
@@ -34,44 +34,74 @@ export class ActivityController {
 
   @Post('create')
   @UseInterceptors(
-    FileInterceptor('thumbnail', {
-      limits: {
-        fileSize: 5 * 1024 * 1024,
+    FileFieldsInterceptor(
+      [
+        { name: 'thumbnail', maxCount: 1 },
+        { name: 'noticeImages', maxCount: 3 },
+      ],
+      {
+        limits: {
+          fileSize: 5 * 1024 * 1024,
+        },
+        fileFilter: ImageFileFilter.filter,
       },
-      fileFilter: ImageFileFilter.filter,
-    }),
+    ),
   )
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  @ApiConsumes('application/json')
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: ActivityCreateRequest,
     description: 'info for creating a new activity.',
   })
-  async createActivity(@Body() request: ActivityCreateRequest, @Token() user: AuthUser): Promise<string> {
+  async createActivity(
+    @Body() request: ActivityCreateRequest,
+    @UploadedFiles()
+    files: {
+      thumbnail?: Express.Multer.File[];
+      noticeImages?: Express.Multer.File[];
+    },
+    @Token() user: AuthUser,
+  ): Promise<string> {
+    request.thumbnail = files?.thumbnail[0];
+    request.noticeImages = files?.noticeImages;
     return this.activityService.createActivity(request, user.id);
   }
 
   @Post('update')
   @UseInterceptors(
-    FileInterceptor('thumbnail', {
-      limits: {
-        fileSize: 5 * 1024 * 1024,
+    FileFieldsInterceptor(
+      [
+        { name: 'thumbnail', maxCount: 1 },
+        { name: 'noticeImages', maxCount: 3 },
+      ],
+      {
+        limits: { fileSize: 5 * 1024 * 1024 },
+        fileFilter: ImageFileFilter.filter,
       },
-      fileFilter: ImageFileFilter.filter,
-    }),
+    ),
   )
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  @ApiConsumes('application/json')
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'data to modify activity.',
     type: ActivityUpdateRequest,
   })
-  async updateActivity(@Body() request: ActivityUpdateRequest, @Token() user: AuthUser): Promise<void> {
+  async updateActivity(
+    @Body() request: ActivityUpdateRequest,
+    @UploadedFiles()
+    files: {
+      thumbnail?: Express.Multer.File[];
+      noticeImages?: Express.Multer.File[];
+    },
+    @Token() user: AuthUser,
+  ): Promise<void> {
+    request.thumbnail = files?.thumbnail[0];
+    request.noticeImages = files?.noticeImages;
     await this.activityService.updateActivity(request, user.id);
   }
 
@@ -86,8 +116,8 @@ export class ActivityController {
     description: ErrorMessageType.NOT_FOUND_ACTIVITY,
   })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
-  async getActivity(@Query('activityId') activityId: number): Promise<ActivityResponse> {
-    return this.activityService.getActivity(activityId);
+  async getActivity(@Query('activityId') activityId: number, @Token() user: AuthUser): Promise<ActivityResponse> {
+    return this.activityService.getActivity(activityId, user.id);
   }
 
   @Get('get/list')
@@ -120,17 +150,30 @@ export class ActivityController {
     return this.activityService.getActivityList(user.id, status, options, meetingId);
   }
 
-  @Post('withdraw')
+  @Post('cancel')
   @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
   @ApiCommonResponse()
   @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
   @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
   @ApiBody({
-    description: 'data to withdraw activity.',
-    type: ActivityWithdrawRequest,
+    description: 'data to cancel activity.',
+    type: ActivityParticipantRequest,
   })
-  async withdraw(@Body() req: ActivityWithdrawRequest, @Token() user: AuthUser): Promise<void> {
-    await this.activityService.withdraw(user.id, req);
+  async cancelActivity(@Body() req: ActivityParticipantRequest, @Token() user: AuthUser): Promise<void> {
+    await this.activityService.cancelActivity(user.id, req);
+  }
+
+  @Post('join')
+  @ApiBearerAuth(AuthGuard.ACCESS_TOKEN_HEADER)
+  @ApiCommonResponse()
+  @ApiBadRequestResponse({ status: 400, description: ErrorMessageType.NOT_FOUND_ACTIVITY })
+  @ApiUnauthorizedResponse({ status: 401, description: ErrorMessageType.NOT_EXIST_REQUESTER })
+  @ApiBody({
+    description: 'data to join activity.',
+    type: ActivityParticipantRequest,
+  })
+  async joinActivity(@Body() req: ActivityParticipantRequest, @Token() user: AuthUser): Promise<void> {
+    await this.activityService.joinActivity(user.id, req);
   }
 
   @Post('delete')
@@ -143,6 +186,6 @@ export class ActivityController {
     type: ActivityDeleteRequest,
   })
   async delete(@Body() req: ActivityDeleteRequest, @Token() user: AuthUser): Promise<void> {
-    await this.activityService.delete(user.id, req);
+    await this.activityService.deleteActivity(user.id, req);
   }
 }

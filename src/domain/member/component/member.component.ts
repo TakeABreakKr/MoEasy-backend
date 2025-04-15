@@ -13,6 +13,10 @@ export class MemberComponentImpl implements MemberComponent {
     await this.memberDao.saveAll(members);
   }
 
+  async countByMeetingIdAndAuthority(meetingId: number, authority: AuthorityEnumType): Promise<number> {
+    return this.memberDao.countByMeetingIdAndAuthority(meetingId, authority);
+  }
+
   async findByMeetingId(meetingId: number): Promise<Member[]> {
     return this.memberDao.findByMeetingId(meetingId);
   }
