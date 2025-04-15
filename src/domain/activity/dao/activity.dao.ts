@@ -92,6 +92,7 @@ export class ActivityDaoImpl implements ActivityDao {
           .where('activity.startDate > :now', { now })
           .andWhere('activity.startDate < :tenDaysLater', { tenDaysLater })
           .andWhere('activity.activity_id IN (' + subQuery + ')')
+          .setParameter('id', id)
           .limit(ActivityDaoImpl.UPCOMING_ACTIVITIES_LIMIT)
           .getMany();
       }
