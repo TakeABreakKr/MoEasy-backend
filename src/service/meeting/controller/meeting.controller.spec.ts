@@ -90,7 +90,7 @@ describe('MeetingController', () => {
       publicYn: true,
     };
 
-    const result = await meetingController.createMeeting(request, user);
+    const result = await meetingController.createMeeting(request, thumbnail, user);
     expect(result).toBe(MockMeetingService.meetingId);
   });
 
@@ -112,7 +112,7 @@ describe('MeetingController', () => {
       meetingId: '',
       thumbnail,
     };
-    const result = await meetingController.updateMeetingThumbnail(request, user);
+    const result = await meetingController.updateMeetingThumbnail(request, thumbnail, user);
     expect(result).toBe(void 0);
   });
 

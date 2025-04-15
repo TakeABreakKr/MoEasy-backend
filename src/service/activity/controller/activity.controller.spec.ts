@@ -20,7 +20,7 @@ class MockActivityService implements ActivityService {
     return {
       name: 'activity name',
       startDate: new Date(),
-      announcement: 'moeasa',
+      notice: 'moeasa',
       onlineYn: true,
       thumbnailId: 50,
       participantLimit: 10,
@@ -28,6 +28,7 @@ class MockActivityService implements ActivityService {
       onlineLink: 'onlineLink',
       members: [],
       isJoined: false,
+      noticeImageIds: [],
     };
   }
   async getActivityList(): Promise<ActivityListResponse> {
@@ -56,15 +57,46 @@ describe('ActivityController', () => {
     startDate: new Date(),
     endDate: null,
     reminder: [],
-    announcement: 'moeasa',
+    notice: 'moeasa',
     address: null,
     detailAddress: null,
     onlineYn: true,
     participants: [],
     participantLimit: 10,
     thumbnail: null,
-    announcementImage: null,
+    noticeImages: null,
     onlineLink: 'onlineLink',
+  };
+
+  const mockThumbnail = {
+    fieldname: 'thumbnail',
+    originalname: 'test.jpg',
+    encoding: '7bit',
+    mimetype: 'image/jpeg',
+    buffer: Buffer.from('test'),
+    size: 4,
+    destination: '',
+    filename: '',
+    stream: undefined,
+    path: '',
+  };
+
+  const mockNoticeImage = {
+    fieldname: 'noticeImages',
+    originalname: 'notice.jpg',
+    encoding: '7bit',
+    mimetype: 'image/jpeg',
+    buffer: Buffer.from('test'),
+    size: 4,
+    destination: '',
+    filename: '',
+    stream: undefined,
+    path: '',
+  };
+
+  const mockFiles = {
+    thumbnail: [mockThumbnail],
+    noticeImages: [mockNoticeImage],
   };
 
   beforeEach(async () => {
@@ -80,7 +112,7 @@ describe('ActivityController', () => {
       ...activityCreateRequest,
     };
 
-    const result = await activityController.createActivity(req, user);
+    const result = await activityController.createActivity(req, mockFiles, user);
     expect(result).toStrictEqual(activityId);
   });
 
@@ -89,7 +121,7 @@ describe('ActivityController', () => {
       ...activityCreateRequest,
       activityId: MeetingUtils.transformMeetingIdToInteger(activityId),
     };
-    const result = await activityController.updateActivity(req, user);
+    const result = await activityController.updateActivity(req, mockFiles, user);
     expect(result).toBe(void 0);
   });
 
@@ -100,7 +132,7 @@ describe('ActivityController', () => {
     const response: ActivityResponse = {
       name: 'activity name',
       startDate: new Date(),
-      announcement: 'moeasa',
+      notice: 'moeasa',
       onlineYn: true,
       thumbnailId: 50,
       participantLimit: 10,
@@ -108,6 +140,7 @@ describe('ActivityController', () => {
       onlineLink: 'onlineLink',
       members: [],
       isJoined: false,
+      noticeImageIds: [],
     };
     expect(result).toStrictEqual(response);
   });
