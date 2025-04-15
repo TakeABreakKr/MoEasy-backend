@@ -21,7 +21,6 @@ class MockActivityRepository extends Repository<Activity> {
       detailAddress: '평택',
       participantLimit: 10,
       thumbnailId: 10,
-      noticeImageId: 10,
     }),
     Activity.createForTest(200, {
       meetingId: 'C8',
@@ -35,7 +34,6 @@ class MockActivityRepository extends Repository<Activity> {
       detailAddress: '수원',
       participantLimit: 10,
       thumbnailId: 20,
-      noticeImageId: 20,
     }),
   ];
 
@@ -151,7 +149,6 @@ describe('ActivityDao', () => {
       detailAddress: '서울',
       participantLimit: 10,
       thumbnailId: 30,
-      noticeImageId: 30,
     };
     const result = await activityDao.create(createActivityDto);
 
@@ -176,7 +173,6 @@ describe('ActivityDao', () => {
       detailAddress: '평택에서 변경',
       participantLimit: 10,
       thumbnailId: 40,
-      noticeImageId: 40,
     });
 
     await activityDao.update(activity);

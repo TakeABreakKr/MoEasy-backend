@@ -24,8 +24,8 @@ export class ActivityResponse {
   @ApiProperty()
   thumbnailId: number;
 
-  @ApiProperty()
-  noticeImageId: number;
+  @ApiProperty({ type: [Number] })
+  noticeImageIds: number[];
 
   @ApiProperty()
   participantLimit: number;

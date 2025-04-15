@@ -245,11 +245,10 @@ class MockActivityComponent implements ActivityComponent {
       meetingId: '64',
       name: 'moeasy1',
       thumbnailId: 30,
-      announcementImageId: 40,
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
-      announcement: '공지사항1',
+      notice: '안내사항1',
       onlineYn: true,
       address: Address.createForTest(),
       detailAddress: '평택',
@@ -259,11 +258,10 @@ class MockActivityComponent implements ActivityComponent {
       meetingId: '64',
       name: 'moeasy4',
       thumbnailId: 40,
-      announcementImageId: 50,
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
-      announcement: '공지사항4',
+      notice: '안내사항4',
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '인천',
@@ -273,11 +271,11 @@ class MockActivityComponent implements ActivityComponent {
       meetingId: 'C8',
       name: 'moeasy2',
       thumbnailId: 50,
-      announcementImageId: 60,
+
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
-      announcement: '공지사항2',
+      notice: '안내사항2',
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '수원',
@@ -287,11 +285,10 @@ class MockActivityComponent implements ActivityComponent {
       meetingId: 'C8',
       name: 'moeasy3',
       thumbnailId: 60,
-      announcementImageId: 70,
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
-      announcement: '공지사항3',
+      notice: '안내사항3',
       onlineYn: false,
       address: Address.createForTest(),
       detailAddress: '시흥',
@@ -487,13 +484,12 @@ describe('ActivityServiceTest', () => {
       const activityCreateRequest = {
         meetingId: '64',
         name: 'moeasy1',
-        explanation: '모임설명1',
         thumbnail: null,
-        announcementImage: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
-        announcement: '공지사항1',
+        notice: '안내사항1',
+        noticeImage: null,
         onlineYn: true,
         address: Address.createTestDto(),
         detailAddress: '평택',
@@ -522,13 +518,12 @@ describe('ActivityServiceTest', () => {
         activityId: activityId,
         meetingId: 'C8',
         name: 'moeasy3 수정',
-        explanation: '모임설명3 수정',
         thumbnail: null,
-        announcementImage: null,
+        noticeImage: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
-        announcement: '공지사항3 수정',
+        notice: '안내사항3 수정',
         onlineYn: false,
         address: Address.createTestDto(),
         detailAddress: '시흥에서 수정',
@@ -547,7 +542,7 @@ describe('ActivityServiceTest', () => {
       expect(result.id).toBe(300);
       expect(result.meetingId).toBe(200);
       expect(result.name).toBe('moeasy3 수정');
-      expect(result.announcement).toBe('공지사항3 수정');
+      expect(result.notice).toBe('안내사항3 수정');
       expect(result.onlineYn).toBe(false);
       expect(result.detailAddress).toBe('시흥에서 수정');
       expect(participant).toEqual([20, 10]);
@@ -570,13 +565,12 @@ describe('ActivityServiceTest', () => {
         activityId: 999,
         meetingId: '64',
         name: 'moeasy1 수정',
-        explanation: '모임설명1 수정',
         thumbnail: null,
-        announcementImage: null,
+        noticeImage: null,
         startDate: new Date(),
         endDate: new Date(),
         reminder: [],
-        announcement: '공지사항1 수정',
+        notice: '안내사항1 수정',
         onlineYn: false,
         address: Address.createTestDto(),
         detailAddress: '평택에서 수정',
@@ -599,7 +593,7 @@ describe('ActivityServiceTest', () => {
       const result = await activityService.getActivity(activityId, requesterId);
 
       expect(result.name).toBe('moeasy2');
-      expect(result.announcement).toBe('공지사항2');
+      expect(result.notice).toBe('안내사항2');
       expect(result.onlineYn).toBe(false);
 
       expect(componentAccessLog).toEqual([MockActivityComponent.findByActivityIdLog]);

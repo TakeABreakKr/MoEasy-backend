@@ -28,6 +28,7 @@ import { UsersComponent } from '@domain/user/component/users.component.interface
 import { ActivityMemberDto } from '@service/activity/dto/response/activity.member.dto';
 import { Member } from '@domain/member/entity/member.entity';
 import { FileService } from '@root/file/service/file.service';
+import { ActivityNoticeImageComponent } from '@domain/activity/component/activity.notice.image.component.interface';
 
 @Injectable()
 export class ActivityServiceImpl implements ActivityService {
@@ -40,6 +41,7 @@ export class ActivityServiceImpl implements ActivityService {
     @Inject('NotificationComponent') private notificationComponent: NotificationComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
     @Inject('FileService') private fileService: FileService,
+    @Inject('ActivityNoticeImageComponent') private activityNoticeImageComponent: ActivityNoticeImageComponent,
   ) {}
 
   @Transactional()
@@ -48,15 +50,10 @@ export class ActivityServiceImpl implements ActivityService {
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
     const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
-    let noticeImageId: number;
-    if (req.noticeImage) {
-      noticeImageId = await this.fileService.uploadAttachment(req.noticeImage);
-    }
 
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
       thumbnailId: thumbnailId,
-      noticeImageId: noticeImageId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -68,6 +65,13 @@ export class ActivityServiceImpl implements ActivityService {
       meetingId: req.meetingId,
       onlineYn: req.onlineYn,
     });
+
+    if (req.noticeImages?.length > 0) {
+      for (const image of req.noticeImages.slice(0, 3)) {
+        const attachmentId = await this.fileService.uploadAttachment(image);
+        await this.activityNoticeImageComponent.create(activity.id, attachmentId);
+      }
+    }
 
     const participants: Participant[] = req.participants.map((participant) => {
       return Participant.create({
@@ -95,15 +99,10 @@ export class ActivityServiceImpl implements ActivityService {
     }
 
     const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
-    let noticeImageId: number;
-    if (req.noticeImage) {
-      noticeImageId = await this.fileService.uploadAttachment(req.noticeImage);
-    }
 
     activity.update({
       name: req.name,
       thumbnailId: thumbnailId,
-      noticeImageId: noticeImageId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -114,6 +113,13 @@ export class ActivityServiceImpl implements ActivityService {
       detailAddress: req?.detailAddress,
       onlineYn: req.onlineYn,
     });
+
+    if (req.noticeImages?.length > 0) {
+      for (const image of req.noticeImages.slice(0, 3)) {
+        const attachmentId = await this.fileService.uploadAttachment(image);
+        await this.activityNoticeImageComponent.create(activity.id, attachmentId);
+      }
+    }
 
     const currentParticipants: number[] = (await this.participantComponent.findByActivityId(req.activityId)).map(
       (participant) => participant.userId,
@@ -170,6 +176,9 @@ export class ActivityServiceImpl implements ActivityService {
       };
     });
 
+    const noticeImages = await this.activityNoticeImageComponent.findByActivityId(activity.id);
+    const noticeImageIds = noticeImages.length > 0 ? noticeImages.map((image) => image.attachmentId) : [];
+
     const baseInfo = {
       activityId: activity.id,
       name: activity.name,
@@ -182,7 +191,7 @@ export class ActivityServiceImpl implements ActivityService {
       notice: activity.notice,
       members: memberDtos,
       isJoined: await this.participantComponent.existsParticipant(requesterId, activity.id),
-      noticeImageId: activity.noticeImageId,
+      noticeImageIds: noticeImageIds,
     };
 
     if (!activity.onlineYn) {

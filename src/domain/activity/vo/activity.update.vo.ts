@@ -13,5 +13,4 @@ export interface ActivityUpdateVO {
   address?: Address;
   detailAddress?: string;
   participantLimit: number;
-  noticeImageId?: number;
 }

@@ -8,6 +8,7 @@ import { ActivityUpdateVO } from '@domain/activity/vo/activity.update.vo';
 import { ActivityUtils } from '@utils/activity.utils';
 import { MeetingUtils } from '@utils/meeting.utils';
 import { Attachment } from '@file/entity/attachment.entity';
+import { ActivityNoticeImage } from '@domain/activity/entity/activity.notice.image.entity';
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -26,12 +27,6 @@ export class Activity extends BaseEntity {
     nullable: false,
   })
   thumbnailId: number;
-
-  @Column({
-    name: 'noticeImage_id',
-    nullable: true,
-  })
-  noticeImageId: number;
 
   @Column({
     type: 'datetime',
@@ -94,9 +89,8 @@ export class Activity extends BaseEntity {
   @JoinColumn({ name: 'thumbnail_id' })
   thumbnail: Promise<Attachment>;
 
-  @OneToOne(() => Attachment)
-  @JoinColumn({ name: 'announcementImage_id' })
-  announcementImage: Promise<Attachment>;
+  @OneToMany(() => ActivityNoticeImage, (activityNoticeImage) => activityNoticeImage.activity)
+  noticeImages: ActivityNoticeImage[];
 
   async getMeeting(): Promise<Meeting> {
     return this.meeting;
@@ -120,7 +114,6 @@ export class Activity extends BaseEntity {
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
     activity.onlineLink = activityCreateVO.onlineLink;
     activity.thumbnailId = activityCreateVO.thumbnailId;
-    activity.noticeImageId = activityCreateVO.noticeImageId;
     return activity;
   }
 
@@ -136,7 +129,6 @@ export class Activity extends BaseEntity {
     this.participantLimit = activityUpdateVO.participantLimit;
     this.onlineLink = activityUpdateVO.onlineLink;
     this.thumbnailId = activityUpdateVO.thumbnailId;
-    this.noticeImageId = activityUpdateVO.noticeImageId;
   }
 
   //only for test

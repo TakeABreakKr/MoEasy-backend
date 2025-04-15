@@ -9,7 +9,7 @@ import {
   ApiUnauthorizedResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { Body, Controller, Get, Inject, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MeetingCreateRequest } from '@service/meeting/dto/request/meeting.create.request';
 import { MeetingUpdateRequest } from '@service/meeting/dto/request/meeting.update.request';
@@ -49,7 +49,12 @@ export class MeetingController {
     type: MeetingCreateRequest,
     description: 'data required to create a new meeting',
   })
-  async createMeeting(@Body() request: MeetingCreateRequest, @Token() user: AuthUser): Promise<string> {
+  async createMeeting(
+    @Body() request: MeetingCreateRequest,
+    @UploadedFile() file: Express.Multer.File,
+    @Token() user: AuthUser,
+  ): Promise<string> {
+    request.thumbnail = file;
     return this.meetingService.createMeeting(request, user.id);
   }
 
@@ -85,7 +90,12 @@ export class MeetingController {
     type: MeetingThumbnailUpdateRequest,
     description: 'data required to update thumbnail',
   })
-  async updateMeetingThumbnail(@Body() request: MeetingThumbnailUpdateRequest, @Token() user: AuthUser): Promise<void> {
+  async updateMeetingThumbnail(
+    @Body() request: MeetingThumbnailUpdateRequest,
+    @UploadedFile() file: Express.Multer.File,
+    @Token() user: AuthUser,
+  ): Promise<void> {
+    request.thumbnail = file;
     await this.meetingService.updateMeetingThumbnail(request, user.id);
   }
 

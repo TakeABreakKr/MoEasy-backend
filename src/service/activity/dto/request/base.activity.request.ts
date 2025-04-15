@@ -31,11 +31,15 @@ export abstract class ActivityRequest {
   thumbnail: Express.Multer.File;
 
   @ApiProperty({
-    type: String,
-    format: 'binary',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
   })
   @IsOptional()
-  noticeImage: Express.Multer.File;
+  @ArrayMaxSize(3)
+  noticeImages?: Express.Multer.File[];
 
   @ApiProperty()
   @IsDate()
