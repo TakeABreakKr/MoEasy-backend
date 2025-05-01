@@ -26,5 +26,5 @@ export class MeetingListMeetingDto {
   memberCount: number;
 
   @ApiProperty()
-  thumbnailId: number;
+  thumbnailPath: string;
 }

@@ -6,11 +6,11 @@ import { FileService } from '@file/service/file.service';
 import { AttachmentDao } from '@file/dao/attachment.dao.interface';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { FileModeEnum, FileModeEnumType } from '@enums/file.mode.enum';
-import { Attachment } from '@file/entity/attachment.entity';
 import axios from 'axios';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Injectable()
-export class S3FileService extends FileService {
+export class S3FileService implements FileService {
   private s3Client: S3Client;
   private readonly awsS3BucketName: string;
 
@@ -18,7 +18,6 @@ export class S3FileService extends FileService {
     private configService: ConfigService,
     @Inject('AttachmentDao') private attachmentDao: AttachmentDao,
   ) {
-    super();
     this.s3Client = new S3Client({
       region: configService.get('AWS.region'),
       credentials: {
@@ -29,7 +28,17 @@ export class S3FileService extends FileService {
     this.awsS3BucketName = configService.get('AWS_S3_BUCKET_NAME');
   }
 
-  public async uploadFromUrl(url: string): Promise<number> {
+  public async uploadFromUrlAndGetId(url: string): Promise<number> {
+    const file = await this.prepareFromUrl(url);
+    return this.uploadAttachmentAndGetId(file);
+  }
+
+  public async uploadFromUrlAndGetPath(url: string): Promise<string> {
+    const file = await this.prepareFromUrl(url);
+    return this.uploadAttachmentAndGetPath(file);
+  }
+
+  private async prepareFromUrl(url: string): Promise<Express.Multer.File> {
     const ALLOWED_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -59,11 +68,11 @@ export class S3FileService extends FileService {
       maxContentLength: MAX_FILE_SIZE,
     });
 
-    const file: Express.Multer.File = {
+    return {
       originalname: filename,
       buffer: response.data,
       fieldname: 'avatar',
-      mimetype: 'image/png',
+      mimetype: contentType,
       size: response.data.length,
       encoding: '7bit',
       filename: filename,
@@ -71,23 +80,32 @@ export class S3FileService extends FileService {
       destination: '',
       path: '',
     };
-
-    return this.uploadAttachment(file);
   }
 
-  public async uploadAttachment(file: Express.Multer.File): Promise<number> {
-    const path = await this.uploadFile(file);
+  public async uploadAttachmentAndGetPath(file: Express.Multer.File): Promise<string> {
+    const { path } = await this.prepareAndCreateAttachment(file);
+    return path;
+  }
+  public async uploadAttachmentAndGetId(file: Express.Multer.File): Promise<number> {
+    const { attachment } = await this.prepareAndCreateAttachment(file);
+    return attachment.id;
+  }
 
+  private async prepareAndCreateAttachment(file: Express.Multer.File): Promise<{
+    path: string;
+    attachment: Attachment;
+  }> {
+    const path = await this.uploadFile(file);
     const sanitizedFileName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 255);
 
-    const attachment: Attachment = await this.attachmentDao.create({
+    const attachment = await this.attachmentDao.create({
       name: sanitizedFileName,
       type: FileModeEnum.s3,
       path: path,
       deletedYn: false,
     });
 
-    return attachment.id;
+    return { path, attachment };
   }
 
   public async downloadAttachment(id: number): Promise<StreamableFile | null> {

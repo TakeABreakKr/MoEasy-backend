@@ -5,5 +5,5 @@ export class ActivityListMeetingListDto {
   name: string;
 
   @ApiProperty()
-  thumbnailId: number;
+  thumbnailPath: string;
 }

@@ -33,6 +33,7 @@ class MockMeetingComponent implements MeetingComponent {
       explanation: '모임 설명1',
       limit: 10,
       thumbnailId: 70,
+      thumbnailPath: 'test/path',
       canJoin: false,
       category: MeetingCategoryEnum.CAREER,
       publicYn: true,
@@ -43,6 +44,7 @@ class MockMeetingComponent implements MeetingComponent {
       explanation: '모임 설명2',
       limit: 10,
       thumbnailId: 80,
+      thumbnailPath: 'test/path',
       canJoin: true,
       category: MeetingCategoryEnum.CAREER,
       publicYn: true,
@@ -225,6 +227,7 @@ class MockUsersComponent implements UsersComponent {
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
       profileImageId: 50,
+      profileImagePath: 'test/path',
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
@@ -234,6 +237,7 @@ class MockUsersComponent implements UsersComponent {
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
       profileImageId: 70,
+      profileImagePath: 'test/path',
       settings: { allowNotificationYn: true },
     }),
   ];
@@ -458,7 +462,7 @@ describe('MeetingService', () => {
       expect(result.name).toBe('모임 이름1');
       expect(result.explanation).toBe('모임 설명1');
       expect(result.limit).toBe(10);
-      expect(result.thumbnailId).toBe(70);
+      expect(result.thumbnailPath).toBe('test/path');
 
       expect(componentAccessLog).toEqual([
         MockMeetingComponent.findByMeetingIdLog,

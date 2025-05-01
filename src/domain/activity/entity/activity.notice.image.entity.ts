@@ -1,8 +1,7 @@
 import { BaseEntity } from '@root/domain/common/base.entity';
 import { Attachment } from '@root/file/entity/attachment.entity';
-import { Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from 'typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
-
 @Entity()
 export class ActivityNoticeImage extends BaseEntity {
   @PrimaryColumn({
@@ -10,10 +9,11 @@ export class ActivityNoticeImage extends BaseEntity {
   })
   activityId: number;
 
-  @PrimaryColumn({
-    name: 'attachment_id',
-  })
+  @PrimaryColumn({})
   attachmentId: number;
+
+  @Column()
+  attachmentPath: string;
 
   @ManyToOne(() => Activity, (activity) => activity.noticeImages)
   @JoinColumn({ name: 'activity_id' })
@@ -23,10 +23,11 @@ export class ActivityNoticeImage extends BaseEntity {
   @JoinColumn({ name: 'attachment_id' })
   attachment: Attachment;
 
-  public static create(activityId: number, attachmentId: number): ActivityNoticeImage {
+  public static create(activityId: number, attachmentId: number, attachmentPath: string): ActivityNoticeImage {
     const activityNoticeImage = new ActivityNoticeImage();
     activityNoticeImage.activityId = activityId;
     activityNoticeImage.attachmentId = attachmentId;
+    activityNoticeImage.attachmentPath = attachmentPath;
     return activityNoticeImage;
   }
 }

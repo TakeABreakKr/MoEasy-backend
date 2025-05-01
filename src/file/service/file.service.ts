@@ -1,8 +1,10 @@
 import { StreamableFile } from '@nestjs/common';
 
-export abstract class FileService {
-  abstract uploadAttachment(file: Express.Multer.File): Promise<number>;
-  abstract downloadAttachment(id: number): Promise<StreamableFile | null>;
-  abstract deleteAttachment(id: number): Promise<void>;
-  abstract uploadFromUrl(url: string): Promise<number>;
+export interface FileService {
+  uploadAttachmentAndGetPath(file: Express.Multer.File): Promise<string>;
+  uploadAttachmentAndGetId(file: Express.Multer.File): Promise<number>;
+  downloadAttachment(id: number): Promise<StreamableFile | null>;
+  deleteAttachment(id: number): Promise<void>;
+  uploadFromUrlAndGetId(url: string): Promise<number>;
+  uploadFromUrlAndGetPath(url: string): Promise<string>;
 }

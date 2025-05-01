@@ -1,5 +1,6 @@
 import { version } from 'package.json';
 import { EnvEnum } from '@enums/env.enum';
+import { join } from 'path';
 
 export default () => ({
   version,
@@ -34,6 +35,6 @@ export default () => ({
     client_secret: process.env.DISCORD_CLIENT_SECRET || '',
   },
   file: {
-    dir: process.env.PWD + '/file',
+    dir: process.env.FILE_DIRECTORY || join(process.cwd(), 'uploads/'),
   },
 });

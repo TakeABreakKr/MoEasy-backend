@@ -26,7 +26,7 @@ import { HeaderResponse } from '@service/home/dto/response/header.response';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { Users } from '@domain/user/entity/users.entity';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interface';
+import { MeetingLikeComponent } from '@domain/meeting/component/meeting.like.component.interface';
 
 @Injectable()
 export class HomeServiceImpl implements HomeService {
@@ -62,7 +62,7 @@ export class HomeServiceImpl implements HomeService {
         return {
           id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: meeting.thumbnailPath,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
           likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
@@ -89,7 +89,7 @@ export class HomeServiceImpl implements HomeService {
           isOnlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
           meetingName: meeting.name,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: meeting.thumbnailPath,
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,
@@ -115,7 +115,7 @@ export class HomeServiceImpl implements HomeService {
           isOnlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
           meetingName: meeting.name,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: meeting.thumbnailPath,
           region: region,
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
@@ -133,7 +133,7 @@ export class HomeServiceImpl implements HomeService {
         return {
           id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: meeting.thumbnailPath,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
           likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
@@ -183,7 +183,7 @@ export class HomeServiceImpl implements HomeService {
     }
     return {
       id: user.id,
-      profileImageId: userEntity.profileImageId,
+      profileImagePath: userEntity.profileImagePath,
     };
   }
 }

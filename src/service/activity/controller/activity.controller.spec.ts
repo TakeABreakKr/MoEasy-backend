@@ -22,13 +22,13 @@ class MockActivityService implements ActivityService {
       startDate: new Date(),
       notice: 'moeasa',
       onlineYn: true,
-      thumbnailId: 50,
+      thumbnailPath: 'thumbnailPath',
       participantLimit: 10,
       participantCount: 10,
       onlineLink: 'onlineLink',
       members: [],
       isJoined: false,
-      noticeImageIds: [],
+      noticeImagePaths: [],
     };
   }
   async getActivityList(): Promise<ActivityListResponse> {
@@ -134,13 +134,13 @@ describe('ActivityController', () => {
       startDate: new Date(),
       notice: 'moeasa',
       onlineYn: true,
-      thumbnailId: 50,
+      thumbnailPath: 'thumbnailPath',
       participantLimit: 10,
       participantCount: 10,
       onlineLink: 'onlineLink',
       members: [],
       isJoined: false,
-      noticeImageIds: [],
+      noticeImagePaths: [],
     };
     expect(result).toStrictEqual(response);
   });

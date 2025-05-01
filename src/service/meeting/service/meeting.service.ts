@@ -48,7 +48,9 @@ export class MeetingServiceImpl implements MeetingService {
       throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
     }
 
-    const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
+    const thumbnailId = await this.fileService.uploadAttachmentAndGetId(req.thumbnail);
+    const thumbnailPath = await this.fileService.uploadAttachmentAndGetPath(req.thumbnail);
+
     const meeting: Meeting = await this.meetingComponent.create({
       name: req.name,
       category: req.category,
@@ -56,6 +58,7 @@ export class MeetingServiceImpl implements MeetingService {
       limit: req.limit,
       publicYn: req.publicYn,
       thumbnailId: thumbnailId,
+      thumbnailPath: thumbnailPath,
       canJoin: req.canJoin,
     });
 
@@ -129,12 +132,14 @@ export class MeetingServiceImpl implements MeetingService {
 
   @Transactional()
   public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requesterId: number) {
-    const thumbnailId = await this.fileService.uploadAttachment(request.thumbnail);
+    const thumbnailId = await this.fileService.uploadAttachmentAndGetId(request.thumbnail);
+    const thumbnailPath = await this.fileService.uploadAttachmentAndGetPath(request.thumbnail);
 
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
     const meeting: Meeting = await this.meetingComponent.findByMeetingId(meetingId);
 
+    meeting.thumbnailPath = thumbnailPath;
     meeting.thumbnailId = thumbnailId;
     await this.meetingComponent.update(meeting);
 
@@ -191,7 +196,7 @@ export class MeetingServiceImpl implements MeetingService {
           name: meeting.name,
           explanation: meeting.explanation,
           canJoin: meeting.canJoin,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: meeting.thumbnailPath,
           likedYn: userId ? await this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
         };
@@ -244,7 +249,7 @@ export class MeetingServiceImpl implements MeetingService {
       name: meeting.name,
       explanation: meeting.explanation,
       limit: meeting.limit,
-      thumbnailId: meeting.thumbnailId,
+      thumbnailPath: meeting.thumbnailPath,
       category: meeting.category,
       members: memberDtos,
       memberCount: await this.memberComponent.getMemberCount(meeting.id),

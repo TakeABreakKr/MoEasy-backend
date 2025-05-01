@@ -19,12 +19,12 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import AuthGuard from '@root/middleware/auth/auth.guard';
-import { FileService } from '@file/service/file.service.interface';
 import { ApiCommonResponse } from '@decorator/api.common.response.decorator';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageFileFilter } from '@root/utils/image.filter.utils';
 import { Public } from '@decorator/public.decorator';
+import { FileService } from '../service/file.service';
 
 @UseGuards(AuthGuard)
 @ApiTags('file')
@@ -56,8 +56,8 @@ export class FileController {
       },
     },
   })
-  async uploadAttachment(@UploadedFile() file: Express.Multer.File): Promise<number> {
-    return this.fileService.uploadAttachment(file);
+  async uploadAttachment(@UploadedFile() file: Express.Multer.File): Promise<string> {
+    return this.fileService.uploadAttachmentAndGetPath(file);
   }
 
   @Public()

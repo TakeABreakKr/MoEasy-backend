@@ -32,6 +32,7 @@ export class UsersDaoImpl implements UsersDao {
       email: profile.email,
       explanation: '',
       profileImageId: profile.profileImageId,
+      profileImagePath: profile.profileImagePath,
       settings: {
         allowNotificationYn: false,
       },

@@ -49,11 +49,13 @@ export class ActivityServiceImpl implements ActivityService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
-    const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
+    const thumbnailId = await this.fileService.uploadAttachmentAndGetId(req.thumbnail);
+    const thumbnailPath = await this.fileService.uploadAttachmentAndGetPath(req.thumbnail);
 
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
       thumbnailId: thumbnailId,
+      thumbnailPath: thumbnailPath,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -93,11 +95,13 @@ export class ActivityServiceImpl implements ActivityService {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
     }
 
-    const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
+    const thumbnailId = await this.fileService.uploadAttachmentAndGetId(req.thumbnail);
+    const thumbnailPath = await this.fileService.uploadAttachmentAndGetPath(req.thumbnail);
 
     activity.update({
       name: req.name,
       thumbnailId: thumbnailId,
+      thumbnailPath: thumbnailPath,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -143,8 +147,10 @@ export class ActivityServiceImpl implements ActivityService {
 
     for (const image of noticeImages.slice(0, 3)) {
       try {
-        const attachmentId = await this.fileService.uploadAttachment(image);
-        await this.activityNoticeImageComponent.create(activityId, attachmentId);
+        const attachmentId = await this.fileService.uploadAttachmentAndGetId(image);
+        const attachmentPath = await this.fileService.uploadAttachmentAndGetPath(image);
+
+        await this.activityNoticeImageComponent.create(activityId, attachmentId, attachmentPath);
       } catch (error) {
         throw new BadRequestException(ErrorMessageType.ACTIVITY_NOTICE_IMAGE_UPLOAD_FAILED);
       }
@@ -180,12 +186,12 @@ export class ActivityServiceImpl implements ActivityService {
     });
 
     const noticeImages = await this.activityNoticeImageComponent.findByActivityId(activity.id);
-    const noticeImageIds = noticeImages.length > 0 ? noticeImages.map((image) => image.attachmentId) : [];
+    const noticeImagePaths = noticeImages.length > 0 ? noticeImages.map((image) => image.attachmentPath) : [];
 
     const baseInfo = {
       activityId: activity.id,
       name: activity.name,
-      thumbnailId: activity.thumbnailId,
+      thumbnailPath: activity.thumbnailPath,
       startDate: activity.startDate,
       onlineYn: activity.onlineYn,
       onlineLink: activity.getOnlineLink(),
@@ -194,7 +200,7 @@ export class ActivityServiceImpl implements ActivityService {
       notice: activity.notice,
       members: memberDtos,
       isJoined: await this.participantComponent.existsParticipant(requesterId, activity.id),
-      noticeImageIds: noticeImageIds,
+      noticeImagePaths: noticeImagePaths,
     };
 
     if (!activity.onlineYn) {
@@ -250,7 +256,7 @@ export class ActivityServiceImpl implements ActivityService {
         const baseInfo = {
           activityId: activity.id,
           name: activity.name,
-          thumbnailId: activity.thumbnailId,
+          thumbnailPath: activity.thumbnailPath,
           startDate: activity.startDate,
           onlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
@@ -279,7 +285,7 @@ export class ActivityServiceImpl implements ActivityService {
     const meetingListDtos: ActivityListMeetingListDto[] = meetingList.map((meeting) => {
       return {
         name: meeting.name,
-        thumbnailId: meeting.thumbnailId,
+        thumbnailPath: meeting.thumbnailPath,
       };
     });
 

@@ -46,10 +46,14 @@ export class Meeting extends BaseEntity {
   publicYn: boolean;
 
   @Column({
-    name: 'thumbnail_id',
     nullable: false,
   })
   thumbnailId: number;
+
+  @Column({
+    nullable: false,
+  })
+  thumbnailPath: string;
 
   @Column()
   canJoin: boolean;
@@ -67,7 +71,7 @@ export class Meeting extends BaseEntity {
   meetingLikes: Promise<MeetingLike[]>;
 
   @OneToOne(() => Attachment)
-  @JoinColumn({ name: 'thumbnail_id' })
+  @JoinColumn({ name: 'thumbnail' })
   thumbnail: Promise<Attachment>;
 
   getCategory(): MeetingCategoryEnum.MeetingCategoryEnumType {

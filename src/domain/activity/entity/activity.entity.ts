@@ -23,10 +23,14 @@ export class Activity extends BaseEntity {
   name: string;
 
   @Column({
-    name: 'thumbnail_id',
     nullable: false,
   })
   thumbnailId: number;
+
+  @Column({
+    nullable: false,
+  })
+  thumbnailPath: string;
 
   @Column({
     type: 'datetime',
@@ -114,6 +118,7 @@ export class Activity extends BaseEntity {
     activity.meetingId = MeetingUtils.transformMeetingIdToInteger(activityCreateVO.meetingId);
     activity.onlineLink = activityCreateVO.onlineLink;
     activity.thumbnailId = activityCreateVO.thumbnailId;
+    activity.thumbnailPath = activityCreateVO.thumbnailPath;
     return activity;
   }
 

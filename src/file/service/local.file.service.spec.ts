@@ -57,7 +57,7 @@ describe('LocalFileService', () => {
       filename: '',
       path: '',
     };
-    const path = await localFileService.uploadAttachment(file);
+    const path = await localFileService.uploadAttachmentAndGetPath(file);
 
     expect(path).toBe(1);
   });

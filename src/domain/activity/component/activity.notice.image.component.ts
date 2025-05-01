@@ -10,8 +10,8 @@ export class ActivityNoticeImageComponentImpl implements ActivityNoticeImageComp
     private activityNoticeImageDao: ActivityNoticeImageDao,
   ) {}
 
-  async create(activityId: number, attachmentId: number): Promise<ActivityNoticeImage> {
-    return this.activityNoticeImageDao.create(activityId, attachmentId);
+  async create(activityId: number, attachmentId: number, attachmentPath: string): Promise<ActivityNoticeImage> {
+    return this.activityNoticeImageDao.create(activityId, attachmentId, attachmentPath);
   }
 
   async findByActivityId(activityId: number): Promise<ActivityNoticeImage[]> {
