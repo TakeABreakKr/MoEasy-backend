@@ -16,15 +16,20 @@ export class LocalFileService implements FileService {
   ) {}
 
   public async uploadAttachmentAndGetPath(file: Express.Multer.File): Promise<string> {
-    const { sanitizedFileName } = await this.prepareAndCreateAttachment(file);
-
-    const host = this.configService.get('host');
-    return `${host}/static/${sanitizedFileName}`;
+    const { path } = await this.uploadAttachment(file);
+    return path;
   }
 
-  public async uploadAttachmentAndGetId(file: Express.Multer.File): Promise<number> {
-    const { attachment } = await this.prepareAndCreateAttachment(file);
-    return attachment.id;
+  public async uploadAttachment(file: Express.Multer.File): Promise<{ id: number; path: string }> {
+    const { sanitizedFileName, attachment } = await this.prepareAndCreateAttachment(file);
+
+    const host = this.configService.get('host');
+    const staticPath = `${host}/static/${sanitizedFileName}`;
+
+    return {
+      id: attachment.id,
+      path: staticPath,
+    };
   }
 
   private async prepareAndCreateAttachment(file: Express.Multer.File): Promise<{
@@ -92,14 +97,13 @@ export class LocalFileService implements FileService {
     return new StreamableFile(content);
   }
 
-  public async uploadFromUrlAndGetId(url: string): Promise<number> {
-    const { attachment } = await this.prepareFromUrl(url);
-    return attachment.id;
-  }
+  public async uploadFromUrl(url: string): Promise<{ id: number; path: string }> {
+    const { url: fileUrl, attachment } = await this.prepareFromUrl(url);
 
-  public async uploadFromUrlAndGetPath(url: string): Promise<string> {
-    const { url: fileUrl } = await this.prepareFromUrl(url);
-    return fileUrl;
+    return {
+      id: attachment.id,
+      path: fileUrl,
+    };
   }
 
   private async prepareFromUrl(url: string): Promise<{ url: string; attachment: Attachment }> {

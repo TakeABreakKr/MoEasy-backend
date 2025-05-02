@@ -49,13 +49,12 @@ export class ActivityServiceImpl implements ActivityService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
-    const thumbnailId = await this.fileService.uploadAttachmentAndGetId(req.thumbnail);
-    const thumbnailPath = await this.fileService.uploadAttachmentAndGetPath(req.thumbnail);
+    const { id, path } = await this.fileService.uploadAttachment(req.thumbnail);
 
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
-      thumbnailId: thumbnailId,
-      thumbnailPath: thumbnailPath,
+      thumbnailId: id,
+      thumbnailPath: path,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -95,13 +94,12 @@ export class ActivityServiceImpl implements ActivityService {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
     }
 
-    const thumbnailId = await this.fileService.uploadAttachmentAndGetId(req.thumbnail);
-    const thumbnailPath = await this.fileService.uploadAttachmentAndGetPath(req.thumbnail);
+    const { id, path } = await this.fileService.uploadAttachment(req.thumbnail);
 
     activity.update({
       name: req.name,
-      thumbnailId: thumbnailId,
-      thumbnailPath: thumbnailPath,
+      thumbnailId: id,
+      thumbnailPath: path,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -147,10 +145,9 @@ export class ActivityServiceImpl implements ActivityService {
 
     for (const image of noticeImages.slice(0, 3)) {
       try {
-        const attachmentId = await this.fileService.uploadAttachmentAndGetId(image);
-        const attachmentPath = await this.fileService.uploadAttachmentAndGetPath(image);
+        const { id, path } = await this.fileService.uploadAttachment(image);
 
-        await this.activityNoticeImageComponent.create(activityId, attachmentId, attachmentPath);
+        await this.activityNoticeImageComponent.create(activityId, id, path);
       } catch (error) {
         throw new BadRequestException(ErrorMessageType.ACTIVITY_NOTICE_IMAGE_UPLOAD_FAILED);
       }

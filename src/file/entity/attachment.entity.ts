@@ -43,4 +43,12 @@ export class Attachment extends BaseEntity {
 
     return attachment;
   }
+
+  static createForTest(attachmentId: number, props: CreateAttachmentDto): Attachment {
+    const attachment = Attachment.create(props);
+    attachment.id = attachmentId;
+    attachment.createdAt = new Date();
+    attachment.updatedAt = new Date();
+    return attachment;
+  }
 }

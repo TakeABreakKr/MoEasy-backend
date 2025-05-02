@@ -38,7 +38,9 @@ export class Users extends BaseEntity {
   @Column()
   explanation: string;
 
-  @Column({})
+  @Column({
+    name: 'profile_image_id',
+  })
   profileImageId: number;
 
   @Column({})
@@ -61,7 +63,7 @@ export class Users extends BaseEntity {
 
   @OneToOne(() => Attachment)
   @JoinColumn({
-    name: 'profile_image_path',
+    name: 'profile_image_id',
   })
   profileImage: Promise<Attachment>;
 

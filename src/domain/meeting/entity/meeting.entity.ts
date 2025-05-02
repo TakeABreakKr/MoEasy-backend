@@ -90,7 +90,16 @@ export class Meeting extends BaseEntity {
     return this.members;
   }
 
-  static create({ name, category, explanation, limit, publicYn, thumbnailId, canJoin }: CreateMeetingDto): Meeting {
+  static create({
+    name,
+    category,
+    explanation,
+    limit,
+    publicYn,
+    thumbnailId,
+    thumbnailPath,
+    canJoin,
+  }: CreateMeetingDto): Meeting {
     const meeting = new Meeting();
 
     meeting.name = name;
@@ -99,6 +108,7 @@ export class Meeting extends BaseEntity {
     meeting.limit = limit;
     meeting.publicYn = publicYn;
     meeting.thumbnailId = thumbnailId;
+    meeting.thumbnailPath = thumbnailPath;
     meeting.canJoin = canJoin;
 
     return meeting;
