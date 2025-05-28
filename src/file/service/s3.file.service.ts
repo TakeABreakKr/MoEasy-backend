@@ -28,6 +28,14 @@ export class S3FileService implements FileService {
     this.awsS3BucketName = configService.get('AWS_S3_BUCKET_NAME');
   }
 
+  public async findById(attachmentId: number): Promise<Attachment | null> {
+    const attachment = await this.attachmentDao.findById(attachmentId);
+    if (!attachment || attachment.deletedYn) {
+      throw new BadRequestException(ErrorMessageType.FILE_NOT_FOUND);
+    }
+    return attachment;
+  }
+
   public async uploadAttachmentAndGetPath(file: Express.Multer.File): Promise<string> {
     const { path } = await this.uploadAttachment(file);
     return path;

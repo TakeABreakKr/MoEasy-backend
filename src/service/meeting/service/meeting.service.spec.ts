@@ -33,7 +33,6 @@ class MockMeetingComponent implements MeetingComponent {
       explanation: '모임 설명1',
       limit: 10,
       thumbnailId: 70,
-      thumbnailPath: 'test/path',
       canJoin: false,
       category: MeetingCategoryEnum.CAREER,
       publicYn: true,
@@ -44,7 +43,6 @@ class MockMeetingComponent implements MeetingComponent {
       explanation: '모임 설명2',
       limit: 10,
       thumbnailId: 80,
-      thumbnailPath: 'test/path',
       canJoin: true,
       category: MeetingCategoryEnum.CAREER,
       publicYn: true,
@@ -227,7 +225,6 @@ class MockUsersComponent implements UsersComponent {
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
       profileImageId: 50,
-      profileImagePath: 'test/path',
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
@@ -237,7 +234,6 @@ class MockUsersComponent implements UsersComponent {
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
       profileImageId: 70,
-      profileImagePath: 'test/path',
       settings: { allowNotificationYn: true },
     }),
   ];

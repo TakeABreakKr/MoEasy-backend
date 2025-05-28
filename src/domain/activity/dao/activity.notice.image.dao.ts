@@ -11,8 +11,8 @@ export class ActivityNoticeImageDaoImpl implements ActivityNoticeImageDao {
     private activityImageRepository: Repository<ActivityNoticeImage>,
   ) {}
 
-  async create(activityId: number, attachmentId: number, attachmentPath: string): Promise<ActivityNoticeImage> {
-    const activityNoticeImage = ActivityNoticeImage.create(activityId, attachmentId, attachmentPath);
+  async create(activityId: number, attachmentId: number): Promise<ActivityNoticeImage> {
+    const activityNoticeImage = ActivityNoticeImage.create(activityId, attachmentId);
     await this.activityImageRepository.save(activityNoticeImage);
     return activityNoticeImage;
   }

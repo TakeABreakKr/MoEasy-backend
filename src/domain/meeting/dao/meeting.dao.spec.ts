@@ -14,7 +14,7 @@ class MockMeetingRepository extends Repository<Meeting> {
       name: '모임 이름1',
       explanation: '모임 설명1',
       limit: 5,
-      thumbnail: 'testThumbnail1.jpg',
+      thumbnailId: 1,
       canJoin: true,
       category: MeetingCategoryEnum.PET,
       publicYn: true,
@@ -24,7 +24,7 @@ class MockMeetingRepository extends Repository<Meeting> {
       name: '모임 이름2',
       explanation: '모임 설명2',
       limit: 7,
-      thumbnail: 'testThumbnail2.jpg',
+      thumbnailId: 2,
       canJoin: true,
       category: MeetingCategoryEnum.PET,
       publicYn: true,
@@ -127,7 +127,7 @@ describe('MeetingDao', () => {
       name: '테스트 모임',
       explanation: '모임 설명',
       limit: 5,
-      thumbnail: 'createThumbnai.jpg',
+      thumbnailId: 3,
       canJoin: true,
       category: MeetingCategoryEnum.PET,
       publicYn: true,
@@ -137,7 +137,7 @@ describe('MeetingDao', () => {
     expect(result.name).toBe('테스트 모임');
     expect(result.explanation).toBe('모임 설명');
     expect(result.limit).toBe(5);
-    expect(result.thumbnail).toBe('createThumbnai.jpg');
+    expect(result.thumbnailId).toBe(3);
     expect(result.canJoin).toBe(true);
   });
 
@@ -147,7 +147,7 @@ describe('MeetingDao', () => {
       name: '업데이트한 모임이름',
       explanation: '업데이트한 모임설명',
       limit: 9,
-      thumbnail: 'updateTestThumbnail.jpg',
+      thumbnailId: 4,
       canJoin: false,
       category: MeetingCategoryEnum.PET,
       publicYn: true,

@@ -49,12 +49,11 @@ export class ActivityServiceImpl implements ActivityService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
-    const { id, path } = await this.fileService.uploadAttachment(req.thumbnail);
+    const { id: thumbnailIdid } = await this.fileService.uploadAttachment(req.thumbnail);
 
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
-      thumbnailId: id,
-      thumbnailPath: path,
+      thumbnailId: thumbnailIdid,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -94,12 +93,11 @@ export class ActivityServiceImpl implements ActivityService {
       throw new BadRequestException(ErrorMessageType.NOT_FOUND_ACTIVITY);
     }
 
-    const { id, path } = await this.fileService.uploadAttachment(req.thumbnail);
+    const { id: thumbnailIdid } = await this.fileService.uploadAttachment(req.thumbnail);
 
     activity.update({
       name: req.name,
-      thumbnailId: id,
-      thumbnailPath: path,
+      thumbnailId: thumbnailIdid,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
@@ -145,9 +143,9 @@ export class ActivityServiceImpl implements ActivityService {
 
     for (const image of noticeImages.slice(0, 3)) {
       try {
-        const { id, path } = await this.fileService.uploadAttachment(image);
+        const { id: noticeImageId } = await this.fileService.uploadAttachment(image);
 
-        await this.activityNoticeImageComponent.create(activityId, id, path);
+        await this.activityNoticeImageComponent.create(activityId, noticeImageId);
       } catch (error) {
         throw new BadRequestException(ErrorMessageType.ACTIVITY_NOTICE_IMAGE_UPLOAD_FAILED);
       }
@@ -181,14 +179,23 @@ export class ActivityServiceImpl implements ActivityService {
         authority: member.authority,
       };
     });
+    const thumbnail = await this.fileService.findById(activity.thumbnailId);
 
     const noticeImages = await this.activityNoticeImageComponent.findByActivityId(activity.id);
-    const noticeImagePaths = noticeImages.length > 0 ? noticeImages.map((image) => image.attachmentPath) : [];
+    const noticeImagePaths: string[] = [];
+    if (noticeImages.length > 0) {
+      for (const noticeImage of noticeImages) {
+        const attachment = await this.fileService.findById(noticeImage.attachmentId);
+        if (attachment) {
+          noticeImagePaths.push(attachment.path);
+        }
+      }
+    }
 
     const baseInfo = {
       activityId: activity.id,
       name: activity.name,
-      thumbnailPath: activity.thumbnailPath,
+      thumbnailPath: thumbnail.path,
       startDate: activity.startDate,
       onlineYn: activity.onlineYn,
       onlineLink: activity.getOnlineLink(),
@@ -250,10 +257,12 @@ export class ActivityServiceImpl implements ActivityService {
 
     const activityList: ActivityListDto[] = await Promise.all(
       filteredActivities.map(async (activity) => {
+        const thumbnail = await this.fileService.findById(activity.thumbnailId);
+
         const baseInfo = {
           activityId: activity.id,
           name: activity.name,
-          thumbnailPath: activity.thumbnailPath,
+          thumbnailPath: thumbnail.path,
           startDate: activity.startDate,
           onlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
@@ -279,12 +288,15 @@ export class ActivityServiceImpl implements ActivityService {
     const meetings = await this.memberComponent.findByUserId(requesterId);
     const meetingIds = meetings.map((meeting) => meeting.meetingId);
     const meetingList = await this.meetingComponent.findByMeetingIds(meetingIds);
-    const meetingListDtos: ActivityListMeetingListDto[] = meetingList.map((meeting) => {
-      return {
-        name: meeting.name,
-        thumbnailPath: meeting.thumbnailPath,
-      };
-    });
+    const meetingListDtos: ActivityListMeetingListDto[] = await Promise.all(
+      meetingList.map(async (meeting) => {
+        const thumbnail = await this.fileService.findById(meeting.thumbnailId);
+        return {
+          name: meeting.name,
+          thumbnailPath: thumbnail.path,
+        };
+      }),
+    );
 
     return {
       activityList,

@@ -27,7 +27,6 @@ class MockMeetingComponent implements MeetingComponent {
       explanation: '모임 설명1',
       limit: 10,
       thumbnailId: 20,
-      thumbnailPath: 'thumbnailPath',
       canJoin: false,
       category: MeetingCategoryEnum.STUDY,
       publicYn: true,
@@ -38,7 +37,6 @@ class MockMeetingComponent implements MeetingComponent {
       explanation: '모임 설명2',
       limit: 10,
       thumbnailId: 30,
-      thumbnailPath: 'thumbnailPath',
       canJoin: true,
       category: MeetingCategoryEnum.STUDY,
       publicYn: true,
@@ -117,7 +115,6 @@ class MockMemberComponent implements MemberComponent {
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
       profileImageId: 10,
-      profileImagePath: 'profileImagePath',
       settings: { allowNotificationYn: false },
     }),
     Users.createForTest({
@@ -127,7 +124,6 @@ class MockMemberComponent implements MemberComponent {
       email: 'parkmoiji2@test.com',
       explanation: 'explanation3',
       profileImageId: 30,
-      profileImagePath: 'profileImagePath',
       settings: { allowNotificationYn: false },
     }),
     Users.createForTest({
@@ -137,7 +133,6 @@ class MockMemberComponent implements MemberComponent {
       email: 'kimmoiji2@test.com',
       explanation: 'explanation4',
       profileImageId: 40,
-      profileImagePath: 'profileImagePath',
       settings: { allowNotificationYn: false },
     }),
   ];
@@ -228,7 +223,6 @@ class MockUsersComponent implements UsersComponent {
       email: 'kimmoiji@test.com',
       explanation: 'explanation1',
       profileImageId: 20,
-      profileImagePath: 'profileImagePath',
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
@@ -238,7 +232,7 @@ class MockUsersComponent implements UsersComponent {
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
       profileImageId: 30,
-      profileImagePath: 'profileImagePath',
+
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
@@ -248,7 +242,6 @@ class MockUsersComponent implements UsersComponent {
       email: 'parkmoiji2@test.com',
       explanation: 'explanation3',
       profileImageId: 40,
-      profileImagePath: 'profileImagePath',
       settings: { allowNotificationYn: true },
     }),
   ];

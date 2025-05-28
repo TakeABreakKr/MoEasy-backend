@@ -43,9 +43,6 @@ export class Users extends BaseEntity {
   })
   profileImageId: number;
 
-  @Column({})
-  profileImagePath: string;
-
   @Column(() => Settings)
   settings: Settings;
 
@@ -80,7 +77,6 @@ export class Users extends BaseEntity {
     users.email = usersCreateDto.email;
     users.explanation = usersCreateDto.explanation;
     users.profileImageId = usersCreateDto.profileImageId;
-    users.profileImagePath = usersCreateDto.profileImagePath;
     users.settings = Settings.create(usersCreateDto.settings);
     return users;
   }

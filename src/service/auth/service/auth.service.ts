@@ -102,20 +102,17 @@ export class AuthService {
     }
 
     let profileImageId: number;
-    let profileImagePath: string;
 
     try {
       const defaultImageUrl = `https://cdn.discordapp.com/embed/avatars/${parseInt(profile.discriminator, 10) % 5}.png`;
       if (profile.avatar) {
         const discordAvatarUrl =
           this.configService.get<string>('discord.cdnHost') + 'avatars/' + profile.id + '/' + profile.avatar;
-        const { id, path } = await this.fileService.uploadFromUrl(discordAvatarUrl);
+        const { id } = await this.fileService.uploadFromUrl(discordAvatarUrl);
         profileImageId = id;
-        profileImagePath = path;
       } else {
-        const { id, path } = await this.fileService.uploadFromUrl(defaultImageUrl);
+        const { id } = await this.fileService.uploadFromUrl(defaultImageUrl);
         profileImageId = id;
-        profileImagePath = path;
       }
     } catch (e) {
       throw new BadRequestException(ErrorMessageType.DISCORD_PROFILE_IMAGE_UPLOAD_FAILED);
@@ -126,7 +123,6 @@ export class AuthService {
       username: profile.username,
       email: profile.email,
       profileImageId: profileImageId,
-      profileImagePath: profileImagePath,
       explanation: '',
       settings: {
         allowNotificationYn: false,
