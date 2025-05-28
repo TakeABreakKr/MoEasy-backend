@@ -2,7 +2,6 @@ import { BaseEntity } from '@root/domain/common/base.entity';
 import { Attachment } from '@root/file/entity/attachment.entity';
 import { Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from 'typeorm';
 import { Activity } from '@domain/activity/entity/activity.entity';
-
 @Entity()
 export class ActivityNoticeImage extends BaseEntity {
   @PrimaryColumn({

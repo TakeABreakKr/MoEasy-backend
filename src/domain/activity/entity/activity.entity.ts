@@ -23,7 +23,6 @@ export class Activity extends BaseEntity {
   name: string;
 
   @Column({
-    name: 'thumbnail_id',
     nullable: false,
   })
   thumbnailId: number;

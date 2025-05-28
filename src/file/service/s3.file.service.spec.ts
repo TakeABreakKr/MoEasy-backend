@@ -60,7 +60,7 @@ describe('S3FileService', () => {
       filename: 'testFilenameMoeasy.jpg',
       path: '',
     };
-    const path = await s3FileService.uploadAttachment(file);
+    const path = await s3FileService.uploadAttachmentAndGetPath(file);
 
     expect(path).toBe('https://s3.ap-northeast-2.amazonaws.com/urlBucketName/testFilenameMoeasy.jpg');
   });

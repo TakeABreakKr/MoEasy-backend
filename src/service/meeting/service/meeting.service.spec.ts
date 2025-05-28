@@ -458,7 +458,7 @@ describe('MeetingService', () => {
       expect(result.name).toBe('모임 이름1');
       expect(result.explanation).toBe('모임 설명1');
       expect(result.limit).toBe(10);
-      expect(result.thumbnailId).toBe(70);
+      expect(result.thumbnailPath).toBe('test/path');
 
       expect(componentAccessLog).toEqual([
         MockMeetingComponent.findByMeetingIdLog,

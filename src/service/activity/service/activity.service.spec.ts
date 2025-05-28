@@ -271,7 +271,6 @@ class MockActivityComponent implements ActivityComponent {
       meetingId: 'C8',
       name: 'moeasy2',
       thumbnailId: 50,
-
       startDate: new Date(),
       endDate: new Date(),
       reminder: [],
@@ -619,13 +618,13 @@ describe('ActivityServiceTest', () => {
       expect(result.activityList[0].onlineYn).toBe(true);
       expect(result.activityList[0].meetingId).toBe('64');
       expect(result.meetings[0].name).toBe('모임 이름1');
-      expect(result.meetings[0].thumbnailId).toBe(20);
+      expect(result.meetings[0].thumbnailPath).toBe('thumbnailPath1');
 
       expect(result.activityList[1].name).toBe('moeasy4');
       expect(result.activityList[1].onlineYn).toBe(false);
       expect(result.activityList[1].meetingId).toBe('64');
       expect(result.meetings[1].name).toBe('모임 이름2');
-      expect(result.meetings[1].thumbnailId).toBe(30);
+      expect(result.meetings[1].thumbnailPath).toBe('thumbnailPath2');
 
       expect(componentAccessLog).toEqual([
         MockActivityComponent.findByMeetingIdLog,

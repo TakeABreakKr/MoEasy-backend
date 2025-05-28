@@ -2,36 +2,63 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { BadRequestException, Inject, Injectable, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FileService } from '@file/service/file.service';
-import { Attachment } from '@file/entity/attachment.entity';
 import { AttachmentDao } from '@file/dao/attachment.dao.interface';
 import { FileModeEnum, FileModeEnumType } from '@enums/file.mode.enum';
 import { ErrorMessageType } from '@enums/error.message.enum';
 import axios, { AxiosResponse } from 'axios';
+import { Attachment } from '@file/entity/attachment.entity';
 
 @Injectable()
-export class LocalFileService extends FileService {
+export class LocalFileService implements FileService {
   constructor(
     private configService: ConfigService,
     @Inject('AttachmentDao') private attachmentDao: AttachmentDao,
-  ) {
-    super();
-  }
-  public async uploadAttachment(file: Express.Multer.File): Promise<number> {
-    const path = await this.uploadFile(file);
+  ) {}
 
+  public async findById(attachmentId: number): Promise<Attachment | null> {
+    const attachment = await this.attachmentDao.findById(attachmentId);
+    if (!attachment || attachment.deletedYn) {
+      throw new BadRequestException(ErrorMessageType.FILE_NOT_FOUND);
+    }
+    return attachment;
+  }
+
+  public async uploadAttachmentAndGetPath(file: Express.Multer.File): Promise<string> {
+    const { path } = await this.uploadAttachment(file);
+    return path;
+  }
+
+  public async uploadAttachment(file: Express.Multer.File): Promise<{ id: number; path: string }> {
+    const { sanitizedFileName, attachment } = await this.prepareAndCreateAttachment(file);
+
+    const host = this.configService.get('host');
+    const staticPath = `${host}/static/${sanitizedFileName}`;
+
+    return {
+      id: attachment.id,
+      path: staticPath,
+    };
+  }
+
+  private async prepareAndCreateAttachment(file: Express.Multer.File): Promise<{
+    path: string;
+    sanitizedFileName: string;
+    attachment: Attachment;
+  }> {
+    const path = await this.uploadFile(file);
     const sanitizedFileName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 255);
 
-    const attachment: Attachment = await this.attachmentDao.create({
+    const attachment = await this.attachmentDao.create({
       name: sanitizedFileName,
       type: FileModeEnum.local,
       path: path,
       deletedYn: false,
     });
 
-    return attachment.id;
+    return { path, sanitizedFileName, attachment };
   }
 
-  async downloadAttachment(attachmentId: number): Promise<StreamableFile | null> {
+  public async downloadAttachment(attachmentId: number): Promise<StreamableFile | null> {
     const attachment = await this.attachmentDao.findById(attachmentId);
     if (!attachment || attachment.deletedYn) {
       throw new BadRequestException(ErrorMessageType.FILE_NOT_FOUND);
@@ -78,7 +105,16 @@ export class LocalFileService extends FileService {
     return new StreamableFile(content);
   }
 
-  public async uploadFromUrl(url: string): Promise<number> {
+  public async uploadFromUrl(url: string): Promise<{ id: number; path: string }> {
+    const { url: fileUrl, attachment } = await this.prepareFromUrl(url);
+
+    return {
+      id: attachment.id,
+      path: fileUrl,
+    };
+  }
+
+  private async prepareFromUrl(url: string): Promise<{ url: string; attachment: Attachment }> {
     const ALLOWED_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
     try {
@@ -97,14 +133,13 @@ export class LocalFileService extends FileService {
     } catch (e) {
       throw new BadRequestException(ErrorMessageType.FAILED_TO_FETCH_URL_HEADER);
     }
-
-    const attachment: Attachment = await this.attachmentDao.create({
+    const attachment = await this.attachmentDao.create({
       name: `external_image_${Date.now()}`,
       type: FileModeEnum.external,
       path: url,
       deletedYn: false,
     });
 
-    return attachment.id;
+    return { url, attachment };
   }
 }

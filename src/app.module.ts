@@ -13,6 +13,9 @@ import { FileModule } from '@file/file.module';
 import { ServiceModule } from '@service/service.module';
 import { FileModeEnum } from '@enums/file.mode.enum';
 import { AppController } from '@root/controller/app.controller';
+import { SeedModule } from '@root/seed/seed.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -43,9 +46,14 @@ import { AppController } from '@root/controller/app.controller';
     }),
     DomainModule,
     ServiceModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', process.env.FILE_DIRECTORY || 'uploads'),
+      serveRoot: '/static',
+    }),
     FileModule.forRoot({
       fileMode: FileModeEnum.local,
     }),
+    SeedModule,
   ],
   controllers: [AppController],
 })

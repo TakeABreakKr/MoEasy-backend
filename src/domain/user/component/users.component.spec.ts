@@ -106,6 +106,8 @@ describe('UsersComponent', () => {
     expect(user.discordId).toBe('discordIdThree');
     expect(user.username).toBe('kimmoiji');
     expect(user.email).toBe('kimmoiji@example.com');
+    expect(user.explanation).toBe('explanation3');
+    expect(user.profileImageId).toBe(50);
   });
 
   it('findByIdTest', async () => {

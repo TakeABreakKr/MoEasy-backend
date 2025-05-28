@@ -22,10 +22,10 @@ export class ActivityResponse {
   region?: RegionEnumType;
 
   @ApiProperty()
-  thumbnailId: number;
+  thumbnailPath: string;
 
-  @ApiProperty({ type: [Number] })
-  noticeImageIds: number[];
+  @ApiProperty({ type: [] })
+  noticeImagePaths: string[];
 
   @ApiProperty()
   participantLimit: number;

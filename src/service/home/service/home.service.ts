@@ -26,7 +26,8 @@ import { HeaderResponse } from '@service/home/dto/response/header.response';
 import { UsersComponent } from '@domain/user/component/users.component.interface';
 import { Users } from '@domain/user/entity/users.entity';
 import { ErrorMessageType } from '@enums/error.message.enum';
-import { MeetingLikeComponent } from '@root/domain/meeting/component/meeting.like.component.interface';
+import { MeetingLikeComponent } from '@domain/meeting/component/meeting.like.component.interface';
+import { FileService } from '@root/file/service/file.service';
 
 @Injectable()
 export class HomeServiceImpl implements HomeService {
@@ -39,6 +40,7 @@ export class HomeServiceImpl implements HomeService {
     @Inject('RegionComponent') private regionComponent: RegionComponent,
     @Inject('UsersComponent') private usersComponent: UsersComponent,
     @Inject('MeetingLikeComponent') private meetingLikeComponent: MeetingLikeComponent,
+    @Inject('FileService') private fileService: FileService,
   ) {}
 
   public async getHome(user: AuthUser): Promise<HomeResponse> {
@@ -59,10 +61,11 @@ export class HomeServiceImpl implements HomeService {
     const meetings: Meeting[] = await this.meetingComponent.getNewMeetings();
     return Promise.all(
       meetings.map(async (meeting) => {
+        const thumbnail = await this.fileService.findById(meeting.thumbnailId);
         return {
           id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: thumbnail.path,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
           likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
@@ -81,6 +84,7 @@ export class HomeServiceImpl implements HomeService {
         );
         const address = activity.address;
         const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
+        const thumbnail = await this.fileService.findById(meeting.thumbnailId);
         return {
           region,
           participants,
@@ -89,7 +93,7 @@ export class HomeServiceImpl implements HomeService {
           isOnlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
           meetingName: meeting.name,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: thumbnail.path,
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
           participantLimit: activity.participantLimit,
@@ -108,6 +112,7 @@ export class HomeServiceImpl implements HomeService {
         );
         const address = activity.address;
         const region: RegionEnumType = getRegionEnum(address.sido, address.sigungu);
+        const thumbnail = await this.fileService.findById(meeting.thumbnailId);
         return {
           participants,
           id: activity.id,
@@ -115,7 +120,7 @@ export class HomeServiceImpl implements HomeService {
           isOnlineYn: activity.onlineYn,
           onlineLink: activity.getOnlineLink(),
           meetingName: meeting.name,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: thumbnail.path,
           region: region,
           time: activity.startDate,
           participantCount: await this.participantComponent.getParticipantCount(activity.id),
@@ -130,10 +135,11 @@ export class HomeServiceImpl implements HomeService {
     const popularMeetings = await this.meetingComponent.findByMeetingIds(meetingIds);
     return Promise.all(
       popularMeetings.map(async (meeting) => {
+        const thumbnail = await this.fileService.findById(meeting.thumbnailId);
         return {
           id: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: thumbnail.path,
           explanation: meeting.explanation,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
           likedYn: id ? await this.meetingLikeComponent.likeStatus(id, meeting.id) : false,
@@ -178,12 +184,13 @@ export class HomeServiceImpl implements HomeService {
 
   public async getHeader(user: AuthUser): Promise<HeaderResponse> {
     const userEntity: Users = await this.usersComponent.findById(user.id);
+    const profileImagePath = await this.fileService.findById(userEntity.profileImageId);
     if (!userEntity) {
       throw new BadRequestException(ErrorMessageType.NO_USER);
     }
     return {
       id: user.id,
-      profileImageId: userEntity.profileImageId,
+      profileImagePath: profileImagePath.path,
     };
   }
 }

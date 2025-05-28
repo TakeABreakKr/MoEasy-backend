@@ -9,7 +9,7 @@ export class ActivityListDto {
   name: string;
 
   @ApiProperty()
-  thumbnailId: number;
+  thumbnailPath: string;
 
   @ApiProperty()
   onlineYn: boolean;

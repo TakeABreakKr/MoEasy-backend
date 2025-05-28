@@ -48,7 +48,8 @@ export class MeetingServiceImpl implements MeetingService {
       throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
     }
 
-    const thumbnailId = await this.fileService.uploadAttachment(req.thumbnail);
+    const { id: thumbnailId } = await this.fileService.uploadAttachment(req.thumbnail);
+
     const meeting: Meeting = await this.meetingComponent.create({
       name: req.name,
       category: req.category,
@@ -129,13 +130,13 @@ export class MeetingServiceImpl implements MeetingService {
 
   @Transactional()
   public async updateMeetingThumbnail(request: MeetingThumbnailUpdateRequest, requesterId: number) {
-    const thumbnailId = await this.fileService.uploadAttachment(request.thumbnail);
+    const { id: thumbnailIdid } = await this.fileService.uploadAttachment(request.thumbnail);
 
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(request.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId, [AuthorityEnum.OWNER]);
     const meeting: Meeting = await this.meetingComponent.findByMeetingId(meetingId);
 
-    meeting.thumbnailId = thumbnailId;
+    meeting.thumbnailId = thumbnailIdid;
     await this.meetingComponent.update(meeting);
 
     const content = meeting.name + ' 모임 썸네일이 변경되었습니다.';
@@ -186,12 +187,13 @@ export class MeetingServiceImpl implements MeetingService {
     SortUtils.sort<Meeting>(meetings, options);
     const meetingList: MeetingListMeetingDto[] = await Promise.all(
       meetings.map(async (meeting) => {
+        const thumbnail = await this.fileService.findById(meeting.thumbnailId);
         return {
           meetingId: MeetingUtils.transformMeetingIdToString(meeting.id),
           name: meeting.name,
           explanation: meeting.explanation,
           canJoin: meeting.canJoin,
-          thumbnailId: meeting.thumbnailId,
+          thumbnailPath: thumbnail.path,
           likedYn: userId ? await this.meetingLikeComponent.likeStatus(meeting.id, userId) : false,
           memberCount: await this.memberComponent.getMemberCount(meeting.id),
         };
@@ -240,11 +242,12 @@ export class MeetingServiceImpl implements MeetingService {
       };
     });
 
+    const thumbnail = await this.fileService.findById(meeting.thumbnailId);
     return {
       name: meeting.name,
       explanation: meeting.explanation,
       limit: meeting.limit,
-      thumbnailId: meeting.thumbnailId,
+      thumbnailPath: thumbnail.path,
       category: meeting.category,
       members: memberDtos,
       memberCount: await this.memberComponent.getMemberCount(meeting.id),

@@ -232,6 +232,7 @@ class MockUsersComponent implements UsersComponent {
       email: 'Parkmoiji@test.com',
       explanation: 'explanation2',
       profileImageId: 30,
+
       settings: { allowNotificationYn: true },
     }),
     Users.createForTest({
