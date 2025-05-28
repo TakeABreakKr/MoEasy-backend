@@ -48,7 +48,7 @@ export class MeetingServiceImpl implements MeetingService {
       throw new BadRequestException(ErrorMessageType.KEYWORD_LIMIT_EXCEEDED);
     }
 
-    const { id: thumbnailIdid } = await this.fileService.uploadAttachment(req.thumbnail);
+    const { id: thumbnailId } = await this.fileService.uploadAttachment(req.thumbnail);
 
     const meeting: Meeting = await this.meetingComponent.create({
       name: req.name,
@@ -56,7 +56,7 @@ export class MeetingServiceImpl implements MeetingService {
       explanation: req.explanation,
       limit: req.limit,
       publicYn: req.publicYn,
-      thumbnailId: thumbnailIdid,
+      thumbnailId: thumbnailId,
       canJoin: req.canJoin,
     });
 

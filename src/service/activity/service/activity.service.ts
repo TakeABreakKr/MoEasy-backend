@@ -49,11 +49,11 @@ export class ActivityServiceImpl implements ActivityService {
     const meetingId: number = MeetingUtils.transformMeetingIdToInteger(req.meetingId);
     await this.authorityComponent.validateAuthority(requesterId, meetingId);
 
-    const { id: thumbnailIdid } = await this.fileService.uploadAttachment(req.thumbnail);
+    const { id: thumbnailId } = await this.fileService.uploadAttachment(req.thumbnail);
 
     const activity: Activity = await this.activityComponent.create({
       name: req.name,
-      thumbnailId: thumbnailIdid,
+      thumbnailId: thumbnailId,
       startDate: req.startDate,
       endDate: req.endDate,
       reminder: req.reminder,
