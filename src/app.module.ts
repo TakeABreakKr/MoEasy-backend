@@ -1,22 +1,52 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { DiscordModule } from '@discord-nestjs/core';
-import { DiscordConfig } from './config/discord.config';
-import { BotModule } from './bot/bot.module';
-import configuration from './config/configuration';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
+import { NecordModule } from 'necord';
+import { DataSource } from 'typeorm';
+import { addTransactionalDataSource } from 'typeorm-transactional';
+import configuration from '@config/configuration';
+import { DiscordConfig } from '@config/discord.config';
+import { DBConfig } from '@config/db.config';
+import { DomainModule } from '@domain/domain.module';
+import { FileModule } from '@file/file.module';
+import { ServiceModule } from '@service/service.module';
+import { FileModeEnum } from '@enums/file.mode.enum';
+import { AppController } from '@root/controller/app.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
+      envFilePath: '.env',
     }),
-    DiscordModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
+      useClass: DBConfig,
+      async dataSourceFactory(options) {
+        if (!options) {
+          throw new Error('Invalid options passed');
+        }
+
+        return addTransactionalDataSource(new DataSource(options));
+      },
+    }),
+    JwtModule.register({
+      global: true,
+    }),
+    NecordModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
       useClass: DiscordConfig,
     }),
-    BotModule,
+    DomainModule,
+    ServiceModule,
+    FileModule.forRoot({
+      fileMode: FileModeEnum.local,
+    }),
   ],
+  controllers: [AppController],
 })
-export class AppModule {
-}
+export class AppModule {}
